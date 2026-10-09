@@ -1,0 +1,23 @@
+# 依赖与构建产物（不入库）
+node_modules/
+dist/
+web/dist/
+e2e/node_modules/
+
+# 测试与报告产物
+e2e/e2e-report/
+e2e/test-results/
+playwright-report/
+coverage/
+*.tsbuildinfo
+
+# 本地环境
+.env
+.env.local
+.env.*.local
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+*.log
