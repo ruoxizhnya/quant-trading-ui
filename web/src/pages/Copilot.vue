@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
 import { NCard, NInput, NButton, useMessage } from 'naive-ui'
-import { generateStrategy } from '@/api/copilot'
+import { generateStrategy, pollCopilotJob } from '@/api/copilot'
 
 const message = useMessage()
 const inputText = ref('')
@@ -63,11 +63,40 @@ async function sendMessage() {
   messages.value.push({ role: 'assistant', content: '正在生成策略...' })
 
   try {
-    const res = await generateStrategy({ prompt: text })
+    // OBS-12：后端是异步 job——先受理（202 + job_id），再轮询到终态。
+    // ① 修复：请求字段是 description（此前发 {prompt}，输入被静默吞掉）。
+    const started = await generateStrategy({ description: text })
     const lastMsg = messages.value[messages.value.length - 1]
-    lastMsg.content = res.explanation || '策略已生成'
-    lastMsg.code = res.code
-    lastMsg.language = res.language
+    lastMsg.content = `已受理（job ${started.job_id.slice(0, 8)}…），生成中（LLM → 沙箱编译 → 回测）...`
+    await nextTick()
+    scrollToBottom()
+
+    // ② ③ 修复：轮询到终态，如实展示产物 / 错误（不再用「策略已生成」兜底）。
+    const job = await pollCopilotJob(started.job_id)
+
+    if (job.status === 'generated' || job.status === 'backtest_complete') {
+      lastMsg.content = job.strategy_name
+        ? `策略 ${job.strategy_name} 生成成功（${job.status}）`
+        : `生成成功（${job.status}）`
+      if (job.backtest_result && typeof job.backtest_result.total_return === 'number') {
+        lastMsg.content += `，回测总收益 ${(job.backtest_result.total_return * 100).toFixed(2)}%`
+      }
+      lastMsg.code = job.generated_code
+      lastMsg.language = 'go'
+    } else {
+      // 失败终态：如实点名状态与原因。
+      const why = job.build_error || job.backtest_error || ''
+      lastMsg.content = `生成未成功（${job.status}）${why ? `：${why}` : ''}`
+      if (job.status === 'sandbox_rejected') {
+        lastMsg.content +=
+          '\n（沙箱未启用：需在后端配置 copilot.working_dir 后，AI 生成的代码才会真正编译验证）'
+      }
+      // build_failed 时通常仍有代码可审阅——展示出来而不是只报错。
+      if (job.generated_code) {
+        lastMsg.code = job.generated_code
+        lastMsg.language = 'go'
+      }
+    }
   } catch (e: unknown) {
     const lastMsg = messages.value[messages.value.length - 1]
     lastMsg.content = `生成失败: ${e instanceof Error ? e.message : String(e)}`

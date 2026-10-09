@@ -133,16 +133,36 @@ export interface ScreenResult {
   factors: Record<string, number>[]
 }
 
+// ── Copilot（OBS-12：对齐后端异步 job 契约，cmd/analysis/handlers_copilot.go）──
+// 旧契约 {prompt} / {code,language,explanation,strategy_name} 是**从未对上过的
+// 同步版遗留**——后端活契约自始就是异步 job（POST 受理 202 + GET 轮询）。
+
 export interface CopilotRequest {
-  prompt: string
-  context?: string
+  description: string
+  universe?: string
+  start_date?: string
+  end_date?: string
 }
 
-export interface CopilotResponse {
-  code: string
-  language: string
-  explanation: string
-  strategy_name: string
+// POST /api/copilot/generate 的响应（202 = job 已受理）。
+export interface CopilotJobStarted {
+  job_id: string
+  status: string
+}
+
+// GET /api/copilot/generate/{job_id} 的响应。
+// status 状态机与后端 pkg/strategy/copilot.go 同步——终态：
+//   generated / backtest_complete（成功）
+//   llm_failed / sandbox_rejected / build_failed / backtest_failed（失败）
+// 非终态只有 pending。前端轮询到终态即返回（见 api/copilot.ts）。
+export interface CopilotJobStatus {
+  job_id: string
+  status: string
+  generated_code?: string
+  build_error?: string
+  strategy_name?: string
+  backtest_error?: string
+  backtest_result?: Record<string, unknown>
 }
 
 export interface HistoryEntry {
