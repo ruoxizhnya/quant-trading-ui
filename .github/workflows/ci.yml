@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  frontend:
+    name: Frontend (lint / typecheck / test)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Node 22：eslint 10 要求 ^20.19.0 || ^22.13.0 || >=24，vitest 4 要求
+      # >=20.19；用 22 这档 LTS 覆盖两者。
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      # 用 ci 而不是 install：lockfile 不同步时直接失败，而不是悄悄改依赖树。
+      - name: Install
+        run: npm ci
+
+      # eslint 目前是 0 error / 大量 warning，退出码 0；这里只守 error。
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      # `npm test` 内部先跑 lint:tests（vitest toBe(expected, "message") 误用的
+      # 静态扫描），再跑 vitest。
+      - name: Test
+        run: npm test
+
+  e2e:
+    name: Playwright e2e (smoke)
+    runs-on: ubuntu-latest
+    # 端到端用例打真实后端 API，需先起整栈。当前后端仍在 core 仓，本地/CI 起
+    # 栈见 core 仓 docs/TEST.md；此 job 先保留为手动触发（workflow_dispatch），
+    # 待后端服务的 CI 就绪后改为自动。
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: e2e/package-lock.json
+      - name: Install
+        working-directory: e2e
+        run: npm ci
+      # 冒烟前需后端在跑（API_BASE 指向已起的 analysis-service）。未起则此步
+      # 失败，故不默认启用——见上面注释。
