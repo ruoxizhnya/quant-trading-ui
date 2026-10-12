@@ -478,3 +478,65 @@ test.describe('Backtest Engine — Error Handling & Edge Cases', () => {
     expect(restoredValue).toContain('600000.SH');
   });
 });
+
+// K9（ResultSpec status 三值收口）：UI 的成功判据必须是 result.status 本身。
+//
+// 这条 E2E 全部接口走 page.route stub（不需要后端在线），把报告 stub 成
+// invalid 运行，钉死「invalid ⇒ 显式警示 + invalid_reasons 列表，不是绿色
+// 成功标签」。破坏腿：判据改回 `result.id` 存在推断成功 ⇒ 警示块不渲染 ⇒ 红
+// （与 web/src/pages/BacktestEngine.test.ts 的 vitest 破坏腿同点）。
+test.describe('K9: status 三值 — invalid 显式警示（全 stub，不需要后端）', () => {
+
+  test.beforeEach(async ({ page }) => {
+    await isolateTestEnvironment(page);
+    // 探测成 open-access 免登录（web/src/router/authGuard.ts 的 isOpenAccess 通路）
+    await page.route('**/api/auth/status', route => route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ auth_enabled: false, bootstrap_required: false }),
+    }));
+    await page.route('**/api/strategies', route => route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ strategies: [] }),
+    }));
+  });
+
+  test('invalid 报告 ⇒ 显式警示 + invalid_reasons 列表，状态标签「无效运行」', async ({ page }) => {
+    await page.route('**/api/backtest/bt-inv/report', route => route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        id: 'bt-inv',
+        status: 'invalid',
+        invalid_reasons: ['empty_universe', 'zero_trades'],
+        total_return: 0,
+        annual_return: 0,
+        sharpe_ratio: 0,
+        sortino_ratio: 0,
+        max_drawdown: 0,
+        max_drawdown_date: '',
+        calmar_ratio: 0,
+        started_at: '2024-01-01T00:00:00Z',
+        completed_at: '2024-01-01T00:01:00Z',
+        portfolio_values: [],
+        trades: [],
+      }),
+    }));
+
+    await page.goto('/backtest?id=bt-inv');
+    await page.waitForLoadState('domcontentloaded');
+
+    // 显式警示 + reasons 逐条呈现
+    const invalidAlert = page.locator('[data-testid="result-invalid"]');
+    await expect(invalidAlert).toBeVisible({ timeout: 15000 });
+    const items = page.locator('[data-testid="invalid-reason-item"]');
+    await expect(items).toHaveCount(2);
+    await expect(items.nth(0)).toHaveText('empty_universe');
+    await expect(items.nth(1)).toHaveText('zero_trades');
+
+    // 状态标签由 status 三值决定（不是 result.id 推出来的「成功」）
+    await expect(page.locator('[data-testid="result-status-tag"]')).toContainText('无效运行');
+    await expect(page.locator('[data-testid="result-failed"]')).toHaveCount(0);
+  });
+});

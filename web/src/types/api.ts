@@ -40,7 +40,14 @@ export interface Trade {
 
 export interface BacktestResult {
   id: string
+  // K9（ResultSpec 冻结）：status 三值 completed / invalid / failed。
+  // **判据是 status 本身**，不得用 id 是否存在推断成功 —— invalid / failed
+  // 的运行同样带 id。
   status: string
+  // 仅 status='invalid' 时有：无效裁定的稳定 Code 列表（OBS-01）。
+  invalid_reasons?: string[]
+  // 仅 status='failed' 时有：真实错误。无效**不**装在这里。
+  error?: string
   strategy?: string
   stock_pool?: string[]
   start_date?: string

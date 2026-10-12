@@ -40,8 +40,10 @@
     <div v-if="result" class="results-section">
       <n-space class="result-actions" align="center" justify="space-between">
         <n-space align="center">
-          <n-tag :type="result.id ? 'success' : 'default'" size="small">
-            {{ result.id ? `ID: ${result.id}` : '未持久化' }}
+          <!-- K9：状态标签由 result.status 三值决定（不是 result.id 是否存在 ——
+               id 是身份不是结论，invalid / failed 的运行同样带 id） -->
+          <n-tag :type="statusTagType" size="small" data-testid="result-status-tag">
+            {{ statusTagLabel }}{{ result.id ? ` · ID: ${result.id}` : ' · 未持久化' }}
           </n-tag>
           <n-text depth="3" style="font-size: 12px">
             <n-checkbox v-model:checked="compareSelected" :disabled="!result.id">
@@ -72,16 +74,35 @@
           </n-button>
         </n-space>
       </n-space>
-      <MetricsCards :metrics="resultMetrics" />
-      <EquityChart
-        :portfolio-values="result.portfolio_values || []"
-        :trades="safeTrades"
-        :show-trades="showTrades"
-        :stock-prices="stockPrices"
-        @toggle-trades="showTrades = !showTrades"
-      />
-      <TradeTable v-if="showTrades && safeTrades.length > 0" :trades="safeTrades" />
-      <DetailMetrics :metrics="safeMetrics" />
+      <!-- K9：status 三值显式呈现 —— invalid 警示 + reasons 列表、failed 错误块。
+           两者都不得被当成成功观测；指标面板只在「跑完了」（completed/invalid）
+           时出现 —— failed 的指标字段无意义（ResultSpec 冻结）。 -->
+      <n-alert
+        v-if="isInvalidResult"
+        type="warning"
+        title="无效运行 —— 结果不可用作成功观测"
+        data-testid="result-invalid"
+      >
+        <ul data-testid="invalid-reasons">
+          <li v-for="code in invalidReasons" :key="code" data-testid="invalid-reason-item">{{ code }}</li>
+        </ul>
+      </n-alert>
+      <n-alert v-if="isFailedResult" type="error" title="回测失败" data-testid="result-failed">
+        {{ result.error || '未知错误' }}
+      </n-alert>
+
+      <template v-if="!isFailedResult">
+        <MetricsCards :metrics="resultMetrics" />
+        <EquityChart
+          :portfolio-values="result.portfolio_values || []"
+          :trades="safeTrades"
+          :show-trades="showTrades"
+          :stock-prices="stockPrices"
+          @toggle-trades="showTrades = !showTrades"
+        />
+        <TradeTable v-if="showTrades && safeTrades.length > 0" :trades="safeTrades" />
+        <DetailMetrics :metrics="safeMetrics" />
+      </template>
     </div>
 
     <n-empty v-else-if="!isRunning && !fromQuickRun && !loadError && asyncState.status === 'idle'" description="配置参数后运行回测" class="empty-state"></n-empty>
@@ -204,6 +225,31 @@ const resultMetrics = computed(() => {
   ]
 })
 
+// K9（ResultSpec status 三值收口）：成功判据是 result.status **本身** ——
+// 不是 result.id 是否存在（id 是身份不是结论，invalid / failed 的运行
+// 同样带 id）。三值语义见 docs/SPEC.md「ResultSpec 冻结」。
+const resultStatus = computed(() => result.value?.status ?? '')
+const isInvalidResult = computed(() => resultStatus.value === 'invalid')
+const isFailedResult = computed(() => resultStatus.value === 'failed')
+const invalidReasons = computed(() => result.value?.invalid_reasons ?? [])
+
+const statusTagType = computed(() => {
+  switch (resultStatus.value) {
+    case 'completed': return 'success'
+    case 'invalid': return 'warning'
+    case 'failed': return 'error'
+    default: return 'default'
+  }
+})
+const statusTagLabel = computed(() => {
+  switch (resultStatus.value) {
+    case 'completed': return '已完成'
+    case 'invalid': return '无效运行'
+    case 'failed': return '失败'
+    default: return '未知状态'
+  }
+})
+
 watch(() => asyncState.value.result, (newResult) => {
   if (newResult) {
     result.value = newResult
@@ -314,9 +360,11 @@ async function runSyncBacktest() {
       commission_rate: form.commissionRate,
       slippage_rate: form.slippageRate,
     })
-    if (!res || !res.id) {
-      throw new Error('回测返回结果无效：缺少ID')
+    if (!res) {
+      throw new Error('回测无响应')
     }
+    // K9：判据是 status 三值本身。旧缺陷是 `!res.id` 当失败 —— id 是身份
+    // 不是结论；invalid / failed 都照常进结果区显式呈现（警示块 / 错误块）。
     result.value = res
     triggerRef(result)
     backtestStore.addToHistory(res)
