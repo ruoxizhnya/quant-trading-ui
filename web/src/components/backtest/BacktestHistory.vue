@@ -16,6 +16,17 @@
               <span class="history-desc">{{ itemDesc(item) }}</span>
             </div>
             <n-space :size="4" align="center">
+              <!-- K9：无效 / 失败运行不得当成功观测陈列 —— 明细标识先于收益标签 -->
+              <n-tag
+                v-if="statusTag(item)"
+                data-testid="history-status-tag"
+                :type="statusTag(item)!.type"
+                size="small"
+                round
+                :bordered="false"
+              >
+                {{ statusTag(item)!.label }}
+              </n-tag>
               <n-tag 
                 :type="(item.total_return ?? 0) >= 0 ? 'success' : 'error'" 
                 size="small" 
@@ -125,6 +136,16 @@ function itemDesc(item: HistoryEntry): string {
     } catch { /* best-effort; ignore failure */ }
   }
   return desc
+}
+
+// K9：由 status 三值派生的明细标识（仅非 completed 时返回，completed 不加噪）。
+// 返回 null 表示「无标识」——旧数据无 status 字段，同样落到这里。
+function statusTag(item: HistoryEntry): { type: 'warning' | 'error'; label: string } | null {
+  switch (item.status) {
+    case 'invalid': return { type: 'warning', label: '无效运行' }
+    case 'failed': return { type: 'error', label: '失败' }
+    default: return null
+  }
 }
 
 function directionLabel(dir: string): string {

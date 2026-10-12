@@ -29,6 +29,7 @@ function safeParse(raw: string | null): HistoryItem[] {
 function toHistoryItem(result: BacktestResult): HistoryItem {
   return {
     id: result.id,
+    status: result.status,
     strategy: result.strategy,
     stock_pool: result.stock_pool,
     start_date: result.start_date,
@@ -44,6 +45,7 @@ function jobToHistoryItem(job: BacktestJob): HistoryItem {
   const r = job.result
   return {
     id: job.id,
+    status: r?.status,
     strategy: job.strategy_id,
     stock_pool: job.universe ? job.universe.split(',') : [],
     start_date: job.start_date,
