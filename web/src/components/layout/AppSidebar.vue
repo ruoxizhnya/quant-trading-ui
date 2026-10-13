@@ -1,7 +1,7 @@
 <template>
   <aside class="app-sidebar" :class="{ collapsed }">
     <div class="sidebar-brand">
-      <n-icon size="22" color="#58a6ff"><TrendingUpOutline /></n-icon>
+      <n-icon size="22" class="brand-icon"><TrendingUpOutline /></n-icon>
       <span v-if="!collapsed" class="brand-text">Quant Lab</span>
     </div>
 
@@ -103,6 +103,11 @@ const navItems = [
   border-bottom: 1px solid var(--q-border);
 }
 
+/* 品牌图标色走 CSS：color 若落到 SVG 呈现属性，var() 会静默失效 */
+.sidebar-brand .brand-icon {
+  color: var(--q-primary);
+}
+
 .brand-text { font-size: 16px; font-weight: 700; color: var(--q-text); white-space: nowrap; }
 
 .sidebar-nav {
@@ -127,9 +132,9 @@ const navItems = [
 
 .nav-item:hover { background: var(--q-surface2); color: var(--q-text); }
 .nav-item.active {
-  background: rgba(88,166,255,0.12);
+  background: var(--q-primary-soft);
   color: var(--q-primary);
-  box-shadow: inset 0 0 0 1px rgba(88,166,255,0.2);
+  box-shadow: inset 0 0 0 1px var(--q-primary-edge);
 }
 .nav-item .nav-label { font-size: 13px; }
 

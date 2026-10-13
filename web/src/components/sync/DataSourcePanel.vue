@@ -130,7 +130,7 @@ async function handleRefresh() {
           size="small"
         >
           <NDescriptionsItem label="错误信息">
-            <span style="color: #d03050">{{ store.dataSourceHealth.error }}</span>
+            <span style="color: var(--q-danger-text)">{{ store.dataSourceHealth.error }}</span>
           </NDescriptionsItem>
         </NDescriptions>
       </NSpace>

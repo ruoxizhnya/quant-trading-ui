@@ -186,19 +186,19 @@ function directionLabel(dir: string): string {
 
 .history-desc {
   font-size: 12px;
-  color: #8b949e;
+  color: var(--q-text3);
 }
 
 .trade-sublist {
   padding: 4px 0 0 16px;
 }
 
-.trade-long td { background: rgba(63, 185, 80, 0.04); }
-.trade-short td { background: rgba(248, 81, 73, 0.04); }
+.trade-long td { background: var(--q-success-soft); }
+.trade-short td { background: var(--q-danger-soft); }
 
-.pnl-pos { color: #3fb950; font-weight: 500; }
-.pnl-neg { color: #f85149; font-weight: 500; }
-.pnl-pct { color: #8b949e; font-size: 11px; margin-left: 4px; }
+.pnl-pos { color: var(--q-success); font-weight: 500; }
+.pnl-neg { color: var(--q-danger); font-weight: 500; }
+.pnl-pct { color: var(--q-text3); font-size: 11px; margin-left: 4px; }
 
 :deep(.n-collapse-item__header-main) {
   width: 100%;

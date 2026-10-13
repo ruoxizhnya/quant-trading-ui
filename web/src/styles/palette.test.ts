@@ -189,33 +189,15 @@ describe('CSS 变量引用完整性', () => {
   }
 
   /**
-   * 棘轮基线（ratchet）：2026-10-13 实测的存量欠债。断言取**集合相等**，
-   * 所以两个方向都会红：新增欠债 → 红；修好了却没删这条 → 也红（防"偷偷还债不记账"）。
+   * 棘轮基线：**A-03 已清零，此后恒为空数组**（2026-10-14）。
    *
-   * 悬空引用是一类此前无人看见的真缺陷：组件引用了从未定义的变量，样式其实一直没生效
-   * （或只在兜底值下勉强成立）。修法属于 TASKS.md 的 A-03 扫页。
-   *
-   * ⚠️ 与 A-03 断言 6 的约定：不得为变绿而放宽基线；每修好一条必须同步删掉对应条目。
+   * 断言取集合相等，所以两个方向都会红：新增欠债 → 红；改动基线却不改代码 → 也红。
+   * 空基线意味着这三类静默失败从此是**永久门禁**而非待办清单 —— 放宽它需要显式改这里，
+   * 改这里就是"故意引入缺陷"，评审时一眼可见。
    */
-  const DANGLING_BASELINE = [
-    '--q-card-bg2 ← /pages/StrategyBuilder.vue',
-    '--q-divider ← /pages/StrategyBuilder.vue',
-    '--q-radius-md ← /components/dashboard/NavTiles.vue',
-    '--q-surface-muted ← /pages/Alerts.vue',
-    '--q-text-muted ← /components/paper/EmergencyFlatten.vue',
-    '--q-text-muted ← /pages/Alerts.vue',
-  ].sort()
+  const DANGLING_BASELINE: string[] = []
 
-  const FALLBACK_BASELINE = [
-    '/components/paper/EmergencyFlatten.vue: var(--q-border, #2a2a2a)',
-    '/components/paper/EmergencyFlatten.vue: var(--q-text-muted, #888)',
-    '/pages/Alerts.vue: var(--q-border, #2a2a2a)',
-    '/pages/Alerts.vue: var(--q-primary, #58a6ff)',
-    '/pages/Alerts.vue: var(--q-text-muted, #888)',
-    '/pages/StrategyBuilder.vue: var(--q-primary, #58a6ff)',
-    '/pages/StrategyBuilder.vue: var(--q-success, #85e89d)',
-    '/pages/StrategyBuilder.vue: var(--q-warning, #ffab70)',
-  ].sort()
+  const FALLBACK_BASELINE: string[] = []
 
   it('悬空 var(--q-*) 引用与基线集合相等', () => {
     expect(findDangling()).toEqual(DANGLING_BASELINE)
@@ -239,6 +221,7 @@ describe('CSS 变量引用完整性', () => {
     '#e6edf3', '#58a6ff', '#1f6feb', '#79c0ff', '#3fb950', '#f85149', '#d29922',
     '#f0883e', '#238636', '#da3633', '#85e89d', '#ffab70', '#f97583', '#ff7b72',
     '#b392f0', '#79b8ff', '#e1e4e8', '#d03050', '#f56c6c', '#a371f7', '#2a2a2a', '#888888',
+    '#f78166', '#ffa657', '#db61a2',
   ]
 
   function retiredRgbTriples(): Set<string> {
@@ -266,21 +249,16 @@ describe('CSS 变量引用完整性', () => {
   }
 
   /**
-   * 棘轮基线：2026-10-13 实测的 rgba 形式旧色存量，修一条删一条。
+   * 棘轮基线：**A-03 已把 7 处全部清零，此后恒为空数组**（2026-10-14）。
    *
-   * ⚠️ 本清单由脚本枚举 src 得到，**不是手抄 grep 结果**。第一版我按 grep 手抄成 6 条，
+   * 原先这份清单由脚本枚举 src 得到，**不是手抄 grep 结果**。第一版我按 grep 手抄成 6 条，
    * 实际是 7 条（漏了 `EmergencyFlatten.vue` 的 `rgba(245,108,108,.04)`）—— 而"手抄"正是
    * 本守卫要防的那类错误，所以清单本身也必须机器生成。
+   *
+   * 换色时 alpha **不是照搬**的：新主色比旧 `#58a6ff` 亮得多，同透明度会得到更重的视觉
+   * 重量。逐条按"合成后 ΔL 相等"解出新 alpha，过程与结果记在 DESIGN.md §0.2.2。
    */
-  const RETIRED_RGBA_BASELINE = [
-    '/components/backtest/BacktestHistory.vue: rgba(248, 81, 73, 0.04)',
-    '/components/backtest/BacktestHistory.vue: rgba(63, 185, 80, 0.04)',
-    '/components/layout/AppSidebar.vue: rgba(88,166,255,0.12)',
-    '/components/layout/AppSidebar.vue: rgba(88,166,255,0.2)',
-    '/components/paper/EmergencyFlatten.vue: rgba(245, 108, 108, 0.04)',
-    '/pages/StrategyBuilder.vue: rgba(133, 232, 157, 0.08)',
-    '/pages/StrategyBuilder.vue: rgba(88, 166, 255, 0.06)',
-  ].sort()
+  const RETIRED_RGBA_BASELINE: string[] = []
 
   it('rgba() 形式的旧调色板与基线集合相等（A-03 清零）', () => {
     expect(findRetiredRgba()).toEqual(RETIRED_RGBA_BASELINE)
