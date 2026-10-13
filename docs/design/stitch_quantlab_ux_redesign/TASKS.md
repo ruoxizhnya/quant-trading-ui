@@ -70,7 +70,38 @@ SVG 呈现属性**不解析 CSS 自定义属性**，直接把 `var()` 塞进 `co
 7. **（承 A-01 第 7 条）** `grep -rn "new Chart(" web/src` 列出的**每一处**都要检查 `scales.grid/ticks` 与 `plugins.legend.labels.color` 是否显式设色；canvas 采样中库默认色 `rgb(102,102,102)` 不得占高占比。
 8. **`rgba()` 形式的旧调色板与 `palette.test.ts` 的 `RETIRED_RGBA_BASELINE` 集合相等，且该基线为空。** 取证方式：`npx vitest run src/styles/palette.test.ts` 该条断言绿 —— 它把废弃 hex 表转成 RGB 三元组后匹配任意 `rgba?(r,g,b,…)`，**不依赖人记得去 grep**。破坏验证已做双向：注入 `rgba(31,111,235,.5)` 与 `rgb(88,166,255)` → 红；删掉一条基线却不改代码 → 红；还原后 36/36 绿。
 
-### A-03 工作清单：守卫上线时抓到的 6 条存量悬空引用（**必须全部清零**）
+### A-03 取证结果　✅ **已完成 2026-10-14**（断言 4 除外，见下）
+
+| # | 取证 |
+|---|---|
+| 1 | 废弃 hex 表扩到 **33 条**（扫页时新登 `#f78166`/`#ffa657`/`#db61a2` —— `#f78166` 是 NavTiles 的策略实验室磁贴色，**原清单根本没覆盖它**，说明"按清单 grep"本身不完整）。扩表后全仓命中 **0 行**（含注释；`variables.css` 里那处提及旧值的注释已改为引用 §0.1） ✅ |
+| 2 | `npm run build` 后 `dist/assets/*.js` 内 `58a6ff` 计数 **4 → 0** ✅。全量扫 dist：唯一残留是 `d03050:1`，上下文实测为 **Naive UI 自带的 light-theme 内部常量**（`errorHover:"#de576d",errorDefault:"#d03050",…`），不在我们的 darkTheme+overrides 路径上 —— 不是欠债 |
+| 3 | 浏览器 computed style 实测：`border-left: 3px rgb(239,68,68)` = `--q-danger`、图标 `rgb(239,68,68)`、`strong` 文字 `rgb(248,113,113)` = `--q-danger-text`、卡片边界 `rgb(90,96,112)` = `--q-border`。F16 三要件（红色 / 二次确认 / 独立确认码）未被颜色改动削弱 ✅。**未点真按钮**（Kill Switch 是危险操作，armed 态的 `--q-danger-soft` 只做了 token 解析核验） |
+| 4 | ➖ **不适用（依赖未完成的 A-04）**：侧栏当前实测 **12 项**（`/`、`/backtest`、`/backtest/compare`、`/screener`、`/copilot`、`/explore`、`/strategy-lab`、`/strategy-builder`、`/data-sync`、`/evidence`、`/factors`、`/alerts`），而"定稿的 9 项标签集"要 A-04 才存在。本条留待 A-04 一并收口，**不在此处判真** |
+| 5 | typecheck 0 错 / **258 passed (21 files)** / build ✅；12 张 visual 基线**全部显式重生成**（未删断言、未放宽阈值）。**但只有 10/12 可复现**，根因见下"重生成时撞出的三个存量测试缺陷" |
+| 6 | 三组棘轮基线**全部收缩为空数组**（悬空 6→0、兜底 8→0、rgba 7→0），且是**集合相等**断言 ⇒ 从此这三类静默失败是永久门禁。`DANGLING_BASELINE: string[] = []` 等三处注释记录了清零时点 ✅ |
+| 7 | `grep -rln "new Chart("` 全仓只有 3 处（`EquityChart` / `useBacktestChart` / `BacktestCompare`），均为 A-01 已主题化文件；三处 `chartPalette` 显式设色计数 6/3/5，A-03 未新增图表 ✅ |
+| 8 | `RETIRED_RGBA_BASELINE = []` 且断言绿 ⇒ 7 处全部清零 ✅。alpha **逐条重算**（合成后 ΔL 相等）而非照搬：过程与结果记在 DESIGN.md §0.2.2 |
+
+**扫页时撞出的三个"看不见"缺陷（都是真缺陷，不是风格问题）**
+
+> **9. scoped 样式对 `h()` 创建的 VNode 不生效 —— 整条规则静默失效。** `NavTiles.vue` 的 `.tile-icon { font-size: 24px; color: var(--accent) }` **从来没生效过**：`tile.icon` 是 setup 里 `h(NIcon, …)` 造出来的，拿不到本组件的 `data-v-*` 属性，而 scoped CSS 编译成 `.tile-icon[data-v-*]`。实测图标色是继承的 `--q-text`、字号也不是 24px。**这条缺陷早于本次扫页**（旧代码写 hex 时同样是死规则），改 token 只是让它显形。修法：`.nav-tile :deep(.tile-icon)`。修后实测 5 枚图标分别解析为 `#b4c5ff / #7fb0b8 / #d9b98a / #d0bcff / #9aa7d6` ✅
+>
+> **10. `class-name` 不是 NIcon 的 prop，会被当成字面 HTML 属性落进 DOM。** 我第一次把侧栏图标色改成 CSS 变量时写 `<n-icon class-name="brand-icon">`，结果 DOM 里是 `class-name="brand-icon"` 而 `class="n-icon"` —— 规则永不匹配，且**不报任何错**。是 computed style 查不到该元素才暴露的。正确写法：`class="brand-icon"`（Vue 会合并到组件根，且模板内的元素拿得到 scope 属性）。
+>
+> 这两条合起来的教训：**颜色改动的验收不能只看 grep，必须看渲染结果。** 断言 1/2/8 全是静态的，三个缺陷里有两个静态断言永远抓不到。
+
+**重生成基线时撞出的三个存量测试缺陷**
+
+| # | 症状 | 根因（实测） | 处置 |
+|---|---|---|---|
+| V-1 | 12 张基线里 5 张**刚生成完立刻重跑就红**，diff 图唯一差异像素在页头时间 | `AppHeader` 有 `setInterval(updateClock, 1000)`，全页快照把秒级时钟烙进基线 | ✅ **已修**：`beforeEach` 里 `page.clock.setFixedTime(2026-05-06T10:30:00)`。**用 setFixedTime 不用 clock.install** —— 后者会冻结待触发的 setTimeout，把依赖轮询的页面打成空态（那是为了变绿而破坏被测行为）。响应式两例自造 context，拿不到 `beforeEach({ page })` 的注入，必须各自调用（第一版就漏在这里，基线里烙进了 `00:28:42`） |
+| V-2 | `backtest-tablet` 偶发：基线有"20 条记录"，实跑渲染"暂无回测历史" | 测试用 `waitForTimeout(500)` **盲等**，异步历史在慢的那次没落地就截图 | ⏳ 待办：改成等终态（`条记录` 或 `暂无回测历史` 二选一出现），别加延时 |
+| V-3 | `data-sync` 不可复现 | 该页渲染的是**活的后台状态**：作业 ID 带纳秒时间戳（`ohlcv_all_aud49_17919266933509689000`）、近期任务列表随状态变、数据源限流告警"请求过于频繁"时有时无 | ⏳ 待办：要么 mask 掉同步状态卡 + 告警条，要么给视觉测试一套 fixture 后端。**这是测试设计决策，不在扫页里顺手改** |
+
+**顺带生效的一处**：`--q-warning` 从"零消费"变为 **1 处真实消费**（`StrategyBuilder` 权重校验的 `.weight-summary.invalid` → `var(--q-warning)` + `--q-warning-soft`）。**这不等于 A-07 完成** —— A-07 要的是 K9 运行结果的 `invalid` 态三处同口径，那里仍是 0。DESIGN.md §0.1 的措辞已按"色值修正 + 语义预留"如实改写。
+
+### A-03 工作清单（历史）：守卫上线时抓到的 6 条存量悬空引用 —— ✅ 已全部清零
 
 这些是**真缺陷**，不是风格问题：组件引用了从未定义的变量，浏览器对未知 `var()` **静默失效不报错**，所以此前没人看见。逐条要么改用已有 token，要么在 DESIGN.md 正式立该 token 后再定义进 `variables.css`。
 
@@ -85,7 +116,7 @@ SVG 呈现属性**不解析 CSS 自定义属性**，直接把 `var()` 塞进 `co
 
 另有 **8 处 `var(--q-x, 旧值)` 兜底写法**（`EmergencyFlatten` 2 / `Alerts` 3 / `StrategyBuilder` 3）：兜底永不生效（变量总有定义），却把旧调色板留在仓库里 —— 一并删。
 
-### A-03 工作清单补录：**7 处 `rgba()` 形式的旧色**（2026-10-13 审查时抓到，第 8 条断言守）
+### A-03 工作清单补录（历史）：**7 处 `rgba()` 形式的旧色** —— ✅ 已全部清零（2026-10-13 审查时抓到，第 8 条断言守）
 
 这是我自己的扫页判据留下的盲点：**前两条断言只按 hex 抓，而半透明旧色一个 hex 都不含**。最严重的正是**每页都渲染**的侧栏激活态。清单由脚本枚举 `src` 得到（我第一版手抄 grep 成 6 条，实际 7 条，漏了 `EmergencyFlatten` —— 所以清单本身也必须机器生成）。
 
@@ -180,6 +211,17 @@ SVG 呈现属性**不解析 CSS 自定义属性**，直接把 `var()` 塞进 `co
 > **主任裁决（2026-10-13）**：ai-service 后端会做、目前没有 ⇒ 相应前端先不做，挂计划。
 > **已知阻塞细节**：`ai-service` 当前**镜像构建失败** —— agent 仓 `go.mod` 与 import 不同步，报 `updates to go.mod needed; go mod tidy`。这是存量问题，`go mod tidy` 会改依赖文件，属 Ask First。**看起来一条命令可解，但按裁决不擅自执行。**
 
+## V 组：视觉基线可复现性（A-03 重生成基线时撞出，2026-10-14）
+
+> 为什么单列：这三条不是设计问题，是**测试基础设施**问题 —— 基线不可复现意味着后面每一个
+> 改颜色的任务（A-04~A-11）都没有可信的回归网。V-1 已在 A-03 内修掉，V-2/V-3 需要设计决策，
+> 不并进扫页 commit。
+
+1. **V-1 ✅ 已修**：`AppHeader` 的秒级时钟被烙进全页基线 → `beforeEach` 用 `page.clock.setFixedTime(2026-05-06T10:30:00)` 冻结。**判据**：`npx playwright test tests/visual-regression.spec.ts` 连跑两轮全绿（当前 10/12，剩余 2 张红因 V-2/V-3）。
+2. **V-2 待办**：`dashboard-mobile` / `backtest-tablet` 用 `waitForTimeout(500)` 盲等，慢的一次在历史列表落地前就截图（实测基线有"20 条记录"、实跑渲染"暂无回测历史"）。改成**等终态**：`条记录` 与 `暂无回测历史` 二者其一可见即可。**禁止**用加大延时解决 —— 那只是把 race 的概率调低。
+3. **V-3 待办**：`data-sync` 页渲染的是**活的后台状态**（纳秒时间戳作业 ID `ohlcv_all_aud49_17919266933509689000`、近期任务列表随状态变、数据源限流告警时有时无），全页基线原理上不可复现。二选一并说明理由：(a) `toHaveScreenshot({ mask: [...] })` 遮掉同步状态卡与告警条；(b) 给视觉测试一套固定 fixture 后端。**不得**删该页基线或断言了事。
+4. 三条收口后，**12/12 连跑三轮全绿**才算 V 组完成（两轮不够 —— race 的漏检率就是这么量出来的）。
+
 ## B-01 `explore` 改造：三栏观察 + 路径回放（F1/F4）
 
 1. 页面消费 `ai` `POST /api/explore/runs` / `GET /runs/:runID` / `POST /runs/:runID/stop` 三条端点，全部真实可达（**当前阻塞：ai-service 未运行**）。
@@ -270,3 +312,4 @@ A-10 → A-11          （补屏与字体）
 | 2026-10-13 | 初版：11 个可做任务 + 6 个延后任务 + G9 新登缺口，每任务 6 条可判定断言。分组 B 依主任裁决挂起（ai-service 后端未就绪） |
 | 2026-10-13 (2) | **A-01、A-02 完成并逐条取证**。三处台账修正与一处扩标准：① 断言 7 新增（**"grep 零命中 ≠ 主题化完成"**，Chart.js 库默认色是第三类来源，实测 `#666` 1397px→1px）；② A-01/A-02 的 visual 基线断言由"待办"改判 **N/A**（12 张快照不含 compare 与 login —— "没基线"≠"基线待更新"）；③ A-02 断言 4 标为**部分取证**并写明 skip 的真实原因（开放访问下 authGuard 正确弹回，重定向逻辑由 `authGuard.test.ts` 覆盖）；④ 新增 `CSS 变量引用完整性` 两组**棘轮基线**守卫（悬空引用 / 旧值兜底，集合相等双向红，破坏验证已做），上线即抓到 **6 条存量悬空引用 + 8 处失效兜底**，已列为 A-03 强制工作清单 |
 | 2026-10-14 | **A-01/A-02 自审复盘**，两处问题直接修掉：① 扫页判据全按 **hex** 抓 ⇒ `rgba()` 形式旧色全程不可见，其中包含**每页都渲染**的侧栏激活态。新增断言 8 + `RETIRED_RGBA_BASELINE` 守卫（废弃 hex 表→RGB 三元组，匹配任意 `rgba?(r,g,b,…)`），并补录 **7 处**进 A-03 工作清单。**清单本身也必须机器生成** —— 我第一版手抄 grep 成 6 条，脚本实测 7 条。破坏验证双向已做（注入红 / 不记账红 / 还原 36 绿）。② `DESIGN.md` §0.1 与 frontmatter 把 `--q-warning` 写成"升格为三值之一/一等公民"，实测 `var(--q-warning)` **消费仍为 0**（success/danger 各 9）—— 那是 A-07 的计划不是现状，已改为"色值修正 + 语义预留"并标注接线任务。另：`index.md` 第 2 项加"visual.md 是人读视图，真相源在 DESIGN.md"的导航注记 |
+| 2026-10-14 (2) | **A-03 完成**（8 文件扫页 + 三组棘轮基线全部收缩为空 ⇒ 永久门禁）。三处新登缺陷：① `NavTiles` 的 `.tile-icon` 整条规则**从未生效**（scoped 属性打不到 `h()` 造的 VNode），改 `:deep()` 后图标才真的着色；② `class-name` 不是 NIcon 的 prop，会落成字面属性且**不报错**，正确写法是 `class`；③ visual 基线不可复现的三个根因里 **V-1（页头秒级时钟）已用 `page.clock.setFixedTime` 修掉**（刻意不用 `clock.install` —— 那会冻结待触发的 setTimeout，把依赖轮询的页面打成空态），**V-2 盲等 `waitForTimeout`、V-3 `data-sync` 渲染活后台状态（纳秒作业 ID / 限流告警）另立待办**，属测试设计决策，不在扫页里顺手改。教训：**颜色改动的验收不能只看 grep** —— 断言 1/2/8 全是静态的，三个缺陷里两个静态断言永远抓不到 |
