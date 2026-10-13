@@ -196,10 +196,6 @@ function directionLabel(dir: string): string {
 .trade-long td { background: var(--q-success-soft); }
 .trade-short td { background: var(--q-danger-soft); }
 
-.pnl-pos { color: var(--q-success); font-weight: 500; }
-.pnl-neg { color: var(--q-danger); font-weight: 500; }
-.pnl-pct { color: var(--q-text3); font-size: 11px; margin-left: 4px; }
-
 :deep(.n-collapse-item__header-main) {
   width: 100%;
 }
