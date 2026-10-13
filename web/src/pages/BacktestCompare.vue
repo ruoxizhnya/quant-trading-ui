@@ -160,6 +160,7 @@ import { Chart, registerables } from 'chart.js'
 import { compareBacktests, type CompareReport, type CompareEntry } from '@/api/backtest'
 import { loadCompareIds, clearCompareIds } from '@/constants/backtest'
 import { fmtPercent, fmtNumber } from '@/utils/format'
+import { chartPalette } from '@/styles/palette'
 
 Chart.register(...registerables)
 
@@ -325,21 +326,27 @@ watch(report, async () => {
       maintainAspectRatio: false,
       animation: false,
       scales: {
-        x: { type: 'linear', title: { display: true, text: '回测期间 (示意)' } },
-        y: { title: { display: true, text: '组合价值' } },
+        x: {
+          type: 'linear',
+          title: { display: true, text: '回测期间 (示意)', color: chartPalette.axisTitle },
+          grid: { color: chartPalette.grid },
+          ticks: { color: chartPalette.tick, font: { size: 11 } },
+        },
+        y: {
+          title: { display: true, text: '组合价值', color: chartPalette.axisTitle },
+          grid: { color: chartPalette.grid },
+          ticks: { color: chartPalette.tick, font: { size: 11 } },
+        },
       },
       plugins: {
-        legend: { display: true, position: 'top' },
+        legend: { display: true, position: 'top', labels: { color: chartPalette.legend, boxWidth: 12, padding: 12, font: { size: 11 } } },
         tooltip: { mode: 'index', intersect: false },
       },
     },
   })
 })
 
-const PALETTE = [
-  '#58a6ff', '#f97583', '#85e89d', '#ffab70',
-  '#b392f0', '#79b8ff', '#ff7b72', '#e1e4e8',
-]
+const PALETTE = chartPalette.seriesCycle
 
 function destroyChart() {
   if (chartInstance) {
@@ -375,7 +382,7 @@ onBeforeUnmount(() => {
 .chart-card { margin-top: 8px; }
 .chart-wrap { position: relative; height: 320px; }
 .chart-empty { padding: 30px 0; }
-.is-best { background: rgba(133, 232, 157, 0.08); }
+.is-best { background: var(--q-success-soft); }
 .is-best.win { color: var(--q-success); }
 .positive { color: var(--q-success); }
 .negative { color: var(--q-danger); }

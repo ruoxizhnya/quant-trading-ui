@@ -33,6 +33,7 @@ import { Chart, registerables, type TooltipItem, type ChartDataset } from 'chart
 import type { PortfolioPoint, Trade } from '@/types/api'
 import { buildTradeMarkers, type TradeMarker } from '@/utils/tradeMarkers'
 import { sampleData, type DateValuePoint } from '@/utils/format'
+import { chartPalette } from '@/styles/palette'
 
 Chart.register(...registerables)
 
@@ -102,8 +103,8 @@ async function renderChart() {
         type: 'line',
         label: '净值 (¥)',
         data: data.map(d => d.value),
-        borderColor: '#58a6ff',
-        backgroundColor: 'rgba(88,166,255,0.06)',
+        borderColor: chartPalette.seriesPrimary,
+        backgroundColor: chartPalette.seriesPrimaryFill,
         fill: true,
         tension: 0.3,
         pointRadius: 0,
@@ -131,8 +132,8 @@ async function renderChart() {
             type: 'scatter',
             label: '买入',
             data: buyData,
-            backgroundColor: '#3fb950',
-            borderColor: '#3fb950',
+            backgroundColor: chartPalette.buy,
+            borderColor: chartPalette.buy,
             pointRadius: 6,
             pointHoverRadius: 8,
             pointStyle: 'triangle',
@@ -145,8 +146,8 @@ async function renderChart() {
             type: 'scatter',
             label: '卖出',
             data: sellData,
-            backgroundColor: '#f85149',
-            borderColor: '#f85149',
+            backgroundColor: chartPalette.sell,
+            borderColor: chartPalette.sell,
             pointRadius: 6,
             pointHoverRadius: 8,
             pointStyle: 'crossRot',
@@ -189,8 +190,8 @@ async function renderChart() {
         type: 'line',
         label: '股价 (¥)',
         data: alignedPrices.map(d => d.y),
-        borderColor: '#f0883e',
-        backgroundColor: 'rgba(240,136,62,0.06)',
+        borderColor: chartPalette.seriesReference,
+        backgroundColor: chartPalette.seriesReferenceFill,
         borderDash: [5, 3],
         tension: 0.3,
         pointRadius: 0,
@@ -205,8 +206,8 @@ async function renderChart() {
           type: 'scatter',
           label: '买入价',
           data: buyPriceData,
-          backgroundColor: '#238636',
-          borderColor: '#238636',
+          backgroundColor: chartPalette.tradeBuy,
+          borderColor: chartPalette.tradeBuy,
           pointRadius: 7,
           pointHoverRadius: 9,
           pointStyle: 'triangle',
@@ -219,8 +220,8 @@ async function renderChart() {
           type: 'scatter',
           label: '卖出价',
           data: sellPriceData,
-          backgroundColor: '#da3633',
-          borderColor: '#da3633',
+          backgroundColor: chartPalette.tradeSell,
+          borderColor: chartPalette.tradeSell,
           pointRadius: 7,
           pointHoverRadius: 9,
           pointStyle: 'crossRot',
@@ -242,7 +243,7 @@ async function renderChart() {
           legend: {
             display: true,
             position: 'top',
-            labels: { color: '#8b949e', boxWidth: 12, padding: 12, font: { size: 11 }, usePointStyle: true },
+            labels: { color: chartPalette.legend, boxWidth: 12, padding: 12, font: { size: 11 }, usePointStyle: true },
           },
           tooltip: {
             callbacks: {
@@ -263,24 +264,24 @@ async function renderChart() {
         },
         scales: {
           x: {
-            grid: { color: '#21262d' },
-            ticks: { color: '#484f58', maxTicksLimit: 15, font: { size: 11 } },
+            grid: { color: chartPalette.grid },
+            ticks: { color: chartPalette.tick, maxTicksLimit: 15, font: { size: 11 } },
           },
           yEquity: {
             type: 'linear',
             display: showEquity.value,
             position: 'left',
-            grid: { color: '#21262d' },
-            ticks: { color: '#58a6ff', font: { size: 11 }, callback(v) { return `¥${(Number(v)/1000).toFixed(0)}K` } },
-            title: { display: true, text: '净值', color: '#58a6ff', font: { size: 11 } },
+            grid: { color: chartPalette.grid },
+            ticks: { color: chartPalette.seriesPrimary, font: { size: 11 }, callback(v) { return `¥${(Number(v)/1000).toFixed(0)}K` } },
+            title: { display: true, text: '净值', color: chartPalette.seriesPrimary, font: { size: 11 } },
           },
           yPrice: {
             type: 'linear',
             display: showPrice.value && !!props.stockPrices?.length,
             position: 'right',
             grid: { drawOnChartArea: false },
-            ticks: { color: '#f0883e', font: { size: 11 }, callback(v) { return `¥${Number(v).toFixed(1)}` } },
-            title: { display: true, text: '股价', color: '#f0883e', font: { size: 11 } },
+            ticks: { color: chartPalette.seriesReference, font: { size: 11 }, callback(v) { return `¥${Number(v).toFixed(1)}` } },
+            title: { display: true, text: '股价', color: chartPalette.seriesReference, font: { size: 11 } },
           },
         },
       },

@@ -2,6 +2,7 @@ import { ref, nextTick, onBeforeUnmount } from 'vue'
 import { Chart, registerables, type ChartData as ChartJSChartData, type TooltipItem } from 'chart.js'
 import type { PortfolioPoint, Trade } from '@/types/api'
 import { sampleData } from '@/utils/format'
+import { chartPalette } from '@/styles/palette'
 
 Chart.register(...registerables)
 
@@ -69,8 +70,8 @@ export function useBacktestChart(canvasRef: { value: HTMLCanvasElement | null })
         type: 'line' as const,
         label: '净值',
         data: data.map(d => d.value),
-        borderColor: '#58a6ff',
-        backgroundColor: 'rgba(88,166,255,0.08)',
+        borderColor: chartPalette.seriesPrimary,
+        backgroundColor: chartPalette.seriesPrimaryFill,
         fill: true,
         tension: 0.3,
         pointRadius: 0,
@@ -98,8 +99,8 @@ export function useBacktestChart(canvasRef: { value: HTMLCanvasElement | null })
             type: 'scatter' as const,
             label: '买入',
             data: buyData,
-            backgroundColor: '#3fb950',
-            borderColor: '#3fb950',
+            backgroundColor: chartPalette.buy,
+            borderColor: chartPalette.buy,
             pointRadius: 5,
             pointHoverRadius: 7,
             pointStyle: 'triangle',
@@ -111,8 +112,8 @@ export function useBacktestChart(canvasRef: { value: HTMLCanvasElement | null })
             type: 'scatter' as const,
             label: '卖出',
             data: sellData,
-            backgroundColor: '#f85149',
-            borderColor: '#f85149',
+            backgroundColor: chartPalette.sell,
+            borderColor: chartPalette.sell,
             pointRadius: 5,
             pointHoverRadius: 7,
             pointStyle: 'crossRot',
@@ -130,7 +131,7 @@ export function useBacktestChart(canvasRef: { value: HTMLCanvasElement | null })
           animation: { duration: 500 },
           interaction: { mode: 'index', intersect: false },
           plugins: {
-            legend: { display: true, position: 'top', labels: { color: '#8b949e', boxWidth: 12, padding: 12, font: { size: 11 } } },
+            legend: { display: true, position: 'top', labels: { color: chartPalette.legend, boxWidth: 12, padding: 12, font: { size: 11 } } },
             tooltip: {
               callbacks: {
                 label(ctx: TooltipItem<'line' | 'scatter'>) {
@@ -144,8 +145,8 @@ export function useBacktestChart(canvasRef: { value: HTMLCanvasElement | null })
             },
           },
           scales: {
-            x: { grid: { color: '#21262d' }, ticks: { color: '#484f58', maxTicksLimit: 10, font: { size: 11 } } },
-            y: { grid: { color: '#21262d' }, ticks: { color: '#484f58', font: { size: 11 } } },
+            x: { grid: { color: chartPalette.grid }, ticks: { color: chartPalette.tick, maxTicksLimit: 10, font: { size: 11 } } },
+            y: { grid: { color: chartPalette.grid }, ticks: { color: chartPalette.tick, font: { size: 11 } } },
           },
         },
       })
