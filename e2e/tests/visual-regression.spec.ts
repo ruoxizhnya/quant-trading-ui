@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import type { Page } from '@playwright/test';
 import { waitForBackendReady } from '../helpers/api';
 import { isolateTestEnvironment } from '../helpers/isolation';
 
@@ -10,6 +11,22 @@ import { isolateTestEnvironment } from '../helpers/isolation';
  * Update baselines with: npx playwright test --update-snapshots
  */
 
+/**
+ * 冻结挂钟，但**只冻结 Date，不冻结定时器**。
+ *
+ * 页头有 `setInterval(updateClock, 1000)` 的秒级时钟，全页快照因此永远不可复现：
+ * 实测 12 张基线里 5 张在**刚生成完立刻重跑**就红，diff 图显示唯一差异像素就在页头
+ * 时间上（30–57 px）。用 setFixedTime 而不是 clock.install —— 后者会让待触发的
+ * setTimeout 永不执行，把依赖轮询/延迟渲染的页面打成空态，那是"为了变绿而破坏被测行为"。
+ *
+ * ⚠️ 响应式两例自己 `browser.newContext()` 造页，拿不到 `beforeEach({ page })` 的注入，
+ * 必须各自调用本函数 —— 漏掉的表现是基线里烙进真实时间，下次跑必红。
+ */
+const FROZEN_CLOCK = new Date('2026-05-06T10:30:00');
+async function freezeClock(page: Page): Promise<void> {
+  await page.clock.setFixedTime(FROZEN_CLOCK);
+}
+
 test.describe('Visual Regression — Key Pages', () => {
 
   test.beforeAll(async () => {
@@ -18,6 +35,7 @@ test.describe('Visual Regression — Key Pages', () => {
   });
 
   test.beforeEach(async ({ page }) => {
+    await freezeClock(page);
     await isolateTestEnvironment(page);
   });
 
@@ -130,6 +148,7 @@ test.describe('Visual Regression — Key Pages', () => {
   test('dashboard responsive on mobile viewport', async ({ browser }) => {
     const context = await browser.newContext({ viewport: { width: 375, height: 667 } });
     const page = await context.newPage();
+    await freezeClock(page);
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('.dashboard-page', { timeout: 15000 }).catch(() => {});
@@ -141,6 +160,7 @@ test.describe('Visual Regression — Key Pages', () => {
   test('backtest responsive on tablet viewport', async ({ browser }) => {
     const context = await browser.newContext({ viewport: { width: 768, height: 1024 } });
     const page = await context.newPage();
+    await freezeClock(page);
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('.dashboard-page', { timeout: 15000 });
