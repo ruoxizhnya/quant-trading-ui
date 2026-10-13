@@ -39,6 +39,12 @@ colors:
   q-danger-text: '#f87171' #  5.46:1 surface3 上的失败小字
   q-info: '#b4c5ff'        # 中性提示（与确定性文字色同值，刻意如此）
   q-focus: '#b4c5ff'       # 焦点环 ≥3:1（键盘可达性承重件）
+  # —— 状态浅底（alpha 经 §0.2.2 重算，唯一一档 0.08；裸 rgba 由守卫禁止）——
+  q-primary-soft: 'rgba(180, 197, 255, 0.08)'  # 激活态底（侧栏/磁贴选中）
+  q-primary-edge: 'rgba(180, 197, 255, 0.15)'  # 激活态 1px 内边框
+  q-success-soft: 'rgba(16, 185, 129, 0.08)'   # completed / 最优行 / 正收益底
+  q-warning-soft: 'rgba(245, 158, 11, 0.08)'   # invalid 底
+  q-danger-soft: 'rgba(239, 68, 68, 0.08)'     # failed / 风险 / 做空底
 typography:
   headline-lg:   { fontFamily: Inter, fontSize: 24px, fontWeight: '600', lineHeight: 32px, letterSpacing: '-0.015em' }
   headline-md:   { fontFamily: Inter, fontSize: 18px, fontWeight: '600', lineHeight: 24px, letterSpacing: '-0.01em' }
@@ -130,7 +136,23 @@ Chart.js 收不了 CSS 变量，只能收字面量，所以系列色必须有一
 
 两条不变量由 `styles/palette.test.ts` 机器守住：① 每条在画布上 ≥3:1（线条可见性）；② 与全部状态色/AI 色**集合不相交**（撞义即红）。
 
-另新增 `--q-success-soft: rgba(16,185,129,0.08)` —— 最优行高亮与 `completed` 芯片底，替代此前散落的 `rgba(133,232,157,…)` 旧值。
+### 0.2.2 状态浅底（soft wash）—— alpha 是**重算**的，不是照搬的
+
+扫页时最容易犯的错是把旧 `rgba(旧色, 0.12)` 直接换成 `rgba(新色, 0.12)`：透明度相同但**颜色明度不同**，视觉重量就漂了。新主色 `#b4c5ff` 比旧 `#58a6ff` 亮得多，照搬 alpha 会把侧栏激活态明显加亮。
+
+做法：把旧值在真实底色上**合成后求相对亮度差 ΔL**，再为新色解出等量的 alpha。
+
+| token | 值 | 等量的旧值 | 实测 ΔL（画布/表面1） |
+|---|---|---|---|
+| `--q-primary-soft` | `rgba(180, 197, 255, 0.08)` | `rgba(88,166,255,0.12)` | 0.0067 vs 旧 0.0071 —— **差 6%，肉眼等重** |
+| `--q-primary-edge` | `rgba(180, 197, 255, 0.15)` | `rgba(88,166,255,0.20)` | 0.0165 vs 旧 0.0167 |
+| `--q-success-soft` | `rgba(16, 185, 129, 0.08)` | `rgba(63,185,80,0.04)` / `rgba(133,232,157,0.08)` | 旧的两个用法本身不一致（0.0034 / 0.0104），**统一为一档**：行高亮与芯片底同值，与 `.is-best` 既有做法对齐 |
+| `--q-warning-soft` | `rgba(245, 158, 11, 0.08)` | `rgba(255,171,64,0.08)` | 0.0074 vs 旧 0.0086（0.86×，可接受：amber 本身比旧橙亮） |
+| `--q-danger-soft` | `rgba(239, 68, 68, 0.08)` | `rgba(248,81,73,0.04)` / `rgba(245,108,108,0.04)` | 与 success 同理统一为一档 |
+
+**规则**：状态浅底只有这一档（0.08）。新增 wash 一律引 token，不得再写裸 `rgba(...)` —— `palette.test.ts` 的 `RETIRED_RGBA_BASELINE` 会把任何旧色三元组的 `rgba()` 抓红。
+
+另：NavTiles 的 5 枚磁贴 accent 允许从 §0.2 系列带取值（系列带**无状态语义**，可借作装饰）；**但 AI Copilot 磁贴必须用 `--q-ai-text`** —— 概率性内容的标识色没有借用余地，这是 §3 双通道的硬规则，不是配色偏好。
 
 ---
 
