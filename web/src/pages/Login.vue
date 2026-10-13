@@ -122,7 +122,7 @@ onMounted(async () => {
   <div class="login-page">
     <div class="login-card">
       <div class="login-brand">
-        <TrendingUpOutline :size="22" color="#58a6ff" />
+        <TrendingUpOutline :size="22" />
         <span>Quant Lab</span>
       </div>
 
@@ -238,17 +238,17 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--q-bg, #0d1117);
+  background: var(--q-bg);
   padding: 24px;
 }
 
 .login-card {
   width: 100%;
   max-width: 380px;
-  background: var(--q-surface, #161b22);
-  border: 1px solid var(--q-border, #30363d);
-  border-radius: var(--q-radius, 10px);
-  box-shadow: var(--q-shadow-lg, 0 10px 25px rgba(0, 0, 0, 0.3));
+  background: var(--q-surface);
+  border: 1px solid var(--q-border);
+  border-radius: var(--q-radius);
+  box-shadow: var(--q-shadow-lg);
   padding: 28px 24px 24px;
 }
 
@@ -258,22 +258,27 @@ onMounted(async () => {
   gap: 8px;
   font-size: 15px;
   font-weight: 700;
-  color: var(--q-text, #e6edf3);
+  color: var(--q-text);
   margin-bottom: 20px;
+}
+
+/* 图标色走 CSS 而非组件 color 属性：SVG 呈现属性不解析 CSS 自定义属性 */
+.login-brand svg {
+  color: var(--q-primary);
 }
 
 .login-title {
   margin: 0 0 6px;
   font-size: 20px;
   font-weight: 600;
-  color: var(--q-text, #e6edf3);
+  color: var(--q-text);
 }
 
 .login-hint {
   margin: 0 0 18px;
   font-size: 13px;
   line-height: 1.6;
-  color: var(--q-text2, #8b949e);
+  color: var(--q-text2);
 }
 
 .login-alert {
