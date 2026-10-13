@@ -30,6 +30,7 @@ colors:
   # —— 概率性通道（Probabilistic：AI 产出、假设、非确定性）——
   q-ai-text: '#d0bcff'     # 10.63:1  AI 文字/徽标/图标（**唯一**的 AI 文字色）
   q-ai: '#7c3aed'          # 白字 5.70:1  AI 填充（v1.0 的 #8b5cf6 白字仅 4.23:1，已废）
+  q-ai-light: '#a78bfa'    # AI hover / 强调
   q-ai-aura: 'rgba(139, 92, 246, 0.25)'  # 非确定性卡片 1px 内发光边（装饰，不受对比度约束）
   q-ai-wash: 'linear-gradient(180deg, rgba(139, 92, 246, 0.04) 0%, transparent 100%)'
   # —— 状态三值（K9 契约：completed / invalid / failed，全链路同口径）——
@@ -39,12 +40,19 @@ colors:
   q-danger-text: '#f87171' #  5.46:1 surface3 上的失败小字
   q-info: '#b4c5ff'        # 中性提示（与确定性文字色同值，刻意如此）
   q-focus: '#b4c5ff'       # 焦点环 ≥3:1（键盘可达性承重件）
-  # —— 状态浅底（alpha 经 §0.2.2 重算，唯一一档 0.08；裸 rgba 由守卫禁止）——
-  q-primary-soft: 'rgba(180, 197, 255, 0.08)'  # 激活态底（侧栏/磁贴选中）
-  q-primary-edge: 'rgba(180, 197, 255, 0.15)'  # 激活态 1px 内边框
+  # —— 状态浅底（alpha 经 §0.2.2 实测重算；裸 rgba 由守卫禁止）——
+  q-primary-soft: 'rgba(180, 197, 255, 0.1)'   # 激活态底（侧栏/磁贴选中/拖拽悬停）
+  q-primary-edge: 'rgba(180, 197, 255, 0.16)'  # 激活态 1px 内边框
   q-success-soft: 'rgba(16, 185, 129, 0.08)'   # completed / 最优行 / 正收益底
   q-warning-soft: 'rgba(245, 158, 11, 0.08)'   # invalid 底
   q-danger-soft: 'rgba(239, 68, 68, 0.08)'     # failed / 风险 / 做空底
+  # —— 多序列图表色带（§0.2；刻意低饱和，不与状态色撞义）——
+  q-series-1: '#b4c5ff'    # 11.67:1  首序列即主角，与确定性文字色同值
+  q-series-2: '#7fb0b8'    #  8.30:1  钢青
+  q-series-3: '#d9b98a'    # 10.62:1  沙，刻意比 amber 灰，不与 invalid 撞
+  q-series-4: '#8fb8a8'    #  9.04:1  鼠尾草，刻意比 emerald 灰，不与 completed 撞
+  q-series-5: '#9aa7d6'    #  8.37:1  雾靛
+  q-series-6: '#e1e2eb'    # 15.35:1  近白，末位兜底
 typography:
   headline-lg:   { fontFamily: Inter, fontSize: 24px, fontWeight: '600', lineHeight: 32px, letterSpacing: '-0.015em' }
   headline-md:   { fontFamily: Inter, fontSize: 18px, fontWeight: '600', lineHeight: 24px, letterSpacing: '-0.01em' }
@@ -142,15 +150,19 @@ Chart.js 收不了 CSS 变量，只能收字面量，所以系列色必须有一
 
 做法：把旧值在真实底色上**合成后求相对亮度差 ΔL**，再为新色解出等量的 alpha。
 
-| token | 值 | 等量的旧值 | 实测 ΔL（画布/表面1） |
+| token | 值 | 等量的旧值 | 实测 ΔL |
 |---|---|---|---|
-| `--q-primary-soft` | `rgba(180, 197, 255, 0.08)` | `rgba(88,166,255,0.12)` | 0.0067 vs 旧 0.0071 —— **差 6%，肉眼等重** |
-| `--q-primary-edge` | `rgba(180, 197, 255, 0.15)` | `rgba(88,166,255,0.20)` | 0.0165 vs 旧 0.0167 |
-| `--q-success-soft` | `rgba(16, 185, 129, 0.08)` | `rgba(63,185,80,0.04)` / `rgba(133,232,157,0.08)` | 旧的两个用法本身不一致（0.0034 / 0.0104），**统一为一档**：行高亮与芯片底同值，与 `.is-best` 既有做法对齐 |
-| `--q-warning-soft` | `rgba(245, 158, 11, 0.08)` | `rgba(255,171,64,0.08)` | 0.0074 vs 旧 0.0086（0.86×，可接受：amber 本身比旧橙亮） |
-| `--q-danger-soft` | `rgba(239, 68, 68, 0.08)` | `rgba(248,81,73,0.04)` / `rgba(245,108,108,0.04)` | 与 success 同理统一为一档 |
+| `--q-primary-soft` | `rgba(180, 197, 255, 0.10)` | `rgba(88,166,255,0.12)` | 新 0.0092 vs 旧 0.0087（**1.06×**，画布上） |
+| `--q-primary-edge` | `rgba(180, 197, 255, 0.16)` | `rgba(88,166,255,0.20)` | 新 0.0183 vs 旧 0.0183（**1.00×**） |
+| `--q-success-soft` | `rgba(16, 185, 129, 0.08)` | `rgba(63,185,80,0.04)` / `rgba(133,232,157,0.08)` | 旧的两档本身不一致（0.0034 / 0.0104，表面1），**统一为一档 0.0068**，与 `.is-best` 既有做法对齐 |
+| `--q-warning-soft` | `rgba(245, 158, 11, 0.08)` | `rgba(255,171,64,0.08)` | 0.0074 vs 旧 0.0086（0.86×，amber 本身比旧橙亮，可接受） |
+| `--q-danger-soft` | `rgba(239, 68, 68, 0.08)` | `rgba(248,81,73,0.04)` / `rgba(245,108,108,0.04)` | 0.0042 vs 旧 0.0019 / 0.0024，与 success 同理统一为一档 |
 
-**规则**：状态浅底只有这一档（0.08）。新增 wash 一律引 token，不得再写裸 `rgba(...)` —— `palette.test.ts` 的 `RETIRED_RGBA_BASELINE` 会把任何旧色三元组的 `rgba()` 抓红。
+> ⚠️ **本表 2026-10-14 重测过一次，第一版是错的。** 初版写的是 soft `0.08` 对旧 `0.12`"差 6%，肉眼等重"，实测该组合是 **0.78×**（旧 ΔL 我记成 0.0071，真实 0.0087 —— 把合成后的绝对亮度当成了差值），edge 也差 9%。教训：**"实测"必须当场重跑一遍脚本读输出，不能从上一次输出里挑数**；上一次扫描表里 `@0.08 → 0.0067` 与 `旧底 L=0.0117` 两行我都看到了，却在脑子里把它们减错了。
+
+**一处刻意不等量**：`StrategyBuilder` 的拖拽悬停底原为 `rgba(88,166,255,0.06)`（表面1 上 ΔL 0.0053），并入 `--q-primary-soft` 后是 0.0131 —— **约 2.5×**。这是瞬时 affordance，加亮是改进不是漂移；记在这里以免被当成疏漏。
+
+**规则**：状态浅底只有这一档（0.08；primary 一档 0.10）。新增 wash 一律引 token，不得再写裸 `rgba(...)` —— `palette.test.ts` 的 `RETIRED_RGBA_BASELINE` 会把任何旧色三元组的 `rgba()` 抓红。
 
 另：NavTiles 的 5 枚磁贴 accent 允许从 §0.2 系列带取值（系列带**无状态语义**，可借作装饰）；**但 AI Copilot 磁贴必须用 `--q-ai-text`** —— 概率性内容的标识色没有借用余地，这是 §3 双通道的硬规则，不是配色偏好。
 

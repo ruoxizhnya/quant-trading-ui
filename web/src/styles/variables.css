@@ -52,8 +52,8 @@
   --q-success-soft: rgba(16, 185, 129, 0.08); /* 最优行高亮 / completed 芯片底 */
   --q-warning-soft: rgba(245, 158, 11, 0.08); /* invalid 底 */
   --q-danger-soft: rgba(239, 68, 68, 0.08);    /* failed / 风险 / 做空底 */
-  --q-primary-soft: rgba(180, 197, 255, 0.08); /* 激活态底（侧栏 / 磁贴选中 / 拖拽悬停） */
-  --q-primary-edge: rgba(180, 197, 255, 0.15); /* 激活态 1px 内边框 */
+  --q-primary-soft: rgba(180, 197, 255, 0.1); /* 激活态底（侧栏 / 磁贴选中 / 拖拽悬停） */
+  --q-primary-edge: rgba(180, 197, 255, 0.16); /* 激活态 1px 内边框 */
 
   /* —— 形状（低半径；胶囊形除小状态徽标外禁用）—— */
   --q-radius: 8px;             /* 卡片、对话框 */
