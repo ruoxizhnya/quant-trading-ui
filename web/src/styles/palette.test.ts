@@ -146,6 +146,52 @@ describe('对比度不变量（WCAG）', () => {
 })
 
 /**
+ * DESIGN.md（规定） ↔ variables.css ↔ palette.ts 三方对账。
+ *
+ * 本文件其余断言钉的是"后两者一致"；本节钉"实现 == 基准"。DESIGN.md 被 v2.0 宣布为
+ * 唯一真相源，而**真相源若无人核对就只是文档** —— 五处真相源各自为政正是这次重构的起因，
+ * 少这一条断言，同一件事会再漂一次。
+ *
+ * 两个方向都要：只查"基准里的值实现有没有"会漏掉实现私加的 token；只查反向会漏掉
+ * 基准里被改过却没落到实现的值。
+ */
+describe('DESIGN.md 基准 ↔ variables.css 实现 对账', () => {
+  const designPath = resolve(__dirname, '../../../docs/design/stitch_quantlab_ux_redesign/obsidian_precision_quant/DESIGN.md')
+
+  /** 取 frontmatter 的 `colors:` 子块（到下一个顶层键为止），解析成 { '--q-x': value } */
+  function designColors(): Record<string, string> {
+    const src = readFileSync(designPath, 'utf8')
+    const fm = src.match(/^---\n([\s\S]*?)\n---/)
+    if (!fm) throw new Error('DESIGN.md 没有 frontmatter —— 基准文件结构变了，本守卫需同步')
+    const block = fm[1].match(/^colors:\n((?:^[ \t]+.*\n?)+)/m)
+    if (!block) throw new Error('DESIGN.md frontmatter 里没有 colors: 块')
+    const out: Record<string, string> = {}
+    for (const m of block[1].matchAll(/^[ \t]+(q-[a-z0-9-]+):\s*'([^']*)'/gm)) {
+      out[`--${m[1]}`] = m[2].replace(/\s+/g, ' ').trim()
+    }
+    return out
+  }
+
+  const looksLikeColor = (v: string) => /^(#[0-9a-fA-F]{3,8}|rgba?\(|linear-gradient\()/.test(v)
+  const implementedColors = Object.fromEntries(Object.entries(css).filter(([, v]) => looksLikeColor(v)))
+  /** CSS 十六进制颜色**大小写不敏感**，故比对前归一小写；不归一会把 `#171E2C` 误报成漂移 */
+  const norm = (v: string) => v.toLowerCase()
+
+  it('基准里每个颜色 token 在实现中同名同值（漏一个即红）', () => {
+    const drift = Object.entries(designColors())
+      .filter(([k, v]) => css[k] === undefined || norm(css[k]) !== norm(v))
+      .map(([k, v]) => `${k}: 基准 ${v} ≠ 实现 ${css[k] ?? '(未定义)'}`)
+    expect(drift, drift.join('\n')).toEqual([])
+  })
+
+  it('实现里每个颜色值都必须由基准立过项（私加即红）', () => {
+    const declared = new Set(Object.keys(designColors()))
+    const rogue = Object.keys(implementedColors).filter((k) => !declared.has(k))
+    expect(rogue, `先在 DESIGN.md frontmatter 立 token，再写进 variables.css：${rogue.join(', ')}`).toEqual([])
+  })
+})
+
+/**
  * 变量引用完整性：src 下每一处 `var(--q-*)` 必须在 variables.css 里有定义。
  *
  * 存在的理由：扫页把 `color="#58a6ff"` 改成 `var(--q-primary)` 时，**打错一个字母不会
