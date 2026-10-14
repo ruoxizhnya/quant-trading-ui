@@ -160,7 +160,9 @@ export const useSyncStore = defineStore('sync', () => {
     error.value = null
     try {
       const resp = await createSyncJob(request)
-      await fetchSyncJobs()
+      // 动作只回读那一条作业（见 refreshJob 的注释）。整张列表由队列面板 own：
+      // 这里若重读，用户选的筛选与页宽会被静默冲掉。
+      await refreshJob(resp.job_id).catch(() => undefined)
       watchJob(resp.job_id)
       return resp.job_id
     } catch (err) {
@@ -193,7 +195,9 @@ export const useSyncStore = defineStore('sync', () => {
     error.value = null
     try {
       await cancelSyncJob(jobId)
-      await fetchSyncJobs()
+      // 后端可能拒绝（条件写没命中：那行在读写之间已经跑完了），回读的那条就是
+      // 真相；不重读整张列表，免得把队列面板的筛选冲掉。
+      await refreshJob(jobId).catch(() => undefined)
     } catch (err) {
       error.value = apiMessage(err, 'Failed to cancel sync job')
       throw err
@@ -204,7 +208,7 @@ export const useSyncStore = defineStore('sync', () => {
     error.value = null
     try {
       await retrySyncJob(jobId)
-      await fetchSyncJobs()
+      await refreshJob(jobId).catch(() => undefined)
       watchJob(jobId)
     } catch (err) {
       error.value = apiMessage(err, 'Failed to retry sync job')

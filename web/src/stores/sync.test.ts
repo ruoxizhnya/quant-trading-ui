@@ -150,19 +150,22 @@ describe('sync store', () => {
     expect(store.progressPercent).toBe(40)
   })
 
-  it('creates a job and refreshes the list', async () => {
+  it('creates a job and puts that job in the queue without clobbering the list', async () => {
     const store = useSyncStore()
     api.createSyncJob.mockResolvedValue({
       message: 'stocks sync job created',
       job_id: 'job-9',
       status: 'pending',
     })
+    api.getSyncJob.mockResolvedValue(makeJob({ id: 'job-9' }))
     api.listSyncJobs.mockResolvedValue({ jobs: [makeJob({ id: 'job-9' })], count: 1 })
     const id = await store.createJob({ type: 'stocks' })
     expect(id).toBe('job-9')
     expect(api.createSyncJob).toHaveBeenCalledWith({ type: 'stocks' })
-    expect(api.listSyncJobs).toHaveBeenCalled()
     expect(store.jobs[0].id).toBe('job-9')
+    // A-08 审查修正：动作只回读那一条。重读整张列表会静默冲掉队列面板的筛选与页宽
+    // （run-now 那条先被抓到，create/cancel/retry 是同一个病，一起收）。
+    expect(api.listSyncJobs).not.toHaveBeenCalled()
   })
 
   it('maps the import form onto L0 job types', async () => {
@@ -172,6 +175,7 @@ describe('sync store', () => {
       job_id: 'job-x',
       status: 'pending',
     })
+    api.getSyncJob.mockResolvedValue(makeJob({ id: 'job-x' }))
     api.listSyncJobs.mockResolvedValue({ jobs: [], count: 0 })
 
     await store.importData({
@@ -340,6 +344,48 @@ describe('runScheduleNow（断言 2 的可证伪腿）', () => {
     const store = useSyncStore()
     await expect(store.runScheduleNow(9)).resolves.toBe('scheduled-9')
     expect(store.jobs).toEqual([])
+  })
+})
+
+describe('cancel / retry 也不冲掉列表（与 run-now 同一条口径）', () => {
+  it('cancel 之后只回读那一条，队列的筛选与页宽保持不变', async () => {
+    api.listSyncJobs.mockResolvedValue({ jobs: [makeJob({ id: 'a', status: 'running' })], count: 1 })
+    const store = useSyncStore()
+    await store.fetchSyncJobs('running', 50)
+    api.listSyncJobs.mockClear()
+
+    api.cancelSyncJob.mockResolvedValue({ message: 'job cancelled', job_id: 'a' })
+    api.getSyncJob.mockResolvedValue(makeJob({ id: 'a', status: 'cancelled' }))
+    await store.cancelJob('a')
+
+    expect(api.getSyncJob).toHaveBeenCalledWith('a')
+    expect(api.listSyncJobs).not.toHaveBeenCalled()
+    expect(store.jobs[0].status).toBe('cancelled')
+  })
+
+  it('retry 之后同样只回读，并且仍只开那条唯一的进度流', async () => {
+    api.listSyncJobs.mockResolvedValue({ jobs: [makeJob({ id: 'b', status: 'failed' })], count: 1 })
+    const store = useSyncStore()
+    await store.fetchSyncJobs(undefined, 50)
+    api.listSyncJobs.mockClear()
+
+    api.retrySyncJob.mockResolvedValue({ message: 'job queued for retry', job_id: 'b', status: 'pending' })
+    api.getSyncJob.mockResolvedValue(makeJob({ id: 'b', status: 'pending', retry_count: 1 }))
+    await store.retryJob('b')
+
+    expect(api.listSyncJobs).not.toHaveBeenCalled()
+    expect(store.jobs[0].status).toBe('pending')
+    expect(FakeEventSource.instances.map((e) => e.url)).toEqual(['/api/sync/jobs/b/progress'])
+  })
+
+  it('回读失败不吞掉动作本身：取消成功了就报成功，行状态维持后端最后给的样子', async () => {
+    api.listSyncJobs.mockResolvedValue({ jobs: [makeJob({ id: 'c', status: 'running' })], count: 1 })
+    const store = useSyncStore()
+    await store.fetchSyncJobs()
+    api.cancelSyncJob.mockResolvedValue({ message: 'job cancelled', job_id: 'c' })
+    api.getSyncJob.mockRejectedValue(new Error('read back failed'))
+    await expect(store.cancelJob('c')).resolves.toBeUndefined()
+    expect(store.error).toBeNull()
   })
 })
 

@@ -227,7 +227,8 @@ function formatNext(row: SyncSchedule): string {
 
 async function reload() {
   await store.fetchSchedules().catch(() => undefined)
-  await store.fetchStats().catch(() => undefined)
+  // fetchStats 设计上不抛（两腿独立，失败进 statsError），所以这里不挂 catch。
+  await store.fetchStats()
 }
 
 function openCreate() {

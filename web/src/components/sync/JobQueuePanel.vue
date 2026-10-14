@@ -197,8 +197,9 @@ import type { SyncJob, SyncJobStatus } from '@/types/sync'
  * 队列区（A-08 断言 1）：列表 + 筛选 + 详情 + cancel/retry 四个动作各一次真实调用。
  *
  * 三条现场口径：
- *  - **动作后回读单条**（store.refreshJob），列表行与抽屉里看到的都是后端写成的状态；
- *    乐观更新会把「取消请求被后端拒绝」显示成「已经取消了」。
+ *  - **动作后回读单条**：读在 store 的动作内部（cancelJob/retryJob → refreshJob），
+ *    面板不再各读一次——两处各读会多打一趟，且将来只改一处就分叉。乐观更新则会把
+ *    「取消请求被后端拒绝」显示成「已经取消了」。
  *  - 状态筛选走后端 `?status=`，类型筛选只能在前端做（后端没有这个参数）。两者混在一个
  *    控件里会谎称同一口径，所以明写各自范围。
  *  - 轮询只在**有活作业时**开（QUEUE_POLL_MS），且只有一条；共享限流桶是进程级的
@@ -278,13 +279,12 @@ async function openDetail(jobId: string) {
 async function act(kind: 'cancel' | 'retry', jobId: string) {
   pendingId.value = jobId
   try {
+    // store 的动作内部会回读那一条作业（后端说了算），并在 retry 时开那条唯一的
+    // 进度流；这里不再各读一次——两处各读会多打一趟接口，且将来只改一处就分叉。
     if (kind === 'cancel') await store.cancelJob(jobId)
     else await store.retryJob(jobId)
-    // 不乐观：动作之后后端说了算，回读这一条覆盖前端看到的。
-    // store.retryJob 已经为新排期那条开了进度流，这里不再 watch 第二次。
-    await store.refreshJob(jobId).catch(() => undefined)
   } catch {
-    // store.error 由 store 记，这里不重复播报
+    // store.error 由 store 记，告警条显示的是后端原话
   } finally {
     pendingId.value = null
   }
