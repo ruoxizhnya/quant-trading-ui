@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;font-family:'Inter',sans-serif;}body{overscroll-behavior:none;background-color:#090a0c;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}.font-mono-num{font-family:'JetBrains Mono',monospace;font-feature-settings:"tnum";font-variant-numeric:tabular-nums;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "background": "#090a0c",
+          "surface": "#101216",
+          "surface-container-lowest": "#060709",
+          "surface-container-low": "#0d0f13",
+          "surface-container": "#13161c",
+          "surface-container-high": "#1a1d24",
+          "surface-container-highest": "#222630",
+          "titanium-light": "#f1f3f7",
+          "titanium-mid": "#c4c8d3",
+          "titanium-dark": "#7e8494",
+          "graphite-border": "#1c202a",
+          "graphite-subtle": "#161920",
+          "accent-silver": "#e2e6ee",
+          "accent-emerald": "#34d399",
+          "accent-amber": "#fbbf24",
+          "accent-rose": "#f87171"
+        },
+        "fontFamily": {
+          "mono": ["'JetBrains Mono'", "monospace"],
+          "sans": ["'Inter'", "sans-serif"]
+        }
+      }
+    }
+  }</script></head><body class="bg-background font-sans text-titanium-mid antialiased selection:bg-titanium-light/10 selection:text-titanium-light"><!-- Navigation Sidebar (Minimal Nordic Titanium Gray) -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-lowest z-50 flex flex-col justify-between border-r border-graphite-border/70"><div class="flex flex-col h-[calc(100vh-80px)]"><div class="h-14 px-5 flex items-center gap-3 bg-surface-container-low/60 shrink-0 border-b border-graphite-border/50"><div class="w-6 h-6 rounded-sm bg-surface-container-highest/80 border border-graphite-border flex items-center justify-center"><span class="material-symbols-outlined text-titanium-light text-[15px]">terminal</span></div><div class="flex flex-col"><div class="flex items-center gap-1.5"><span class="text-[13px] tracking-tight text-titanium-light font-semibold uppercase">Quant Lab</span><span class="text-[9px] px-1 py-0.5 rounded-sm bg-surface-container-high text-titanium-dark tracking-widest border border-graphite-border/60">A-SHARE</span></div><span class="text-[9px] text-titanium-dark/70 font-mono tracking-wider uppercase">Self-hosted Core</span></div></div><div class="px-3 py-3 overflow-y-auto"><nav class="flex flex-col gap-0.5"><div class="px-2 pt-2 pb-1.5 text-[10px] font-mono uppercase tracking-wider text-titanium-dark/60 flex items-center justify-between"><span>Research Mainline</span><span class="text-[10px] text-titanium-mid/50 font-mono">04</span></div><a class="flex items-center justify-between px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="review-desk" href="#"><span>审阅台 Review Desk</span><span class="font-mono text-[10px] px-1.5 py-0.2 rounded-sm bg-surface-container-high text-titanium-light border border-graphite-border">3</span></a><a class="flex items-center justify-between px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="explore" href="#"><span>探索观察台 Explore</span><span class="flex items-center gap-1.5 text-[10px] font-mono text-titanium-mid"><span class="w-1 h-1 rounded-full bg-titanium-light"></span>ACT</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="journal" href="#"><span>研究日志与采纳记录</span></a><div class="px-2 pt-4 pb-1.5 text-[10px] font-mono uppercase tracking-wider text-titanium-dark/60"><span>Instruments</span></div><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="backtest" href="#"><span>回测引擎 Backtest</span></a><a class="flex items-center justify-between px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="compare" href="#"><span>多策略对比 Compare</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="strategies" href="#"><span>策略库 Strategies</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="factors" href="#"><span>因子研究 Factors</span></a><a class="flex items-center justify-between px-2.5 py-1.5 rounded-sm bg-surface-container-high/60 text-titanium-light border-l border-titanium-light transition-all text-xs font-medium" data-path="screener" href="#"><span>选股与市场 Screener</span><span class="material-symbols-outlined text-[13px] text-titanium-dark">chevron_right</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="data-sync" href="#"><span>数据管道 Data Sync</span></a><div class="px-2 pt-4 pb-1.5 text-[10px] font-mono uppercase tracking-wider text-titanium-dark/60"><span>Risk &amp; Execution</span></div><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="alerts-health" href="#"><span>风险告警与健康</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="execution" href="#"><span>交易执行 Execution</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="macro-industry" href="#"><span>宏观与产业链 Macro</span></a></nav></div></div><div class="p-3 bg-surface-container-lowest shrink-0 border-t border-graphite-border/70"><div class="p-2.5 rounded-sm bg-surface-container-low border border-graphite-border/60 flex flex-col gap-1.5"><div class="flex items-center justify-between"><span class="text-[9px] font-mono uppercase tracking-wider text-titanium-dark">LOCAL NODE</span><span class="text-[10px] font-mono text-titanium-mid flex items-center gap-1.5"><span class="w-1 h-1 rounded-full bg-accent-emerald"></span>ONLINE</span></div><div class="text-xs font-mono text-titanium-light">SHA-DC-A102</div><div class="flex items-center justify-between text-[10px] font-mono text-titanium-dark/70"><span>PORT 9840</span><span>0.42ms</span></div></div></div></aside><div class="pl-64"><!-- Top Header: Restrained Monochromatic Titanium -->
+<header class="fixed top-0 left-64 right-0 h-14 bg-surface-container-lowest/90 backdrop-blur-md z-40 border-b border-graphite-border/70"><div class="h-14 w-full px-6 flex items-center justify-between"><div class="flex items-center gap-5"><div class="flex items-center gap-2 px-3 py-1.5 rounded-sm bg-surface-container-low border border-graphite-border text-titanium-dark hover:border-titanium-dark/40 transition-colors cursor-pointer"><span class="material-symbols-outlined text-[15px]">search</span><span class="text-xs text-titanium-mid">⌘K 给方向 (指令级探查)</span><kbd class="font-mono text-[10px] bg-surface-container-highest/60 px-1 py-0.5 rounded-sm text-titanium-dark border border-graphite-border/50">⌘K</kbd></div><div class="hidden xl:flex items-center gap-5 pl-2 text-xs font-mono"><div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-titanium-light/80"></span><span class="text-titanium-dark uppercase text-[10px]">HERMES</span><span class="text-titanium-mid">380 probe/h</span></div><div class="h-3 w-px bg-graphite-border"></div><div class="flex items-center gap-2"><span class="text-titanium-dark uppercase text-[10px]">DETERMINISTIC</span><span class="text-titanium-light">STABLE</span></div><div class="h-3 w-px bg-graphite-border"></div><div class="flex items-center gap-2"><span class="text-titanium-dark uppercase text-[10px]">QUEUE</span><span class="text-titanium-light font-medium">3</span></div></div></div><div class="flex items-center gap-4"><div class="flex items-center gap-2 text-xs font-mono text-titanium-dark px-2.5 py-1 rounded-sm bg-surface-container-low border border-graphite-border"><span class="material-symbols-outlined text-[14px] text-titanium-mid">dns</span><span>SSE · L2 FEED</span></div><div class="flex items-center gap-2.5 pl-2"><div class="flex flex-col text-right"><span class="text-xs text-titanium-light font-medium leading-none">实验室主任</span><span class="text-[9px] font-mono text-titanium-dark uppercase tracking-widest mt-1">RESEARCH MODE</span></div><div class="w-7 h-7 rounded-sm bg-surface-container-high border border-graphite-border flex items-center justify-center text-titanium-mid"><span class="material-symbols-outlined text-[15px]">person</span></div></div></div></div></header><main class="relative pt-14 bg-background min-h-screen pb-16"><div class="flex flex-col w-full">
+<!-- Archival Context Banner & Macro Ledgers -->
+<section class="w-full bg-surface-container-lowest px-6 py-6 md:px-8">
+<div class="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-6">
+<div class="flex flex-col gap-2 max-w-3xl">
+<div class="flex items-center gap-2">
+<span class="font-label-caps text-label-caps tracking-widest text-outline uppercase">ARCHIVE LEDGER · EP-CORE 04</span>
+<span class="h-1 w-1 rounded-full bg-outline-variant"></span>
+<span class="font-mono-data-sm text-mono-data-sm text-tertiary">STABLE COMMITS ALIGNED</span>
+</div>
+<div class="flex flex-wrap items-baseline gap-3">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">RESEARCH JOURNAL</h1>
+<span class="font-body-md text-body-md text-on-surface-variant font-light">历史探索归档与投委会拍板采纳台账</span>
+</div>
+<p class="font-body-sm text-body-sm text-outline max-w-2xl">
+          记录所有由探查引擎自动生成假说、人工审阅结论及参数定稿的不可篡改审计链路。Deterministic 实证回测与 Probabilistic 先验置信度隔离存证。
+        </p>
+</div>
+<!-- Action Utilities -->
+<div class="flex items-center gap-2.5 shrink-0">
+<button class="flex items-center gap-2 px-3 py-2 rounded bg-surface-container-high text-on-surface hover:bg-surface-variant transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">terminal</span>
+<span class="font-mono-data-sm text-mono-data-sm">Git Snapshot 对齐</span>
+<span class="font-mono-data-sm text-[10px] px-1 rounded bg-surface-container text-outline">#9f24da</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-2 rounded bg-primary-container text-on-primary-container hover:bg-inverse-primary transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[16px]">picture_as_pdf</span>
+<span class="font-title-sm text-title-sm">导出投委会审阅报告 (PDF)</span>
+</button>
+</div>
+</div>
+<!-- Institutional Key Metric Ledger Cards -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-4">
+<div class="bg-surface-container-low rounded p-3.5 flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-outline uppercase">Total Probe Runs</span>
+<span class="material-symbols-outlined text-outline text-[16px]">hub</span>
+</div>
+<div class="mt-3 flex items-baseline gap-2">
+<span class="font-mono-data-lg text-[22px] font-semibold text-on-surface tracking-tight">1,420</span>
+<span class="font-mono-data-sm text-mono-data-sm text-outline">探索回测总数</span>
+</div>
+<div class="mt-2 w-full bg-surface-container-highest rounded-full h-1 overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 100%;"></div>
+</div>
+</div>
+<div class="bg-surface-container-low rounded p-3.5 flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-tertiary uppercase">Accepted to Prod</span>
+<span class="font-mono-data-sm text-[10px] px-1.5 py-0.5 rounded bg-tertiary/10 text-tertiary">1.27% PASS</span>
+</div>
+<div class="mt-3 flex items-baseline gap-2">
+<span class="font-mono-data-lg text-[22px] font-semibold text-tertiary tracking-tight">18</span>
+<span class="font-mono-data-sm text-mono-data-sm text-outline">正选采纳进库</span>
+</div>
+<div class="mt-2 w-full bg-surface-container-highest rounded-full h-1 overflow-hidden">
+<div class="bg-tertiary h-full rounded-full" style="width: 1.27%;"></div>
+</div>
+</div>
+<div class="bg-surface-container-low rounded p-3.5 flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-error uppercase">Pruned / Rejected</span>
+<span class="material-symbols-outlined text-error text-[16px]">do_not_disturb_on</span>
+</div>
+<div class="mt-3 flex items-baseline gap-2">
+<span class="font-mono-data-lg text-[22px] font-semibold text-on-surface tracking-tight">1,280</span>
+<span class="font-mono-data-sm text-mono-data-sm text-outline">换手/偏误剪枝</span>
+</div>
+<div class="mt-2 w-full bg-surface-container-highest rounded-full h-1 overflow-hidden">
+<div class="bg-error/70 h-full rounded-full" style="width: 90.1%;"></div>
+</div>
+</div>
+<div class="bg-surface-container-low rounded p-3.5 flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-secondary uppercase">Halted / Watching</span>
+<span class="material-symbols-outlined text-secondary text-[16px]">visibility</span>
+</div>
+<div class="mt-3 flex items-baseline gap-2">
+<span class="font-mono-data-lg text-[22px] font-semibold text-on-surface tracking-tight">122</span>
+<span class="font-mono-data-sm text-mono-data-sm text-outline">数据管道待补</span>
+</div>
+<div class="mt-2 w-full bg-surface-container-highest rounded-full h-1 overflow-hidden">
+<div class="bg-secondary/70 h-full rounded-full" style="width: 8.6%;"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Filter Strip & View Controller -->
+<div class="w-full bg-surface-container-low px-6 md:px-8 py-3 flex flex-wrap items-center justify-between gap-4 sticky top-14 z-20 shadow-sm">
+<div class="flex flex-wrap items-center gap-1.5">
+<button class="px-3 py-1.5 rounded bg-surface-container-highest text-on-surface font-title-sm text-title-sm transition-colors shadow-sm">
+        全部记录 (1,420)
+      </button>
+<button class="px-3 py-1.5 rounded bg-surface-container text-on-surface-variant hover:text-on-surface font-title-sm text-title-sm transition-colors">
+        已采纳台账 (18)
+      </button>
+<button class="px-3 py-1.5 rounded bg-surface-container text-on-surface-variant hover:text-on-surface font-title-sm text-title-sm transition-colors">
+        被否决/剪枝理由 (1,280)
+      </button>
+<button class="px-3 py-1.5 rounded bg-surface-container text-on-surface-variant hover:text-on-surface font-title-sm text-title-sm transition-colors">
+        待补充观测 (122)
+      </button>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-2.5 text-outline text-[16px]">filter_alt</span>
+<input class="w-64 bg-surface-container-lowest text-on-surface pl-8 pr-3 py-1 rounded font-mono-data-sm text-mono-data-sm placeholder:text-outline/60 focus:outline-none focus:bg-surface-container" placeholder="搜索假设代码、因子哈希、决策人..." type="text"/>
+</div>
+<div class="h-4 w-px bg-surface-variant"></div>
+<button class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container text-outline hover:text-on-surface font-mono-data-sm text-mono-data-sm">
+<span>按时间倒序</span>
+<span class="material-symbols-outlined text-[14px]">arrow_downward</span>
+</button>
+</div>
+</div>
+<!-- Primary Journal Tri-Pane Layout (Editorial Timeline + Meta Inspector) -->
+<div class="w-full px-6 md:px-8 py-6">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Left Column: Sequential Chronological Journal -->
+<main class="lg:col-span-8 flex flex-col gap-6">
+<!-- Entry 1: ACCEPTED -->
+<article class="bg-surface-container-low rounded-lg p-5 md:p-6 transition-all relative overflow-hidden shadow-sm">
+<!-- Probabilistic Subtle Halo Ribbon -->
+<div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-tertiary/70 via-primary/50 to-transparent"></div>
+<!-- Card Header & Metadata -->
+<div class="flex flex-wrap items-start justify-between gap-4">
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center gap-2">
+<span class="font-mono-data-sm text-mono-data-sm text-outline">2026-04-18 14:38:12 CST</span>
+<span class="h-1 w-1 rounded-full bg-outline-variant"></span>
+<span class="font-mono-data-sm text-mono-data-sm text-outline uppercase">PROBE SEED #8942-A</span>
+<span class="font-mono-data-sm text-[10px] px-1.5 py-0.2 rounded bg-surface-container-highest text-on-surface-variant">COMMIT #3a98e10</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight">
+                Run #2026-1012-G: 光模块 800G/1.6T 渗透率与高频流动性溢价 (CPO-VolSurge 800G)
+              </h2>
+</div>
+<!-- Acceptance Badge -->
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-tertiary/10 text-tertiary">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+<span class="font-label-caps text-label-caps uppercase tracking-wider">已采纳进策略库 · APPROVED</span>
+</div>
+</div>
+<!-- Deterministic Metrics vs Uncertainty Interval -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 my-4 bg-surface-container-lowest rounded p-3">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-outline uppercase">SHARPE RATIO</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-mono-data-lg text-mono-data-lg text-on-surface font-semibold">2.41</span>
+<span class="font-mono-data-sm text-[10px] text-tertiary font-mono">P(&gt;2.0)=84%</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-outline uppercase">CAGR (年化复合)</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-mono-data-lg text-mono-data-lg text-tertiary font-semibold">+38.4%</span>
+<span class="font-mono-data-sm text-[10px] text-outline">扣费净值</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-outline uppercase">MAX DRAWDOWN</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-mono-data-lg text-mono-data-lg text-on-surface font-semibold">-8.6%</span>
+<span class="font-mono-data-sm text-[10px] text-outline">回撤区间41D</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-outline uppercase">因果图置信度</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-mono-data-lg text-mono-data-lg text-primary font-semibold">71.2%</span>
+<span class="font-mono-data-sm text-[10px] text-primary-fixed-dim font-mono">Do-Calculus</span>
+</div>
+</div>
+</div>
+<!-- 拍板备注 (Executive Decision Narrative) -->
+<div class="bg-surface-container rounded p-3.5 flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-full bg-surface-variant flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-[11px]">gavel</span>
+</div>
+<span class="font-title-sm text-title-sm text-on-surface">实验室主任 拍板纪要与投委会采纳陈词</span>
+</div>
+<span class="font-mono-data-sm text-mono-data-sm text-outline">决议哈希: 0x8a21..cc7f</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              引入尾盘换手率衰减因子，有效对冲盘中流动性滑点；虽因果语义略受上游海外云厂商Capex数据披露频次约束，但在当前算力高景气周期中统计显著性高达88%，夏普改善幅度显著击穿基准边界。已批准进入模拟实盘并分配 1,500 万基底权重。
+            </p>
+</div>
+<!-- Bottom Telemetry & Artifact Inspector Drawer Hook -->
+<div class="mt-4 pt-3 flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container-high text-on-surface hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[15px] text-outline">query_stats</span>
+<span class="font-mono-data-sm text-mono-data-sm">查看回测快照 (48M Tick)</span>
+</button>
+<button class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container-high text-on-surface hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[15px] text-outline">account_tree</span>
+<span class="font-mono-data-sm text-mono-data-sm">查看 AST 语法树</span>
+</button>
+<button class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container text-outline hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[14px]">code</span>
+<span class="font-mono-data-sm text-[10px]">Factor::Alpha_CPO_800G.py</span>
+</button>
+</div>
+<div class="flex items-center gap-1 text-outline">
+<span class="font-mono-data-sm text-[10px]">AUDIT LEVEL: L4 SOVEREIGN RIGOR</span>
+</div>
+</div>
+</article>
+<!-- Entry 2: HALTED / WATCHING -->
+<article class="bg-surface-container-low rounded-lg p-5 md:p-6 transition-all relative overflow-hidden shadow-sm">
+<div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-secondary/60 via-secondary/20 to-transparent"></div>
+<div class="flex flex-wrap items-start justify-between gap-4">
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center gap-2">
+<span class="font-mono-data-sm text-mono-data-sm text-outline">2026-04-17 11:20:04 CST</span>
+<span class="h-1 w-1 rounded-full bg-outline-variant"></span>
+<span class="font-mono-data-sm text-mono-data-sm text-outline uppercase">PROBE SEED #8939-E</span>
+<span class="font-mono-data-sm text-[10px] px-1.5 py-0.2 rounded bg-surface-container-highest text-on-surface-variant">COMMIT #f102c98</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight">
+                Run #2026-1011-B: InP-Substrate 磷化铟衬底交付周期先行指标与反转模型
+              </h2>
+</div>
+<!-- Watching Badge -->
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-secondary/10 text-secondary">
+<span class="material-symbols-outlined text-[16px]">pause_circle</span>
+<span class="font-label-caps text-label-caps uppercase tracking-wider">搁置复议 · WATCHING</span>
+</div>
+</div>
+<!-- Deterministic Metrics -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 my-4 bg-surface-container-lowest rounded p-3">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-outline uppercase">SHARPE ESTIMATE</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-mono-data-lg text-mono-data-lg text-on-surface font-semibold">1.88</span>
+<span class="font-mono-data-sm text-[10px] text-outline font-mono">P(Uncertain)</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-outline uppercase">CAGR (年化估算)</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-mono-data-lg text-mono-data-lg text-on-surface font-semibold">+24.1%</span>
+<span class="font-mono-data-sm text-[10px] text-outline">初筛区间</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-outline uppercase">MAX DRAWDOWN</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-mono-data-lg text-mono-data-lg text-on-surface font-semibold">-14.2%</span>
+<span class="font-mono-data-sm text-[10px] text-outline">回撤偏宽</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-outline uppercase">因果图置信度</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-mono-data-lg text-mono-data-lg text-secondary font-semibold">52.8%</span>
+<span class="font-mono-data-sm text-[10px] text-secondary font-mono">数据断截</span>
+</div>
+</div>
+</div>
+<!-- 拍板备注 -->
+<div class="bg-surface-container rounded p-3.5 flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-full bg-surface-variant flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-[11px]">hourglass_top</span>
+</div>
+<span class="font-title-sm text-title-sm text-on-surface">数据管道同步阻断说明</span>
+</div>
+<span class="font-mono-data-sm text-mono-data-sm text-secondary">PIPE: DATA_STALE (48h Lag)</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              海关提单数据颗粒度近期跳跃，数据管道延迟需人工复核对齐。待光通信供应商周度采购台账补齐后重新进行 Walk-Forward 多周期滑动窗口复测，当前锁定参数树，暂停实盘上线准入。
+            </p>
+</div>
+<div class="mt-4 pt-3 flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container-high text-on-surface hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[15px] text-outline">sync_problem</span>
+<span class="font-mono-data-sm text-mono-data-sm">查看管道异常日志 (3 Warnings)</span>
+</button>
+<button class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container text-outline hover:text-on-surface transition-colors">
+<span class="font-mono-data-sm text-[10px]">Tushare/CustomFeed::InP_Substrate_Rev.py</span>
+</button>
+</div>
+<span class="font-mono-data-sm text-[10px] text-outline">NEXT REVIEW: 2026-04-24</span>
+</div>
+</article>
+<!-- Entry 3: REJECTED / PRUNED -->
+<article class="bg-surface-container-low rounded-lg p-5 md:p-6 transition-all relative overflow-hidden shadow-sm">
+<div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-error/60 via-error/20 to-transparent"></div>
+<div class="flex flex-wrap items-start justify-between gap-4">
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center gap-2">
+<span class="font-mono-data-sm text-mono-data-sm text-outline">2026-04-16 16:05:30 CST</span>
+<span class="h-1 w-1 rounded-full bg-outline-variant"></span>
+<span class="font-mono-data-sm text-mono-data-sm text-outline uppercase">PROBE SEED #8928-X</span>
+<span class="font-mono-data-sm text-[10px] px-1.5 py-0.2 rounded bg-surface-container-highest text-on-surface-variant">COMMIT #c9443b1</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight">
+                Run #2026-1008-F: Optical-Drift 高速光收发模块风格漂移对冲策略
+              </h2>
+</div>
+<!-- Rejected Badge -->
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-error/10 text-error">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+<span class="font-label-caps text-label-caps uppercase tracking-wider">已否决剪枝 · PRUNED</span>
+</div>
+</div>
+<!-- Deterministic Metrics (Highlighting failure) -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 my-4 bg-surface-container-lowest rounded p-3">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-outline uppercase">TURNOVER (双边换手)</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-mono-data-lg text-mono-data-lg text-error font-semibold">142.8x</span>
+<span class="font-mono-data-sm text-[10px] text-error">LIMIT &lt; 40x</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-outline uppercase">冲击滑点估算</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-mono-data-lg text-mono-data-lg text-error font-semibold">-42.8 bps</span>
+<span class="font-mono-data-sm text-[10px] text-outline">净收益转负</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-outline uppercase">PAPER SHARPE (毛利)</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-mono-data-lg text-mono-data-lg text-outline font-semibold">3.12 (虚假)</span>
+<span class="font-mono-data-sm text-[10px] text-outline">未计印花滑点</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-outline uppercase">REALIZED SHARPE</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-mono-data-lg text-mono-data-lg text-error font-semibold">-0.32</span>
+<span class="font-mono-data-sm text-[10px] text-error font-mono">Friction Collapse</span>
+</div>
+</div>
+</div>
+<!-- 拍板备注: 否决原因 -->
+<div class="bg-surface-container rounded p-3.5 flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-full bg-error/20 flex items-center justify-center text-error">
+<span class="material-symbols-outlined text-[11px]">block</span>
+</div>
+<span class="font-title-sm text-title-sm text-error">风险合规否决剪枝报告 (硬性红线触碰)</span>
+</div>
+<span class="font-mono-data-sm text-mono-data-sm text-outline">RULE: RISK_TURNOVER_CEILING</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              年化双边换手率 142.8 倍严重超标 (硬性风控上限 40倍)。高频撮合重构下冲击成本滑点估算衰减高达 -42.8bps，实盘摩擦成本完全吞噬理论 Alpha，实盘净期望收益为负。假说判定为“虚假微观套利”，已永久剪枝加入负样本记忆库。
+            </p>
+</div>
+<div class="mt-4 pt-3 flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container-high text-on-surface hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[15px] text-outline">history_edu</span>
+<span class="font-mono-data-sm text-mono-data-sm">查看剪枝归档报告</span>
+</button>
+<button class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container text-outline hover:text-on-surface transition-colors">
+<span class="font-mono-data-sm text-[10px]">VectorDB::Negative_Hypo_Embeddings.idx</span>
+</button>
+</div>
+<span class="font-mono-data-sm text-[10px] text-outline">ARCHIVE DISPOSITION: PERMANENT PRUNE</span>
+</div>
+</article>
+<!-- Pagination Ledger -->
+<div class="flex items-center justify-between py-4 bg-surface-container-lowest px-4 rounded text-outline">
+<span class="font-mono-data-sm text-mono-data-sm">显示 1 至 3 项 (共 1,420 条历史台账记录)</span>
+<div class="flex items-center gap-1">
+<button class="px-2.5 py-1 rounded bg-surface-container text-outline hover:text-on-surface font-mono-data-sm text-mono-data-sm disabled:opacity-30">上页</button>
+<span class="px-3 py-1 font-mono-data-sm text-mono-data-sm text-on-surface bg-surface-container-high rounded">1</span>
+<button class="px-2.5 py-1 rounded bg-surface-container text-outline hover:text-on-surface font-mono-data-sm text-mono-data-sm">2</button>
+<button class="px-2.5 py-1 rounded bg-surface-container text-outline hover:text-on-surface font-mono-data-sm text-mono-data-sm">3</button>
+<span class="px-1 text-outline">...</span>
+<button class="px-2.5 py-1 rounded bg-surface-container text-outline hover:text-on-surface font-mono-data-sm text-mono-data-sm">474</button>
+<button class="px-2.5 py-1 rounded bg-surface-container text-outline hover:text-on-surface font-mono-data-sm text-mono-data-sm">下页</button>
+</div>
+</div>
+</main>
+<!-- Right Column: Meta Insights & Research Productivity Benchmarks -->
+<aside class="lg:col-span-4 flex flex-col gap-6">
+<!-- Institutional Discipline Metric Panel -->
+<div class="bg-surface-container-low rounded-lg p-5 flex flex-col gap-4 shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">verified_user</span>
+<span class="font-title-sm text-title-sm text-on-surface">投研严谨度与准入纪律</span>
+</div>
+<span class="font-mono-data-sm text-[10px] px-1.5 py-0.5 rounded bg-surface-container-highest text-tertiary">STRICT DISCIPLINE</span>
+</div>
+<div class="bg-surface-container-lowest rounded p-3.5 flex flex-col gap-1">
+<span class="font-label-caps text-label-caps text-outline uppercase">MONTHLY ACCEPTANCE RATE</span>
+<div class="flex items-baseline justify-between mt-1">
+<span class="font-mono-data-lg text-[28px] font-semibold text-on-surface tracking-tight">1.27%</span>
+<span class="font-mono-data-sm text-mono-data-sm text-tertiary font-mono">Top Quant Bar</span>
+</div>
+<p class="font-body-sm text-body-sm text-outline mt-1 leading-normal">
+              本月共探查 240 个高维多因子假说，仅批准 3 个进入实盘，杜绝过拟合与数据窥探偏误。
+            </p>
+</div>
+<!-- Top Rejection Causes Breakdown Bar Visualization -->
+<div class="flex flex-col gap-2.5 pt-2">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-outline uppercase">否决与剪枝核心原因分布</span>
+<span class="font-mono-data-sm text-[10px] text-outline">N=1,280</span>
+</div>
+<!-- Custom Segmented Stacked Progress Bar -->
+<div class="w-full bg-surface-container-highest rounded h-2 overflow-hidden flex">
+<div class="bg-error h-full" style="width: 48%;" title="换手与滑点过大 (48%)"></div>
+<div class="bg-outline h-full" style="width: 28%;" title="未来函数与幸存者偏误 (28%)"></div>
+<div class="bg-secondary h-full" style="width: 16%;" title="经济学逻辑不可解释 (16%)"></div>
+<div class="bg-surface-variant h-full" style="width: 8%;" title="其他/未通过检验 (8%)"></div>
+</div>
+<div class="flex flex-col gap-2 mt-2">
+<div class="flex items-center justify-between text-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span class="text-on-surface font-body-sm">换手率与滑点超标 (Friction)</span>
+</div>
+<span class="font-mono-data-sm text-on-surface font-semibold">48%</span>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+<span class="text-on-surface font-body-sm">未来函数与幸存者偏误 (Bias)</span>
+</div>
+<span class="font-mono-data-sm text-on-surface font-semibold">28%</span>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="text-on-surface font-body-sm">因果逻辑薄弱 (Spurious)</span>
+</div>
+<span class="font-mono-data-sm text-on-surface font-semibold">16%</span>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-surface-variant"></span>
+<span class="text-on-surface font-body-sm">数据覆盖不足与其它 (Data)</span>
+</div>
+<span class="font-mono-data-sm text-on-surface font-semibold">8%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Causal Engine Autonomous Optimization Summary -->
+<div class="bg-surface-container-low rounded-lg p-5 flex flex-col gap-4 shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">neurology</span>
+<span class="font-title-sm text-title-sm text-on-surface">Causal Engine 自主剪枝效能</span>
+</div>
+<span class="font-mono-data-sm text-[10px] text-outline font-mono">v4.1.2</span>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<div class="bg-surface-container-lowest rounded p-3 flex flex-col">
+<span class="font-label-caps text-label-caps text-outline uppercase">探索迭代耗时节省</span>
+<span class="font-mono-data-lg text-[20px] font-semibold text-tertiary mt-1">6.4h</span>
+<span class="font-mono-data-sm text-[10px] text-outline mt-0.5">380次无效分支早停</span>
+</div>
+<div class="bg-surface-container-lowest rounded p-3 flex flex-col">
+<span class="font-label-caps text-label-caps text-outline uppercase">算力等效节约</span>
+<span class="font-mono-data-lg text-[20px] font-semibold text-on-surface mt-1">1,920</span>
+<span class="font-mono-data-sm text-[10px] text-outline mt-0.5">GPU 核时 (A100)</span>
+</div>
+</div>
+<div class="p-3 bg-surface-container-lowest rounded flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<span class="font-title-sm text-[12px] text-on-surface">负样本空间收敛速度</span>
+<span class="font-mono-data-sm text-[10px] text-tertiary">Converging</span>
+</div>
+<!-- Minimal Sparkline SVG -->
+<svg class="w-full h-10 text-tertiary" fill="none" viewbox="0 0 200 40">
+<path d="M0,35 Q30,30 50,22 T100,18 T150,8 T200,4" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path>
+<path d="M0,35 Q30,30 50,22 T100,18 T150,8 T200,4 L200,40 L0,40 Z" fill="currentColor" fill-opacity="0.08"></path>
+</svg>
+<div class="flex items-center justify-between text-outline font-mono-data-sm text-[9px]">
+<span>T-30D: 24h/Run</span>
+<span>NOW: 1.2h/Run</span>
+</div>
+</div>
+</div>
+<!-- Editorial Archival Integrity Sign-off -->
+<div class="bg-surface-container-low rounded-lg p-5 flex flex-col gap-3 shadow-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline text-[16px]">lock</span>
+<span class="font-title-sm text-title-sm text-on-surface">不可篡改审计链</span>
+</div>
+<p class="font-body-sm text-body-sm text-outline leading-relaxed">
+            所有拍板纪要与回测指标均经由本地冷密钥对签名，生成对应 Merkle Root 锚定至自建节点，确保投委会裁决无任何追溯修改可能。
+          </p>
+<div class="flex items-center justify-between pt-2">
+<span class="font-mono-data-sm text-[10px] text-outline">MERKLE ROOT: 4f18..a99c</span>
+<button class="font-mono-data-sm text-mono-data-sm text-primary hover:underline">验证证书 ↗</button>
+</div>
+</div>
+</aside>
+</div>
+</div>
+</div></main></div></body></html>

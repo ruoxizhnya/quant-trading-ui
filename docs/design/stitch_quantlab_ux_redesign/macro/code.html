@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;font-family:'Inter',sans-serif;}body{overscroll-behavior:none;background-color:#090a0c;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}.font-mono-num{font-family:'JetBrains Mono',monospace;font-feature-settings:"tnum";font-variant-numeric:tabular-nums;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "background": "#090a0c",
+          "surface": "#101216",
+          "surface-container-lowest": "#060709",
+          "surface-container-low": "#0d0f13",
+          "surface-container": "#13161c",
+          "surface-container-high": "#1a1d24",
+          "surface-container-highest": "#222630",
+          "titanium-light": "#f1f3f7",
+          "titanium-mid": "#c4c8d3",
+          "titanium-dark": "#7e8494",
+          "graphite-border": "#1c202a",
+          "graphite-subtle": "#161920",
+          "accent-silver": "#e2e6ee",
+          "accent-emerald": "#34d399",
+          "accent-amber": "#fbbf24",
+          "accent-rose": "#f87171"
+        },
+        "fontFamily": {
+          "mono": ["'JetBrains Mono'", "monospace"],
+          "sans": ["'Inter'", "sans-serif"]
+        }
+      }
+    }
+  }</script></head><body class="bg-background font-sans text-titanium-mid antialiased selection:bg-titanium-light/10 selection:text-titanium-light"><!-- Navigation Sidebar (Minimal Nordic Titanium Gray) -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-lowest z-50 flex flex-col justify-between border-r border-graphite-border/70"><div class="flex flex-col h-[calc(100vh-80px)]"><div class="h-14 px-5 flex items-center gap-3 bg-surface-container-low/60 shrink-0 border-b border-graphite-border/50"><div class="w-6 h-6 rounded-sm bg-surface-container-highest/80 border border-graphite-border flex items-center justify-center"><span class="material-symbols-outlined text-titanium-light text-[15px]">terminal</span></div><div class="flex flex-col"><div class="flex items-center gap-1.5"><span class="text-[13px] tracking-tight text-titanium-light font-semibold uppercase">Quant Lab</span><span class="text-[9px] px-1 py-0.5 rounded-sm bg-surface-container-high text-titanium-dark tracking-widest border border-graphite-border/60">A-SHARE</span></div><span class="text-[9px] text-titanium-dark/70 font-mono tracking-wider uppercase">Self-hosted Core</span></div></div><div class="px-3 py-3 overflow-y-auto"><nav class="flex flex-col gap-0.5"><div class="px-2 pt-2 pb-1.5 text-[10px] font-mono uppercase tracking-wider text-titanium-dark/60 flex items-center justify-between"><span>Research Mainline</span><span class="text-[10px] text-titanium-mid/50 font-mono">04</span></div><a class="flex items-center justify-between px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="review-desk" href="#"><span>审阅台 Review Desk</span><span class="font-mono text-[10px] px-1.5 py-0.2 rounded-sm bg-surface-container-high text-titanium-light border border-graphite-border">3</span></a><a class="flex items-center justify-between px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="explore" href="#"><span>探索观察台 Explore</span><span class="flex items-center gap-1.5 text-[10px] font-mono text-titanium-mid"><span class="w-1 h-1 rounded-full bg-titanium-light"></span>ACT</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="journal" href="#"><span>研究日志与采纳记录</span></a><div class="px-2 pt-4 pb-1.5 text-[10px] font-mono uppercase tracking-wider text-titanium-dark/60"><span>Instruments</span></div><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="backtest" href="#"><span>回测引擎 Backtest</span></a><a class="flex items-center justify-between px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="compare" href="#"><span>多策略对比 Compare</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="strategies" href="#"><span>策略库 Strategies</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="factors" href="#"><span>因子研究 Factors</span></a><a class="flex items-center justify-between px-2.5 py-1.5 rounded-sm bg-surface-container-high/60 text-titanium-light border-l border-titanium-light transition-all text-xs font-medium" data-path="screener" href="#"><span>选股与市场 Screener</span><span class="material-symbols-outlined text-[13px] text-titanium-dark">chevron_right</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="data-sync" href="#"><span>数据管道 Data Sync</span></a><div class="px-2 pt-4 pb-1.5 text-[10px] font-mono uppercase tracking-wider text-titanium-dark/60"><span>Risk &amp; Execution</span></div><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="alerts-health" href="#"><span>风险告警与健康</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="execution" href="#"><span>交易执行 Execution</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="macro-industry" href="#"><span>宏观与产业链 Macro</span></a></nav></div></div><div class="p-3 bg-surface-container-lowest shrink-0 border-t border-graphite-border/70"><div class="p-2.5 rounded-sm bg-surface-container-low border border-graphite-border/60 flex flex-col gap-1.5"><div class="flex items-center justify-between"><span class="text-[9px] font-mono uppercase tracking-wider text-titanium-dark">LOCAL NODE</span><span class="text-[10px] font-mono text-titanium-mid flex items-center gap-1.5"><span class="w-1 h-1 rounded-full bg-accent-emerald"></span>ONLINE</span></div><div class="text-xs font-mono text-titanium-light">SHA-DC-A102</div><div class="flex items-center justify-between text-[10px] font-mono text-titanium-dark/70"><span>PORT 9840</span><span>0.42ms</span></div></div></div></aside><div class="pl-64"><!-- Top Header: Restrained Monochromatic Titanium -->
+<header class="fixed top-0 left-64 right-0 h-14 bg-surface-container-lowest/90 backdrop-blur-md z-40 border-b border-graphite-border/70"><div class="h-14 w-full px-6 flex items-center justify-between"><div class="flex items-center gap-5"><div class="flex items-center gap-2 px-3 py-1.5 rounded-sm bg-surface-container-low border border-graphite-border text-titanium-dark hover:border-titanium-dark/40 transition-colors cursor-pointer"><span class="material-symbols-outlined text-[15px]">search</span><span class="text-xs text-titanium-mid">⌘K 给方向 (指令级探查)</span><kbd class="font-mono text-[10px] bg-surface-container-highest/60 px-1 py-0.5 rounded-sm text-titanium-dark border border-graphite-border/50">⌘K</kbd></div><div class="hidden xl:flex items-center gap-5 pl-2 text-xs font-mono"><div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-titanium-light/80"></span><span class="text-titanium-dark uppercase text-[10px]">HERMES</span><span class="text-titanium-mid">380 probe/h</span></div><div class="h-3 w-px bg-graphite-border"></div><div class="flex items-center gap-2"><span class="text-titanium-dark uppercase text-[10px]">DETERMINISTIC</span><span class="text-titanium-light">STABLE</span></div><div class="h-3 w-px bg-graphite-border"></div><div class="flex items-center gap-2"><span class="text-titanium-dark uppercase text-[10px]">QUEUE</span><span class="text-titanium-light font-medium">3</span></div></div></div><div class="flex items-center gap-4"><div class="flex items-center gap-2 text-xs font-mono text-titanium-dark px-2.5 py-1 rounded-sm bg-surface-container-low border border-graphite-border"><span class="material-symbols-outlined text-[14px] text-titanium-mid">dns</span><span>SSE · L2 FEED</span></div><div class="flex items-center gap-2.5 pl-2"><div class="flex flex-col text-right"><span class="text-xs text-titanium-light font-medium leading-none">实验室主任</span><span class="text-[9px] font-mono text-titanium-dark uppercase tracking-widest mt-1">RESEARCH MODE</span></div><div class="w-7 h-7 rounded-sm bg-surface-container-high border border-graphite-border flex items-center justify-center text-titanium-mid"><span class="material-symbols-outlined text-[15px]">person</span></div></div></div></div></header><main class="relative pt-14 bg-background min-h-screen pb-16"><div class="flex flex-col w-full">
+<!-- Interactive Canvas & Analysis Layout -->
+<div class="w-full px-6 py-5 flex flex-col gap-5">
+<!-- Top Utility & Metadata Strip -->
+<div class="flex flex-col xl:flex-row xl:items-center justify-between gap-4 p-4 rounded-lg bg-surface-container-lowest border-0">
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center gap-2">
+<span class="font-label-caps text-label-caps text-outline uppercase tracking-widest">MACRO &amp; SUPPLY CHAIN</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">产业链知识图谱与宏观因果分析</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-mono-data-sm bg-surface-container-high text-tertiary">STATIONARY VAR(3)</span>
+</div>
+<div class="flex items-center gap-4 flex-wrap">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-headline-md text-headline-md text-on-surface">AI 算力硬件与光通信产业链 (CPO / 800G-1.6T)</span>
+</div>
+<div class="h-3 w-px bg-surface-variant hidden sm:block"></div>
+<div class="flex items-center gap-3 font-mono-data-sm text-mono-data-sm text-outline">
+<span>拓扑节点: <strong class="text-on-surface font-medium">64</strong></span>
+<span>·</span>
+<span>因果传导边: <strong class="text-on-surface font-medium">142</strong></span>
+<span>·</span>
+<span>外生宏观驱动: <strong class="text-on-surface font-medium">8</strong></span>
+<span>·</span>
+<span>Granger 因果置信度: <strong class="text-tertiary font-medium">p &lt; 0.01</strong></span>
+</div>
+</div>
+</div>
+<!-- Action Panel & Export -->
+<div class="flex items-center gap-2.5 shrink-0">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-primary text-on-primary font-body-sm text-body-sm transition-all hover:bg-primary/90" id="extractAlphaBtn">
+<span class="material-symbols-outlined text-[15px]">neurology</span>
+<span>生成产业链因果因子</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface-container-high hover:bg-surface-bright text-on-surface font-body-sm text-body-sm transition-all">
+<span class="material-symbols-outlined text-[15px]">dataset</span>
+<span>导出拓扑邻接矩阵</span>
+</button>
+<div class="h-6 w-px bg-surface-container-highest mx-0.5"></div>
+<button class="w-8 h-8 rounded flex items-center justify-center bg-surface-container text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-[18px]">fullscreen</span>
+</button>
+</div>
+</div>
+<!-- Filter Control Dock -->
+<div class="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 rounded bg-surface-container-low text-on-surface">
+<div class="flex flex-wrap items-center gap-2.5">
+<!-- Depth Selector -->
+<div class="flex items-center bg-surface-container-lowest rounded p-0.5">
+<button class="px-2.5 py-1 rounded text-primary font-mono-data-sm text-mono-data-sm bg-surface-container-high">L1-L3 全层传导</button>
+<button class="px-2.5 py-1 rounded text-outline hover:text-on-surface font-mono-data-sm text-mono-data-sm">仅核心层 (L1)</button>
+</div>
+<!-- Weight Threshold Toggle -->
+<div class="flex items-center gap-2 px-3 py-1 rounded bg-surface-container-lowest">
+<span class="material-symbols-outlined text-[14px] text-primary">filter_alt</span>
+<span class="font-body-sm text-body-sm text-outline">因果强权重阈值</span>
+<span class="font-mono-data-sm text-mono-data-sm text-on-surface">&gt; 0.60</span>
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+</div>
+<!-- Lag Interval Dropdown -->
+<div class="relative flex items-center gap-2 px-3 py-1 rounded bg-surface-container-lowest cursor-pointer hover:bg-surface-container">
+<span class="material-symbols-outlined text-[14px] text-outline">history</span>
+<span class="font-body-sm text-body-sm text-outline">滞后观察窗:</span>
+<span class="font-mono-data-sm text-mono-data-sm text-on-surface">15 - 45 交易日 (t-Δ)</span>
+<span class="material-symbols-outlined text-[14px] text-outline">expand_more</span>
+</div>
+</div>
+<!-- Live Search in Graph -->
+<div class="flex items-center gap-2 px-3 py-1 rounded bg-surface-container-lowest w-full sm:w-72">
+<span class="material-symbols-outlined text-[15px] text-outline">search</span>
+<input class="w-full bg-transparent border-0 p-0 font-mono-data-sm text-mono-data-sm text-on-surface focus:outline-none placeholder:text-outline" placeholder="检索节点代码、材料或宏观序列..." type="text" value="300308.SZ / 中际旭创"/>
+<kbd class="font-mono-data-sm text-[9px] text-outline px-1 rounded bg-surface-container-high">ESC</kbd>
+</div>
+</div>
+<!-- Main Workspace (70% Graph / 30% Analytical Detail) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+<!-- Left Panel: Monochromatic Tactile Node Graph Canvas (70% = 8.4 cols -> 8 cols on 12-col grid) -->
+<div class="lg:col-span-8 flex flex-col rounded-lg bg-surface-container-lowest p-5 relative overflow-hidden min-h-[760px]">
+<!-- Subtle Vector Grid Canvas Decorator -->
+<div class="absolute inset-0 bg-[radial-gradient(#272a31_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none"></div>
+<!-- Macro Stream Axis Headings -->
+<div class="grid grid-cols-4 gap-2 z-10 mb-4 pb-2">
+<div class="flex items-center gap-2">
+<span class="font-mono-data-sm text-[10px] text-outline uppercase tracking-wider">01. 外部宏观 / 资本支出</span>
+<div class="h-1 w-1 rounded-full bg-primary"></div>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-mono-data-sm text-[10px] text-outline uppercase tracking-wider">02. 上游衬底与元器件</span>
+<div class="h-1 w-1 rounded-full bg-outline"></div>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-mono-data-sm text-[10px] text-outline uppercase tracking-wider">03. 中游核心光模块 (焦点)</span>
+<div class="h-1 w-1 rounded-full bg-tertiary"></div>
+</div>
+<div class="flex items-center gap-2 justify-end">
+<span class="font-mono-data-sm text-[10px] text-outline uppercase tracking-wider">04. 下游集群与智算落地</span>
+</div>
+</div>
+<!-- Interactive SVG Causal Flow Rendering -->
+<div class="relative w-full flex-1 z-10 flex flex-col justify-between py-2">
+<!-- Layer 1: Macro & Global Inflows -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+<!-- Node: North American CapEx -->
+<div class="p-3 rounded bg-surface-container-low hover:bg-surface-container cursor-pointer transition-all relative">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-caps text-label-caps text-primary uppercase">EXOGENOUS DRIVER</span>
+<span class="font-mono-data-sm text-mono-data-sm text-tertiary">+0.84 Wgt</span>
+</div>
+<div class="font-title-sm text-title-sm text-on-surface font-medium">北美四大云商季度 CapEx 预期</div>
+<div class="mt-2 flex items-center justify-between text-outline font-mono-data-sm text-[10px]">
+<span>MSFT / GOOG / AMZN</span>
+<span class="text-on-surface">领先周期: 45d</span>
+</div>
+<div class="w-full bg-surface-container h-1 rounded mt-2 overflow-hidden">
+<div class="bg-primary h-full w-[84%]"></div>
+</div>
+</div>
+<!-- Node: US 10Y Yield -->
+<div class="p-3 rounded bg-surface-container-low hover:bg-surface-container cursor-pointer transition-all">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-caps text-label-caps text-error uppercase">VALUATION PRESSURE</span>
+<span class="font-mono-data-sm text-mono-data-sm text-error">-0.32 Wgt</span>
+</div>
+<div class="font-title-sm text-title-sm text-on-surface font-medium">美债 10 年期名义收益率 (US10Y)</div>
+<div class="mt-2 flex items-center justify-between text-outline font-mono-data-sm text-[10px]">
+<span>无风险折现率中枢</span>
+<span class="text-on-surface">瞬时传导: 1-3d</span>
+</div>
+<div class="w-full bg-surface-container h-1 rounded mt-2 overflow-hidden">
+<div class="bg-error h-full w-[32%]"></div>
+</div>
+</div>
+<!-- Node: USD/CNY Rate -->
+<div class="p-3 rounded bg-surface-container-low hover:bg-surface-container cursor-pointer transition-all">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-caps text-label-caps text-tertiary uppercase">FX SENSITIVITY</span>
+<span class="font-mono-data-sm text-mono-data-sm text-tertiary">+0.58 Wgt</span>
+</div>
+<div class="font-title-sm text-title-sm text-on-surface font-medium">离岸人民币汇率 (USD/CNH)</div>
+<div class="mt-2 flex items-center justify-between text-outline font-mono-data-sm text-[10px]">
+<span>海外业务毛利增益</span>
+<span class="text-on-surface">结算滞后: 30d</span>
+</div>
+<div class="w-full bg-surface-container h-1 rounded mt-2 overflow-hidden">
+<div class="bg-tertiary h-full w-[58%]"></div>
+</div>
+</div>
+</div>
+<!-- Hairline SVG Connector Matrix -->
+<div class="w-full my-3 h-20 relative">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 800 80">
+<!-- Causal links from Drivers to Upstream/Midstream -->
+<path d="M 130 5 C 130 45, 220 35, 220 75" fill="none" stroke="rgba(180, 197, 255, 0.4)" stroke-dasharray="2 2" stroke-width="1.2"></path>
+<path d="M 130 5 C 130 50, 400 30, 400 75" fill="none" stroke="rgba(180, 197, 255, 0.85)" stroke-width="1.5"></path>
+<path d="M 400 5 C 400 40, 400 40, 400 75" fill="none" stroke="rgba(255, 180, 171, 0.4)" stroke-dasharray="3 3" stroke-width="1"></path>
+<path d="M 670 5 C 670 45, 420 40, 420 75" fill="none" stroke="rgba(78, 222, 163, 0.5)" stroke-width="1.2"></path>
+<!-- Transmission Flow Indicators -->
+<circle cx="265" cy="40" fill="#b4c5ff" r="2.5"></circle>
+<circle cx="400" cy="42" fill="#b4c5ff" r="3"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<span class="px-2 py-0.5 rounded bg-surface-container-high font-mono-data-sm text-[9px] text-outline">VAR Granger Causal Projection: t - 45d ──&gt; t0</span>
+</div>
+</div>
+<!-- Layer 2: Upstream & Midstream Fabric -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+<!-- Upstream Node Card -->
+<div class="p-3.5 rounded bg-surface-container border-0 hover:bg-surface-bright cursor-pointer transition-all flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-mono-data-sm text-mono-data-sm text-outline">UPSTREAM · 衬底与光芯片</span>
+<span class="text-[10px] font-mono-data-sm text-on-surface bg-surface-container-lowest px-1.5 py-0.5 rounded">600459.SH</span>
+</div>
+<div class="flex items-baseline justify-between">
+<span class="font-headline-md text-headline-md text-on-surface">云南锗业 (InP 晶圆)</span>
+<span class="font-mono-data-sm text-mono-data-sm text-tertiary">Beta 1.18</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">磷化铟光通信衬底高纯提取。作为光芯片核心衬底，其交期对中游产能具备显著先行指引。</p>
+<div class="pt-2 flex items-center justify-between font-mono-data-sm text-[10px] text-outline">
+<span>因果传导权重: <strong class="text-on-surface">0.78</strong></span>
+<span>滞后: 30 交易日</span>
+</div>
+</div>
+<!-- Active Target Node: Zhongji Innolight (FOCAL NODE) -->
+<div class="p-4 rounded-lg bg-surface-container-high hover:bg-surface-variant cursor-pointer transition-all shadow-md relative group">
+<!-- Focal Indicator Pill -->
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-caps text-label-caps text-primary tracking-wider uppercase">FOCAL NODE · 光模块中枢</span>
+</div>
+<span class="font-mono-data-sm text-mono-data-sm text-on-primary bg-primary-container px-2 py-0.5 rounded">300308.SZ</span>
+</div>
+<div class="flex items-baseline justify-between">
+<div class="font-display-lg text-display-lg text-on-surface font-semibold tracking-tight">中际旭创</div>
+<span class="font-mono-data-lg text-mono-data-lg text-tertiary font-medium">¥142.80</span>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-3 p-2 rounded bg-surface-container-lowest">
+<div>
+<div class="font-mono-data-sm text-[10px] text-outline">流通市值</div>
+<div class="font-mono-data-sm text-mono-data-sm text-on-surface font-medium">1,138.4 亿</div>
+</div>
+<div>
+<div class="font-mono-data-sm text-[10px] text-outline">800G/1.6T 营收敞口</div>
+<div class="font-mono-data-sm text-mono-data-sm text-primary font-medium">78.4% (Tier-1)</div>
+</div>
+</div>
+<!-- Transmission Arrow Callout -->
+<div class="mt-3 flex items-center justify-between text-outline font-mono-data-sm text-[11px]">
+<span class="flex items-center gap-1 text-tertiary">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> 综合因果中枢评分: 0.92
+                </span>
+<span class="text-primary font-medium">当前被选定 ◉</span>
+</div>
+</div>
+<!-- Peer Node: Eoptolink -->
+<div class="p-3.5 rounded bg-surface-container hover:bg-surface-bright cursor-pointer transition-all flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-mono-data-sm text-mono-data-sm text-outline">MIDSTREAM · 高速光模块</span>
+<span class="text-[10px] font-mono-data-sm text-on-surface bg-surface-container-lowest px-1.5 py-0.5 rounded">300502.SZ</span>
+</div>
+<div class="flex items-baseline justify-between">
+<span class="font-headline-md text-headline-md text-on-surface">新易盛</span>
+<span class="font-mono-data-sm text-mono-data-sm text-tertiary">Beta 1.34</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">LPO / Silicon Photonics 方案研发落地，与海外 ASIC 方案适配性极高。</p>
+<div class="pt-2 flex items-center justify-between font-mono-data-sm text-[10px] text-outline">
+<span>因果传导权重: <strong class="text-on-surface">0.89</strong></span>
+<span>滞后: 15 交易日</span>
+</div>
+</div>
+</div>
+<!-- Hairline SVG Connector Matrix Outflow -->
+<div class="w-full my-3 h-16 relative">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 800 64">
+<path d="M 400 4 C 400 35, 220 30, 220 60" fill="none" stroke="rgba(180, 197, 255, 0.7)" stroke-width="1.3"></path>
+<path d="M 400 4 C 400 40, 400 35, 400 60" fill="none" stroke="rgba(78, 222, 163, 0.8)" stroke-width="1.5"></path>
+<path d="M 400 4 C 400 35, 600 30, 600 60" fill="none" stroke="rgba(180, 197, 255, 0.4)" stroke-dasharray="3 3" stroke-width="1"></path>
+<circle cx="310" cy="32" fill="#4edea3" r="2.5"></circle>
+<circle cx="400" cy="34" fill="#4edea3" r="3"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<span class="px-2 py-0.5 rounded bg-surface-container-high font-mono-data-sm text-[9px] text-outline">下行产业链辐射: 高频高速 PCB &amp; 智算算力总装集成 (Δt = 15-20d)</span>
+</div>
+</div>
+<!-- Layer 3: Downstream & Integration -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+<!-- Downstream PCB -->
+<div class="p-3 rounded bg-surface-container-low hover:bg-surface-container cursor-pointer transition-all">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-caps text-label-caps text-outline uppercase">DOWNSTREAM · HIGH-FREQ PCB</span>
+<span class="font-mono-data-sm text-mono-data-sm text-on-surface">002463.SZ</span>
+</div>
+<div class="font-title-sm text-title-sm text-on-surface font-medium">沪电股份 (高阶交换机板)</div>
+<div class="mt-2 flex items-center justify-between text-outline font-mono-data-sm text-[10px]">
+<span>传导权重: 0.71</span>
+<span class="text-tertiary">同步/滞后: 12d</span>
+</div>
+</div>
+<!-- Downstream Server Cluster -->
+<div class="p-3 rounded bg-surface-container-low hover:bg-surface-container cursor-pointer transition-all">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-caps text-label-caps text-outline uppercase">COMPUTE CLUSTERS</span>
+<span class="font-mono-data-sm text-mono-data-sm text-on-surface">000977.SZ</span>
+</div>
+<div class="font-title-sm text-title-sm text-on-surface font-medium">浪潮信息 (AI 服务器总装)</div>
+<div class="mt-2 flex items-center justify-between text-outline font-mono-data-sm text-[10px]">
+<span>传导权重: 0.65</span>
+<span class="text-tertiary">滞后: 22d</span>
+</div>
+</div>
+<!-- Downstream National Supercomputing -->
+<div class="p-3 rounded bg-surface-container-low hover:bg-surface-container cursor-pointer transition-all">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-caps text-label-caps text-outline uppercase">DOMESTIC COMPUTE INFRA</span>
+<span class="font-mono-data-sm text-mono-data-sm text-on-surface">603019.SH</span>
+</div>
+<div class="font-title-sm text-title-sm text-on-surface font-medium">中科曙光 (智算基础设施)</div>
+<div class="mt-2 flex items-center justify-between text-outline font-mono-data-sm text-[10px]">
+<span>传导权重: 0.54</span>
+<span class="text-tertiary">滞后: 35d</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Canvas Footer / Interaction Legend -->
+<div class="pt-3 flex flex-wrap items-center justify-between gap-3 text-outline font-mono-data-sm text-[10px] z-10">
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1.5"><span class="w-2 h-0.5 bg-primary"></span>实线: 强 Granger 因果关系 (&gt;0.70)</span>
+<span class="flex items-center gap-1.5"><span class="w-2 h-0.5 border-t border-dashed border-outline"></span>虚线: 间接估值传导 / 宏观压制</span>
+<span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>正相关弹性</span>
+<span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-error"></span>负相关压制</span>
+</div>
+<div>拓扑矩阵更新于 15:30 收盘后 L2 聚类演算 · 状态: 确定性收敛</div>
+</div>
+</div>
+<!-- Right Panel: Causal Transmission Rigor & Alpha Factor Extraction (30% = 4 cols) -->
+<div class="lg:col-span-4 flex flex-col gap-4">
+<!-- Target Detail Inspector Card -->
+<div class="p-5 rounded-lg bg-surface-container-low flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">account_tree</span>
+<span class="font-title-sm text-title-sm text-on-surface font-medium">节点因果流向审计</span>
+</div>
+<span class="font-mono-data-sm text-mono-data-sm text-outline">ID: 300308.SZ</span>
+</div>
+<!-- Header Metrics -->
+<div class="p-3 rounded bg-surface-container-lowest flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface font-medium">中际旭创 (Innolight Corp.)</span>
+<span class="px-1.5 py-0.5 rounded bg-tertiary-container text-on-tertiary-container font-mono-data-sm text-[10px]">α 敏感核心度 0.94</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">
+              该节点在当前 CPO 拓扑中呈现极高“入度汇聚”与“出度扩散”，属典型产业链咽喉节点 (Bottle-neck Hub)。
+            </div>
+</div>
+<!-- Inflow & Outflow Vector Breakdown -->
+<div class="flex flex-col gap-3">
+<div class="font-label-caps text-label-caps text-outline uppercase">CAUSAL INFLOW (上游与驱动传入)</div>
+<div class="p-2.5 rounded bg-surface-container-lowest flex flex-col gap-1.5">
+<div class="flex items-center justify-between font-mono-data-sm text-mono-data-sm">
+<span class="text-on-surface">北美四大云厂商 CapEx</span>
+<span class="text-tertiary">+0.84 (Lead 45d)</span>
+</div>
+<div class="w-full bg-surface-container h-1 rounded overflow-hidden">
+<div class="bg-tertiary h-full w-[84%]"></div>
+</div>
+<div class="flex justify-between text-[10px] font-mono-data-sm text-outline">
+<span>因果显著性: F=18.42 (p=0.0002)</span>
+<span>稳态传递率: 87%</span>
+</div>
+</div>
+<div class="p-2.5 rounded bg-surface-container-lowest flex flex-col gap-1.5">
+<div class="flex items-center justify-between font-mono-data-sm text-mono-data-sm">
+<span class="text-on-surface">光芯片制造/晶圆交付良率</span>
+<span class="text-tertiary">+0.62 (Lead 30d)</span>
+</div>
+<div class="w-full bg-surface-container h-1 rounded overflow-hidden">
+<div class="bg-primary h-full w-[62%]"></div>
+</div>
+<div class="flex justify-between text-[10px] font-mono-data-sm text-outline">
+<span>云南锗业 / 天孚通信传导</span>
+<span>弹性系数: β=0.48</span>
+</div>
+</div>
+<div class="font-label-caps text-label-caps text-outline uppercase mt-1">CAUSAL OUTFLOW (下游辐射推演)</div>
+<div class="p-2.5 rounded bg-surface-container-lowest flex flex-col gap-1.5">
+<div class="flex items-center justify-between font-mono-data-sm text-mono-data-sm">
+<span class="text-on-surface">沪电股份 (高频 PCB 采购需求)</span>
+<span class="text-primary">+0.71 (Lead 12d)</span>
+</div>
+<div class="w-full bg-surface-container h-1 rounded overflow-hidden">
+<div class="bg-primary h-full w-[71%]"></div>
+</div>
+<div class="flex justify-between text-[10px] font-mono-data-sm text-outline">
+<span>物料采购单滞后确认</span>
+<span>置信区间: ±3.8%</span>
+</div>
+</div>
+</div>
+<!-- Macro Regime Sensitivity Matrix -->
+<div class="pt-2 flex flex-col gap-2.5">
+<div class="font-label-caps text-label-caps text-outline uppercase">MACRO REGIME SENSITIVITY (宏观情景弹性)</div>
+<div class="grid grid-cols-2 gap-2">
+<div class="p-2.5 rounded bg-surface-container-lowest flex flex-col gap-1">
+<div class="font-mono-data-sm text-[10px] text-outline">美债收益率敏感度</div>
+<div class="font-mono-data-md text-mono-data-md text-error font-medium">-0.32</div>
+<div class="font-body-sm text-[10px] text-outline">高远期估值折现惩罚</div>
+</div>
+<div class="p-2.5 rounded bg-surface-container-lowest flex flex-col gap-1">
+<div class="font-mono-data-sm text-[10px] text-outline">美元汇率敏感度</div>
+<div class="font-mono-data-md text-mono-data-md text-tertiary font-medium">+0.58</div>
+<div class="font-body-sm text-[10px] text-outline">85% 美元计价结算利差</div>
+</div>
+</div>
+</div>
+<!-- Factor Construction Terminal Trigger -->
+<div class="p-3.5 rounded bg-surface-container-highest flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="font-mono-data-sm text-[11px] text-on-surface font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-tertiary">terminal</span>
+                因子生成器：时序超前滞后向量
+              </span>
+<span class="font-mono-data-sm text-[9px] text-outline px-1.5 py-0.5 rounded bg-surface-container-lowest">Ts_LeadLag_Vector</span>
+</div>
+<div class="font-mono-data-sm text-[10px] text-on-surface-variant p-2 rounded bg-surface-container-lowest leading-relaxed overflow-x-auto">
+<code>Alpha_CPO_Lead = DecayLinear(LeadLag_Corr(CapEx_US_QoQ, Ret[300308], lag=45), 10) * Sign(FX_Beta)</code>
+</div>
+<div class="flex flex-col gap-2">
+<button class="w-full py-2 px-3 rounded bg-primary text-on-primary font-body-sm text-body-sm font-medium flex items-center justify-center gap-2 hover:bg-primary/90 transition-all" id="dispatchFactorLab">
+<span class="material-symbols-outlined text-[16px]">bolt</span>
+<span>一键将该传导链提取为 Alpha 因子</span>
+</button>
+<button class="w-full py-1.5 px-3 rounded bg-surface-container-low hover:bg-surface-bright text-on-surface font-body-sm text-body-sm flex items-center justify-center gap-1.5 transition-all">
+<span class="material-symbols-outlined text-[15px] text-outline">science</span>
+<span>发送至因子实验室检验 (IC / IR 回测)</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Empirical Stationarity & Health Verification Card -->
+<div class="p-4 rounded-lg bg-surface-container-lowest flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="font-mono-data-sm text-mono-data-sm text-outline uppercase tracking-wider">因果计量检验报告</span>
+<span class="px-2 py-0.5 rounded font-mono-data-sm text-[10px] bg-tertiary/10 text-tertiary">ADF TEST PASSED</span>
+</div>
+<div class="grid grid-cols-3 gap-2 font-mono-data-sm text-center">
+<div class="p-2 rounded bg-surface-container-low">
+<div class="text-[10px] text-outline">协整秩 (Johansen)</div>
+<div class="text-mono-data-sm text-on-surface font-medium mt-0.5">r = 3</div>
+</div>
+<div class="p-2 rounded bg-surface-container-low">
+<div class="text-[10px] text-outline">AIC 准则极小值</div>
+<div class="text-mono-data-sm text-on-surface font-medium mt-0.5">-14.28</div>
+</div>
+<div class="p-2 rounded bg-surface-container-low">
+<div class="text-[10px] text-outline">残差自相关 (LM)</div>
+<div class="text-mono-data-sm text-tertiary font-medium mt-0.5">0.18 (无偏)</div>
+</div>
+</div>
+<p class="font-body-sm text-[11px] text-outline">
+            注：该链条已排除假相关性 (Spurious Correlation)，经过截面市值中性化与换手率衰减清洗。
+          </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Simple micro-interaction for institutional trigger buttons
+  document.getElementById('extractAlphaBtn')?.addEventListener('click', () => {
+    const btn = document.getElementById('extractAlphaBtn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = `<span class="material-symbols-outlined text-[15px] animate-spin">refresh</span><span>提取中 (构建 AST 节点)...</span>`;
+    btn.classList.add('opacity-80');
+    setTimeout(() => {
+      btn.innerHTML = `<span class="material-symbols-outlined text-[15px]">check</span><span>Alpha_CPO_V1 已入库</span>`;
+      btn.classList.remove('opacity-80');
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+      }, 2500);
+    }, 900);
+  });
+
+  document.getElementById('dispatchFactorLab')?.addEventListener('click', () => {
+    const btn = document.getElementById('dispatchFactorLab');
+    btn.innerHTML = `<span class="material-symbols-outlined text-[16px]">sync</span><span>已推送至回测任务队列 #4902</span>`;
+    setTimeout(() => {
+      btn.innerHTML = `<span class="material-symbols-outlined text-[16px]">bolt</span><span>一键将该传导链提取为 Alpha 因子</span>`;
+    }, 3000);
+  });
+</script></main></div></body></html>
