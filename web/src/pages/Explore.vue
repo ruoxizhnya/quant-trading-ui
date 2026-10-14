@@ -21,11 +21,10 @@ import {
   getExploreStatus,
   startExplore,
   stopExplore,
-  dimensionLabel,
   type AttemptView,
-  type Challenge,
   type ExploreStatus,
 } from '@/api/explore'
+import VerdictPanel from '@/components/validation/VerdictPanel.vue'
 
 // P2-9 裁决的展示口径。
 //
@@ -38,15 +37,6 @@ function probType(p: number): SeverityType {
   if (p < 0.5) return 'warning'
   return 'success'
 }
-
-function challengeType(severity: string): SeverityType {
-  if (severity === 'blocking') return 'error'
-  if (severity === 'warning') return 'warning'
-  return 'default'
-}
-
-// blocking 排最前 —— 它是「这条足以否掉结论」的那一级，不能被 note 埋掉。
-const severityRank: Record<string, number> = { blocking: 0, warning: 1, note: 2 }
 
 // P1-3 观察页：正在试什么 / 结果流 / 当前最优。
 //
@@ -86,11 +76,6 @@ const selected = computed<AttemptView | null>(() => {
   return latest.value
 })
 const verdict = computed(() => selected.value?.verdict ?? null)
-const sortedChallenges = computed<Challenge[]>(() =>
-  [...(verdict.value?.challenges ?? [])].sort(
-    (a, b) => (severityRank[a.severity] ?? 9) - (severityRank[b.severity] ?? 9),
-  ),
-)
 
 function stopTimer() {
   if (timer !== undefined) {
@@ -240,91 +225,14 @@ onUnmounted(stopTimer)
       </NCard>
     </div>
 
-    <!-- 下：验证器裁决 -->
+    <!-- 下：验证器裁决（A-05 横切组件，六维 + 未评估 + 最弱一环 + 因果下注 + 质疑分级） -->
     <NCard title="验证器裁决" size="small" class="verdict-card">
       <template #header-extra>
         <NText depth="3" style="font-size: 12px">
           第 {{ selected?.seq ?? 0 }} 次 · 点结果流里任一行可切换
         </NText>
       </template>
-
-      <NEmpty v-if="!verdict" description="这一条没有裁决 —— 失败的尝试没有可被证伪的东西" />
-
-      <template v-else>
-        <NSpace align="center" :size="24">
-          <NStatistic label="综合概率" :value="verdict.probability" :precision="3" />
-          <NStatistic label="质疑条数" :value="verdict.challenges.length" />
-          <NSpace :vertical="true" :size="4">
-            <NText depth="3" style="font-size: 12px">
-              综合概率取各维最小值 —— 结论受限于最弱的那一环
-            </NText>
-            <NSpace :size="8">
-              <NText depth="3" style="font-size: 12px">最弱维：</NText>
-              <NTag
-                v-if="verdict.weakest"
-                :type="probType(verdict.dimensions[verdict.weakest] ?? 0)"
-                size="small"
-              >
-                {{ dimensionLabel(verdict.weakest) }}
-              </NTag>
-              <NTag v-if="verdict.blocking > 0" type="error" size="small">
-                {{ verdict.blocking }} 条 blocking
-              </NTag>
-            </NSpace>
-          </NSpace>
-        </NSpace>
-
-        <NDivider style="margin: 12px 0" />
-
-        <NSpace :size="8" :wrap="true">
-          <NTag
-            v-for="[dim, p] in Object.entries(verdict.dimensions)"
-            :key="dim"
-            :type="probType(p)"
-            size="small"
-          >
-            {{ dimensionLabel(dim) }} {{ p.toFixed(2) }}
-          </NTag>
-          <!-- 「没查」必须显示成没查，不能省掉 —— 省掉就成了「没问题」 -->
-          <NTag
-            v-for="dim in verdict.unassessed ?? []"
-            :key="dim"
-            size="small"
-            :bordered="false"
-            type="default"
-          >
-            {{ dimensionLabel(dim) }} 未评估
-          </NTag>
-        </NSpace>
-
-        <!-- 因果维：机制是人要读的，但旁边必须写着它赌中了几条 ——
-             只讲机制不下注的故事，等于没讲。 -->
-        <template v-if="verdict.causal">
-          <NDivider style="margin: 12px 0" />
-          <NSpace :vertical="true" :size="4">
-            <NSpace :size="8">
-              <NText depth="3" style="font-size: 12px">机制（模型给的）</NText>
-              <NTag :type="probType(verdict.causal.probability)" size="small">
-                可证伪预测 {{ verdict.causal.testable }} 条 · 应验
-                {{ verdict.causal.passed }} · 被证伪 {{ verdict.causal.failed }}
-              </NTag>
-            </NSpace>
-            <NText depth="2" style="font-size: 13px">{{ verdict.causal.mechanism }}</NText>
-          </NSpace>
-        </template>
-
-        <NDivider style="margin: 12px 0" />
-
-        <NAlert
-          v-for="(c, i) in sortedChallenges"
-          :key="i"
-          :type="challengeType(c.severity)"
-          :title="dimensionLabel(c.dimension)"
-          style="margin-bottom: 8px"
-        >
-          {{ c.message }}
-        </NAlert>
-      </template>
+      <VerdictPanel :verdict="verdict" />
     </NCard>
   </div>
 </template>
