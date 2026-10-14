@@ -425,7 +425,7 @@ SVG 呈现属性**不解析 CSS 自定义属性**，直接把 `var()` 塞进 `co
 5. 稿上的湖仓/集群/L2 元素（Parquet、Iceberg、DuckDB、GPU、SLA、Level2 逐笔）**一个都不实现**，grep 为 0。
 6. PIT 时间轴与幸存者偏差两块**保留**（ANNOTATIONS 判为唯一精华），各有一条用例。
 
-### A-08 实施计划（六字段，2026-10-14 起草，**待批准后再动代码**）
+### A-08 实施计划（六字段，2026-10-14 起草 → 同日批准开工：若曦指示「先 sync01 再 A08」）
 
 **① 目标**：`/data-sync` 成为作业控制台 —— 一条可筛可续的队列、一块排程管理、一组真实的
 worker/scheduler 读数，且**屏幕上每个数都能指到一条端点或明写"未摄取"**。
@@ -438,7 +438,7 @@ worker/scheduler 读数，且**屏幕上每个数都能指到一条端点或明�
 | `GET /api/sync/jobs/{id}/progress`（SSE） | 已有 | ✅ `syncJobProgressStreamPath` + store 的 watch/unwatch（全站唯一 SSE 腿） |
 | `/api/sync/schedules` 系 **7 条**（list/get/create/update/delete/toggle/run-now） | 实测 200；后端在 `quant-trading/cmd/data/main.go:149-155`，经 analysis 网关代理可达 | ❌ **`web/src` 对 `schedules` 零命中** ⇒ 这一整块是**纯新增**，不是改造 |
 | `GET /api/sync/workers` | 实测 200（`num_workers:3` + 7 类 registered_types） | ❌ 无消费点 |
-| `GET /api/sync/scheduler/stats` | 实测 200，但 **恒 `{"active_schedules":0,"total_entries":0}`** | ❌ 无消费点。**根因见 core 仓工单 SYNC-01**：`pkg/sync/scheduler.go:47` 的 `Scheduler.Start()` 全仓**零调用方（生产与测试都是 0）** ⇒ cron 从未启动。`active_schedules=0` 与数据一致（唯一那条排程 `is_active:false`），`total_entries=0` 是结构缺陷 |
+| `GET /api/sync/scheduler/stats` | 起草时实测恒 `{"active_schedules":0,"total_entries":0}` | ❌ 无消费点。**根因见 core 仓工单 SYNC-01，已于同日修掉**（`quant-trading` commit `65a31a7`）：`pkg/sync/scheduler.go:47` 的 `Scheduler.Start()` 全仓**零调用方（生产与测试都是 0）** ⇒ cron 从未启动。修后实测：toggle on → `total_entries:1` + `next_runs` 有值；toggle off → `0/0`（见步骤 0 结论 (a)）。⚠️ **0/0 有两种成因（启动失败 vs 确实无 active 排程），后端不区分** —— 已登记，前端不得编诊断文案（§三 跨仓指针 A-08 行） |
 
 页面现状：`pages/DataSync.vue`(34 行) 只是三块拼装 —— `DataSourcePanel`(139) /
 `SyncStatusPanel`(146) / `DataImportForm`(93)；`api/sync.ts` 另有 datasource
@@ -456,6 +456,7 @@ worker/scheduler 读数，且**屏幕上每个数都能指到一条端点或明�
 **④ 约束与非目标**
 
 - **措辞硬约束（SYNC-01 未修前生效）**：排程面板与 stats 读数**不得**出现「调度运行中」「下次执行 …」这类暗示 cron 会在后台触发的文案或字段位。可以显示"已注册 N 条 / 已排定"吗？—— 不行，"排定"就是那个暗示。只允许显示后端**确实量到**的东西：条目数、`is_active` 状态、以及"本环境的调度器未启动（见 core SYNC-01）"这句事实。
+  > ⚠️ **本条已被步骤 0 结论 (a) 改判（2026-10-14，SYNC-01 已修并落 commit `65a31a7`）**：前提「cron 永不触发」不再成立，故「下次执行」这类文案**可以用**——但只在 `is_active=true` 时；替换生效的是步骤 0 (a) 里那条新规则（inactive 不显示 `next_run_at`，因 core SYNC-03 未修）。原文保留是为可追溯：这条约束当初为什么会存在。
 - **不做**：稿上湖仓/集群/L2 全部（Parquet、Iceberg、DuckDB、GPU、SLA 99.999%、Level2 逐笔）—— 断言 5 以 grep 判定；不引入 `Tailwind`/新依赖；不加新端点假设（每条请求都能指到 `cmd/data/main.go` 的注册行或 openapi）；不碰 `docker-compose.yml`；不在前端改 `stats` 字段语义来"让它好看"。
 - **不退化**：`DataSourcePanel` / `DataImportForm` 的现有能力（数据源状态与创建作业）在新 IA 里必须仍有落点，删除任一功能要在本台账写明理由，不静默丢弃。
 - 每条用户可见字符串**不夹 markdown**（A-05/A-06 两次复发的老坑）；大对象用 `shallowRef`；DOM 访问前 `await nextTick()`。
@@ -473,11 +474,60 @@ worker/scheduler 读数，且**屏幕上每个数都能指到一条端点或明�
 
 **⑥ 边界**：只做 `/data-sync` 一屏 + 其 api/store/组件；core 侧 SYNC-01、EQD-P1-2 归 core；V-3 的策略决定若需要测试基础设施改动，落 AUD-61 而不是夹在本任务里。
 
+### A-08 步骤 0 结论（2026-10-14 实测，三件事各自的落笔前结论）
+
+**(a) SYNC-01 已在 A-08 开工前修掉** —— core 仓 commit `65a31a7`（`fix(sync): 调度器接上装配点`）。
+活进程正证据：重建重启 data-service 后日志齐 `scheduler.go:48/:254/:56` 三行；`POST /schedules/1/toggle {active:true}` → `scheduler/stats` 的 `total_entries` **0→1** 且 `next_runs` 出现，toggle 回 `false` → `0/0`（现场已还原，未触发真同步）。
+
+⇒ **原「措辞硬约束」解除**（那条约束的前提「cron 永远不会跑」已不成立）。但实测顶出**一条新的、方向相反的约束**：
+
+> **SYNC-03 实测（同一批 curl）**：toggle 回 `false` 后 `GET /api/sync/schedules/1` 仍返回
+> `is_active:false` **且** `next_run_at:"2026-10-15T09:00:00Z"` —— 停用路径只 `cron.Remove`，不清字段。
+> ⇒ **A-08 前端规则：`is_active=false` 的排程一律不显示 `next_run_at`**（显示它就是把一个不会发生的未来当事实，违愿景原则 4）。
+> 后端真解登记为 core 工单 **SYNC-03**（`quant-trading:docs/TASKS.md` §二·补），前端防御**不代替**它修好后的口径。
+
+**(b) V-3 基线策略：选 (a) mask，不选 (b) 固定 fixture 后端。**
+
+- 理由：`scheduler/stats` 从今天起是**活状态**（排程一注册就变），全页基线原理上不可能复现；(b) 要新搭一套测试后端，属**测试基础设施**，按 §⑥ 归 AUD-61，且无法与本屏改造原子提交。
+- 代价（明写）：被遮的区域**不再有任何像素覆盖** —— 排程卡/队列/告警条三块的颜色回归只剩 A-08 的功能断言（断言 1–3）兜，视觉回归网在这些地方是**主动放弃**的，不是通过。
+- 依赖顺序：mask 需要稳定选择器 ⇒ 步骤 3–5 先落 `data-testid`，再回来遮；遮哪几块、连跑三轮的登记**落 AUD-61 表**，本文件不重复记账（两处各记必漂移）。
+
+**(c) 幸存者偏差块的数据前提：库里真有，HTTP 面上没有。**
+
+| 实测（`stocks` 表，psql `ON_ERROR_STOP=1`） | 读数 |
+|---|---|
+| 总行数 | **5908** |
+| `delist_date IS NOT NULL` | **339**（跨度 `1999-07-12` → `2026-07-30`） |
+| 按 `status` 分组 | `active` 5569 行 / `delist_date` 非空 **0** 条；`delisted` 339 行 / `delist_date` 非空 **339** 条 |
+| 不一致行（有摘牌日却仍标 active） | **0** |
+
+⇒ 数据侧干净可用（列存在且类型是 `date`，`pkg/storage/stocks.go:15 stockColumns` 已把 `delist_date` 读出来，`pkg/domain/market/types.go:49` 用指针区分「未知」与「仍在市」）。
+
+**但**：SPA 唯一的票池读数腿是 `GET /api/stocks/count` → `{count, latest_date}`（`cmd/data/handlers_stocks.go:84-104`，count 是**含已退市**的 5908），analysis 网关**没有**代理带 `status`/`delist_date` 的 `/api/stocks` 列表（`cmd/analysis/handlers_proxy.go` 只登记了 count 一条）。
+
+⇒ 结论两条：
+1. 幸存者块**这次不显示任何拆分数**，只显示「后端未暴露按状态拆分的读数」这一事实 + 指向 core 需求单；**不**在前端偷偷 `5908 - 339` 之类自算（那是在客户端重建后端语义，两处真相）。
+2. 现有 `count` 若出现在界面上，标签必须写「全部记录（含已退市）」——把 5908 叫「在市股票数」就是假数字。
+3. 需求以**只登记不指挥**的方式提给 core（工单 **DATA-02**，见本节末「向 core 提的需求」）：要一条按状态拆分/含摘牌日的只读腿。**具体形状由 core 定**，前端不干预后端设计（若曦 2026-10-14 准则原文）。
+
 **实测边界（提前声明，避免事后写假结论）**：排程 toggle 之后 `scheduler/stats` 的
 `active_schedules` **会变 1**（`ToggleSchedule` 真的把条目加进了 cron），但因为没有
 `cron.Start()`，那一格**永远不会跑**。所以 A-08 若用"stats 计数变化"当验收，会在缺陷状态下
 照样变绿 —— 验收必须落在「**是否出现了由排程产生的作业行**」这种可证伪的事实上，这条正是
 core SYNC-01 的验收第 1、2 条要防的形状，本任务不能替它绕过。
+
+> **改判后的形状（2026-10-14，步骤 0 结论 (a)）**：`cron.Start()` 现在有调用方了，所以这条**不再是缺陷**
+> —— 但它作为**方法论**保留，且对 A-08 依然生效，只是方向变了：
+> toggle 之后 `total_entries` 变 1 只证明「注册进了 cron」，**不证明「会跑」**（cron 表达式指向的未来时刻
+> 在测试窗口内不会到）。⇒ A-08 断言 2 里「排程真的产生作业」这一腿必须走 **`POST /schedules/:id/run`（run-now）**
+> ——它同步创建作业行（实测返回 `202 {message, job_id, status}`），是唯一能在测试窗口内证伪的判据；
+> 用「等 toggle 后出现作业行」当判据是把验收挂在一条 09:00 的时间上，等于没有判据。
+>
+> ✅ **run-now 那条已经当场量过，不是读码推测**（2026-10-14 17:41Z，经网关 :8085）：
+> `POST /api/sync/schedules/1/run` → `202 {"job_id":"scheduled-1791999687307345938","message":"schedule triggered","status":"pending"}`；
+> 1.6 秒后 `GET /api/sync/jobs/{id}` → `status:"completed"`、`progress_percent:100`、`result:{count:242, symbols:1}`。
+> **副作用留痕（明写不藏）**：这次真取数向 `ohlcv_daily_qfq` 写入 000001.SZ 2024 年 **242** 行真实日线；
+> 作业行 `scheduled-1791999687307345938` 留在 `sync_jobs` 里，**正好充当 A-08 队列区 e2e 的真作业 fixture**。
 
 ## A-09 `execution` 重画为纸交易观测台（F16）
 
