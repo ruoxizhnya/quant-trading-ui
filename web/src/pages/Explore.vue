@@ -104,6 +104,45 @@ function poll(): Promise<ExploreStatus> {
   })
 }
 
+/**
+ * 刷新节奏。一次尝试要跑「意图解析 → 表达式 → 回测 → 六维校验」，实测 90 秒
+ * 以上；1 秒一跳看不到任何新东西，却把 analysis-service 每人 100 次/分钟的
+ * 预算吃掉 60 次（同一 IP 还要和页面上其余请求共享）。实测就是这样撞出 429。
+ */
+const POLL_MS = 2500
+
+/** 连续失败到第几次才认定真断线（约 15 秒），此前三次以内按瞬时抖动处理 */
+const MAX_POLL_FAILS = 6
+
+let pollFails = 0
+
+/**
+ * 观察循环的失败处理。**一次瞬时失败绝不许停掉轮询**：这个页面存在的唯一理由
+ * 是"看得见他在干什么"，循环一停，窗口就永久瞎在最后一次成功的那一帧上，
+ * 而用户看不出自己看的是旧的。真断线（连续失败）才停，并且把"已停止"说清楚。
+ */
+function startPolling() {
+  stopTimer()
+  pollFails = 0
+  timer = window.setInterval(() => {
+    poll().then(
+      () => {
+        pollFails = 0
+        error.value = ''
+      },
+      (e: unknown) => {
+        const msg = e instanceof Error ? e.message : String(e)
+        if (++pollFails < MAX_POLL_FAILS) {
+          error.value = `状态刷新失败，正在重试（第 ${pollFails} 次）：${msg}`
+          return
+        }
+        error.value = `状态刷新已停止（连续 ${pollFails} 次失败）：${msg} —— 屏幕上的是最后一次成功拿到的进展，可能已经过期。`
+        stopTimer()
+      },
+    )
+  }, POLL_MS)
+}
+
 async function run() {
   error.value = ''
   busy.value = true
@@ -113,15 +152,7 @@ async function run() {
     const res = await startExplore({ description: description.value, max_tries: maxTries.value })
     runID.value = res.run_id
     const s = await poll()
-    if (s.running) {
-      stopTimer()
-      timer = window.setInterval(() => {
-        poll().catch((e: unknown) => {
-          error.value = e instanceof Error ? e.message : String(e)
-          stopTimer()
-        })
-      }, 1000)
-    }
+    if (s.running) startPolling()
   } catch (e: unknown) {
     error.value = e instanceof Error ? e.message : String(e)
   } finally {
