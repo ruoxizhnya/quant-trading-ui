@@ -30,6 +30,7 @@ import {
   toggleSyncSchedule,
   updateSyncSchedule,
 } from '@/api/sync'
+import { apiMessage } from '@/utils/apiMessage'
 
 function isJobActive(job: SyncJob): boolean {
   return job.status === 'pending' || job.status === 'running' || job.status === 'retrying'
@@ -100,7 +101,7 @@ export const useSyncStore = defineStore('sync', () => {
     try {
       dataSourceStatus.value = await getDataSourceStatus()
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch data source status'
+      error.value = apiMessage(err, 'Failed to fetch data source status')
       throw err
     } finally {
       isLoading.value = false
@@ -111,7 +112,7 @@ export const useSyncStore = defineStore('sync', () => {
     try {
       dataSourceHealth.value = await getDataSourceHealth()
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch data source health'
+      error.value = apiMessage(err, 'Failed to fetch data source health')
       throw err
     }
   }
@@ -123,7 +124,7 @@ export const useSyncStore = defineStore('sync', () => {
       const resp = await listSyncJobs(status, limit)
       jobs.value = resp.jobs
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch sync jobs'
+      error.value = apiMessage(err, 'Failed to fetch sync jobs')
       throw err
     } finally {
       isLoading.value = false
@@ -163,7 +164,7 @@ export const useSyncStore = defineStore('sync', () => {
       watchJob(resp.job_id)
       return resp.job_id
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to create sync job'
+      error.value = apiMessage(err, 'Failed to create sync job')
       throw err
     } finally {
       isLoading.value = false
@@ -194,7 +195,7 @@ export const useSyncStore = defineStore('sync', () => {
       await cancelSyncJob(jobId)
       await fetchSyncJobs()
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to cancel sync job'
+      error.value = apiMessage(err, 'Failed to cancel sync job')
       throw err
     }
   }
@@ -206,7 +207,7 @@ export const useSyncStore = defineStore('sync', () => {
       await fetchSyncJobs()
       watchJob(jobId)
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to retry sync job'
+      error.value = apiMessage(err, 'Failed to retry sync job')
       throw err
     }
   }
@@ -271,7 +272,7 @@ export const useSyncStore = defineStore('sync', () => {
       const resp = await listSyncSchedules(activeOnly)
       schedules.value = resp.schedules ?? []
     } catch (err) {
-      schedulesError.value = err instanceof Error ? err.message : 'Failed to fetch schedules'
+      schedulesError.value = apiMessage(err, 'Failed to fetch schedules')
       throw err
     } finally {
       schedulesLoading.value = false
@@ -287,7 +288,7 @@ export const useSyncStore = defineStore('sync', () => {
       await fetchStats()
       return created.id
     } catch (err) {
-      schedulesError.value = err instanceof Error ? err.message : 'Failed to create schedule'
+      schedulesError.value = apiMessage(err, 'Failed to create schedule')
       throw err
     }
   }
@@ -299,7 +300,7 @@ export const useSyncStore = defineStore('sync', () => {
       await fetchSchedules()
       await fetchStats()
     } catch (err) {
-      schedulesError.value = err instanceof Error ? err.message : 'Failed to update schedule'
+      schedulesError.value = apiMessage(err, 'Failed to update schedule')
       throw err
     }
   }
@@ -311,7 +312,7 @@ export const useSyncStore = defineStore('sync', () => {
       await fetchSchedules()
       await fetchStats()
     } catch (err) {
-      schedulesError.value = err instanceof Error ? err.message : 'Failed to delete schedule'
+      schedulesError.value = apiMessage(err, 'Failed to delete schedule')
       throw err
     }
   }
@@ -323,7 +324,7 @@ export const useSyncStore = defineStore('sync', () => {
       await fetchSchedules()
       await fetchStats()
     } catch (err) {
-      schedulesError.value = err instanceof Error ? err.message : 'Failed to toggle schedule'
+      schedulesError.value = apiMessage(err, 'Failed to toggle schedule')
       throw err
     }
   }
@@ -333,16 +334,20 @@ export const useSyncStore = defineStore('sync', () => {
    * returns its id, so the queue — not a toast — is where the result is shown.
    * `watchJob` then rides the same single SSE leg the jobs already use; the
    * schedule area does **not** get its own stream (A-08 断言 4).
+   *
+   * 这里**不重读整张列表**：浏览器实测（2026-10-14）原先的做法让队列从 50 行缩回
+   * 20 行、用户选的筛选也一并掉了 —— 排程面板不该知道自己没有的队列筛选状态，
+   * 正确形状是把新作业这一条 upsert 进去（refreshJob 走同一条 upsert 口径）。
    */
   async function runScheduleNow(id: number): Promise<string> {
     schedulesError.value = null
     try {
       const resp = await runSyncScheduleNow(id)
-      await fetchSyncJobs()
+      await refreshJob(resp.job_id).catch(() => undefined)
       watchJob(resp.job_id)
       return resp.job_id
     } catch (err) {
-      schedulesError.value = err instanceof Error ? err.message : 'Failed to trigger schedule'
+      schedulesError.value = apiMessage(err, 'Failed to trigger schedule')
       throw err
     }
   }
@@ -363,7 +368,7 @@ export const useSyncStore = defineStore('sync', () => {
       | PromiseRejectedResult
       | undefined
     if (failed) {
-      statsError.value = failed.reason instanceof Error ? failed.reason.message : 'Failed to fetch sync stats'
+      statsError.value = apiMessage(failed.reason, 'Failed to fetch sync stats')
     }
   }
 

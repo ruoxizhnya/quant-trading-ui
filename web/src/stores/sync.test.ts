@@ -309,15 +309,37 @@ describe('排程变更动作的编排（断言 2）', () => {
 })
 
 describe('runScheduleNow（断言 2 的可证伪腿）', () => {
-  it('返回 job_id、重读队列，并只开一条作业进度 SSE 腿', async () => {
+  it('返回 job_id，把那条新作业 upsert 进队列，并只开一条作业进度 SSE 腿', async () => {
     api.runSyncScheduleNow.mockResolvedValue({ message: 'schedule triggered', job_id: 'scheduled-7', status: 'pending' })
-    api.listSyncJobs.mockResolvedValue({ jobs: [makeJob({ id: 'scheduled-7' })], count: 1 })
+    api.getSyncJob.mockResolvedValue(makeJob({ id: 'scheduled-7', status: 'pending' }))
     const store = useSyncStore()
     const id = await store.runScheduleNow(7)
     expect(id).toBe('scheduled-7')
-    expect(api.listSyncJobs).toHaveBeenCalledTimes(1)
+    expect(api.getSyncJob).toHaveBeenCalledWith('scheduled-7')
+    expect(store.jobs.map((j) => j.id)).toEqual(['scheduled-7'])
     // 全站唯一 SSE 腿：排程区不得另开通道（A-08 断言 4）。
     expect(FakeEventSource.instances.map((e) => e.url)).toEqual(['/api/sync/jobs/scheduled-7/progress'])
+  })
+
+  it('不重读整张列表 —— 否则用户看到的队列会从 50 行缩回默认页（2026-10-14 浏览器实测抓到的形状）', async () => {
+    api.listSyncJobs.mockResolvedValue({ jobs: [makeJob({ id: 'existing' })], count: 1 })
+    api.runSyncScheduleNow.mockResolvedValue({ message: 'schedule triggered', job_id: 'scheduled-8', status: 'pending' })
+    api.getSyncJob.mockResolvedValue(makeJob({ id: 'scheduled-8', status: 'pending' }))
+    const store = useSyncStore()
+    await store.fetchSyncJobs(undefined, 50)
+    api.listSyncJobs.mockClear()
+    await store.runScheduleNow(8)
+    expect(api.listSyncJobs).not.toHaveBeenCalled()
+    // 原有行仍在，新行在队首
+    expect(store.jobs.map((j) => j.id)).toEqual(['scheduled-8', 'existing'])
+  })
+
+  it('新作业单条读不到时不谎报：run-now 仍返回 id，队列保持原样', async () => {
+    api.runSyncScheduleNow.mockResolvedValue({ message: 'schedule triggered', job_id: 'scheduled-9', status: 'pending' })
+    api.getSyncJob.mockRejectedValue(new Error('job not found: scheduled-9'))
+    const store = useSyncStore()
+    await expect(store.runScheduleNow(9)).resolves.toBe('scheduled-9')
+    expect(store.jobs).toEqual([])
   })
 })
 

@@ -76,7 +76,7 @@ async function handleImport() {
         .map((s) => s.trim())
         .filter((s) => s !== ''),
     })
-    successMessage.value = `已创建同步任务：${ids.join('、')}，可在上方同步状态中查看进度`
+    successMessage.value = `已创建同步任务：${ids.join('、')}，可在上方作业队列中查看进度`
   } catch {
     // error state is rendered by the panel itself
   }
