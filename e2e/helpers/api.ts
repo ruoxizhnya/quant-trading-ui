@@ -101,6 +101,32 @@ export async function getJsonWithBackoff(
   return res;
 }
 
+/**
+ * POST 版的 429 退避，边界与 getJsonWithBackoff 完全一致（只认 429、预算 < 30s 超时）。
+ *
+ * 为什么必须有它：造真作业（A-08 断言 1 的 cancel 腿）是唯一走写的取证请求，
+ * 而 GET 那套退避帮不到它 —— 没有退避时它会先撞上"429 红"，
+ * 把一个本来就够窄的限流问题伪装成"前端造不出作业"的缺陷。
+ *
+ * ⚠️ 只给**幂等或可接受重复**的写用。非幂等写（下单、扣款那类）重试会产生真的
+ * 第二份副作用，那种请求宁可红也不要退避。
+ */
+export async function postJsonWithBackoff(
+  ctx: APIRequestContext,
+  path: string,
+  data: unknown,
+  opts: { tries?: number; baseDelayMs?: number; timeoutMs?: number } = {}
+): Promise<APIResponse> {
+  const tries = opts.tries ?? 4;
+  const base = opts.baseDelayMs ?? 1500;
+  let res = await ctx.post(path, { data, timeout: opts.timeoutMs ?? 10000 });
+  for (let i = 1; i < tries && res.status() === 429; i++) {
+    await new Promise(r => setTimeout(r, base * i));
+    res = await ctx.post(path, { data, timeout: opts.timeoutMs ?? 10000 });
+  }
+  return res;
+}
+
 export async function waitForBackendReady(timeoutMs = 60000): Promise<boolean> {
   const ctx = await apiRequest();
   const start = Date.now();
