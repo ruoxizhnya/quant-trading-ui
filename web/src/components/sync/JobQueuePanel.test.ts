@@ -123,6 +123,33 @@ describe('队列列表', () => {
   })
 })
 
+describe('空态的三句话（读到空 / 没读到 / 被筛掉）', () => {
+  it('首屏就读不到时说"队列未读取"，不能说"没有作业"', async () => {
+    // 这是 A-08 断言 3 那条纪律在队列区的反面：0/空是合法读数，
+    // 拿它当"没读到"的占位，等于把一次接口失败说成这个环境一条作业都没有。
+    api.listSyncJobs.mockRejectedValue(new Error('connection refused'))
+    const w = mount(JobQueuePanel, mountOptions)
+    await flushPromises()
+    expect(w.find('[data-testid="queue-empty"]').text()).toBe('队列未读取')
+    w.unmount()
+  })
+
+  it('读到空列表时说"当前筛选条件下没有作业"，不改口成"未读取"', async () => {
+    const w = await mountPanel([])
+    expect(w.find('[data-testid="queue-empty"]').text()).toBe('当前筛选条件下没有作业')
+    w.unmount()
+  })
+
+  it('被类型筛选挡掉时说清挡掉的是哪个类型、在多少条里找的', async () => {
+    const w = await mountPanel([j({ id: 'a', job_type: 'ohlcv' })])
+    const selects = w.findAllComponents(NSelect)
+    await selects[1].vm.$emit('update:value', 'ohlcv_all')
+    await flushPromises()
+    expect(w.find('[data-testid="queue-empty"]').text()).toContain('1 条里没有 ohlcv_all 类型')
+    w.unmount()
+  })
+})
+
 describe('详情抽屉', () => {
   it('点详情会回读那一条作业（GET /api/sync/jobs/:id），不是只用列表里的缓存', async () => {
     api.getSyncJob.mockResolvedValue(

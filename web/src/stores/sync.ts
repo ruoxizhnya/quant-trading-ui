@@ -55,6 +55,10 @@ export const useSyncStore = defineStore('sync', () => {
   const dataSourceStatus = ref<DataSourceStatus | null>(null)
   const dataSourceHealth = ref<DataSourceHealth | null>(null)
   const jobs = ref<SyncJob[]>([])
+  // 与 schedulesLoaded 同一纪律：空列表是读到了「没有」，读取失败是「没读到」。
+  // 队列区原先只用 store.error 区分，于是失败后 visibleJobs 为空照样渲染
+  // "当前筛选条件下没有作业" —— 那是一句把故障说成空态的假话。
+  const jobsLoaded = ref(false)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
   const sseConnected = ref(false)
@@ -126,7 +130,11 @@ export const useSyncStore = defineStore('sync', () => {
     error.value = null
     try {
       const resp = await listSyncJobs(status, limit)
-      jobs.value = resp.jobs
+      // Go 侧空结果编码成 `jobs: null`（实测 `?status=pending` → `{"count":0,"jobs":null}`），
+      // 而类型写的是 SyncJob[]。塌成空数组是 fail-closed：null 会让 queueLength 的
+      // .filter 直接 TypeError，把整块队列面板变成白屏 —— 而这正是最常见的空态。
+      jobs.value = resp.jobs ?? []
+      jobsLoaded.value = true
     } catch (err) {
       error.value = apiMessage(err, 'Failed to fetch sync jobs')
       throw err
@@ -416,6 +424,7 @@ export const useSyncStore = defineStore('sync', () => {
     dataSourceStatus,
     dataSourceHealth,
     jobs,
+    jobsLoaded,
     isLoading,
     error,
     sseConnected,

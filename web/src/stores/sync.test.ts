@@ -517,6 +517,32 @@ describe('fetchSyncJobs 的状态筛选走后端参数（不是前端挑）', ()
     await store.fetchSyncJobs()
     expect(api.listSyncJobs).toHaveBeenLastCalledWith(undefined, undefined)
   })
+
+  it('空队列的真实回包是 {"count":0,"jobs":null}（2026-10-14 curl 实测），队列得塌成空数组', async () => {
+    // Go 侧 `Jobs []*SyncJob` 为 nil 时 json 编码出 null 而不是 []，前端类型却写着
+    // SyncJob[]。按 null 存进去，queueLength 的 .filter 立刻 TypeError —— 整块队列
+    // 面板白屏，而这恰恰是"筛一个没有活作业的状态"这种最常见的空态。
+    api.listSyncJobs.mockResolvedValue({ count: 0, jobs: null as unknown as [] })
+    const store = useSyncStore()
+    await store.fetchSyncJobs('pending', 50)
+    expect(store.jobs).toEqual([])
+    expect(store.queueLength).toBe(0)
+    expect(store.activeJob).toBeNull()
+  })
+
+  it('jobsLoaded：读到空表算已读取，读取失败不算（空态文案分这两句）', async () => {
+    api.listSyncJobs.mockResolvedValue({ count: 0, jobs: null as unknown as [] })
+    const store = useSyncStore()
+    expect(store.jobsLoaded).toBe(false)
+    await store.fetchSyncJobs()
+    expect(store.jobsLoaded).toBe(true)
+
+    setActivePinia(createPinia())
+    api.listSyncJobs.mockRejectedValue(new Error('队列读取失败'))
+    const failed = useSyncStore()
+    await expect(failed.fetchSyncJobs()).rejects.toThrow('队列读取失败')
+    expect(failed.jobsLoaded).toBe(false)
+  })
 })
 
 describe('visibleNextRun（core SYNC-03 的前端防御）', () => {

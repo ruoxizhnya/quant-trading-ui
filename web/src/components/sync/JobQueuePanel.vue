@@ -51,7 +51,7 @@
 
     <NEmpty
       v-if="visibleJobs.length === 0 && !store.isLoading"
-      description="当前筛选条件下没有作业"
+      :description="queueEmptyText"
       data-testid="queue-empty"
     />
 
@@ -225,6 +225,17 @@ const typeOptions = computed(() =>
 const visibleJobs = computed(() =>
   store.jobs.filter((job) => !typeFilter.value || job.job_type === typeFilter.value),
 )
+
+/**
+ * 空态的三句话不能合成一句：**没读到**（首屏就失败）/ 读到了确实没有 /
+ * 被类型筛选挡掉了。前两句混写等于把一次接口失败说成"这个环境一条作业都没有"，
+ * 而 0 是一个合法的队列读数（与读数区、排程区同一纪律，A-08 断言 3）。
+ */
+const queueEmptyText = computed(() => {
+  if (!store.jobsLoaded) return '队列未读取'
+  if (typeFilter.value) return `已加载的 ${store.jobs.length} 条里没有 ${typeFilter.value} 类型`
+  return '当前筛选条件下没有作业'
+})
 
 const selectedJob = computed<SyncJob | null>(
   () => store.jobs.find((job) => job.id === selectedId.value) ?? null,
