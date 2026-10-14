@@ -1,11 +1,12 @@
 // FactorCitation.test.ts — TASKS.md P5-3 (L0 citation coordinates on the
-// factor face)
+// factor face) + A-06 (质问入口内嵌)
 //
 // The component is where a citation tuple becomes user-visible truth:
 //   - the four-tuple fields are shown when the source response is archived;
 //   - a hash-only tuple is flagged 未归档 instead of being padded;
 //   - a 404 row is "未命中", not an error;
-//   - 回溯证据 hands the hash to /evidence for a one-click walk back.
+//   - 质问就地开抽屉，**不跳页**（A-06 断言 2 —— 原先那一跳 push 到 /evidence
+//     已按 F6 撤掉，完整页只剩抽屉里的深链兜底）。
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
@@ -23,6 +24,12 @@ vi.mock('@/api/factor', () => ({
 
 vi.mock('vue-router', () => ({
   useRouter: () => ({ push }),
+}))
+
+// 抽屉里的 EvidenceProbe 会真去查证据；这一层由 EvidenceProbe.test.ts 逐态覆盖，
+// 本文件只关心"入口在不在、点了跳不跳"，所以给一个空答复即可。
+vi.mock('@/api/evidence', () => ({
+  getEvidence: vi.fn(() => Promise.reject(new ApiError(404, 'not ingested'))),
 }))
 
 const hash = 'a'.repeat(64)
@@ -132,14 +139,22 @@ describe('FactorCitation', () => {
     expect(wrapper.text()).not.toContain('未命中')
   })
 
-  it('walks a coordinate back to the evidence page in one click', async () => {
+  it('断言 2：质问入口就地开抽屉，一次页面跳转都不发生', async () => {
     vi.spyOn(factorApi, 'getFactorCitation').mockResolvedValue(mockEntry)
 
-    const wrapper = mount(FactorCitation)
+    const wrapper = mount(FactorCitation, { attachTo: document.body })
     await load(wrapper)
-    await action(wrapper, '回溯证据').trigger('click')
+    push.mockClear()
 
-    expect(push).toHaveBeenCalledWith({ name: 'evidence', query: { content_hash: hash } })
+    const trigger = wrapper.find('[data-testid="ev-probe-trigger"]')
+    expect(trigger.exists()).toBe(true)
+    await trigger.trigger('click')
+    await flushPromises()
+
+    // 这一条守的是 F6 的核心取舍：为了确认一个坐标把人整页跳走，
+    // 等于用上下文换真相 —— 结果是没人去确认。
+    expect(push).not.toHaveBeenCalled()
+    wrapper.unmount()
   })
 
   it('states that a row with an empty citation has no A→B chain yet', async () => {

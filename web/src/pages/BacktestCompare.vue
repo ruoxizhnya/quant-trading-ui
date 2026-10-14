@@ -117,7 +117,17 @@
           </thead>
           <tbody>
             <tr v-for="row in metricRows" :key="row.key">
-              <td class="row-label">{{ row.label }}</td>
+              <td class="row-label">
+                {{ row.label }}
+                <!-- A-06 断言 1：对比页每个指标行都要有质问入口。入口挂在**行标签**
+                     而不是每格 —— 一格一个的话 N 个策略 × 12 行会糊成一片按钮，
+                     而这一行被质问的是同一个量，一次质问覆盖整行。 -->
+                <EvidenceProbe
+                  :label="`多策略对比 · ${row.label}`"
+                  :hash="null"
+                  :reason="compareEvidenceReason"
+                />
+              </td>
               <td
                 v-for="entry in report.entries"
                 :key="entry.id"
@@ -161,6 +171,7 @@ import { compareBacktests, type CompareReport, type CompareEntry } from '@/api/b
 import { loadCompareIds, clearCompareIds } from '@/constants/backtest'
 import { fmtPercent, fmtNumber } from '@/utils/format'
 import { chartPalette } from '@/styles/palette'
+import EvidenceProbe from '@/components/evidence/EvidenceProbe.vue'
 
 Chart.register(...registerables)
 
@@ -186,6 +197,17 @@ interface MetricRow {
   positive?: (e: CompareEntry) => boolean
   negative?: (e: CompareEntry) => boolean
 }
+/**
+ * 对比页的每一行都是**两次以上回测结果的并排读数**，而回测结果本身不带证据坐标
+ * （`GET /api/backtest/:id/report` 的响应里零个 hash/citation，2026-10-14 实测）。
+ * 所以这里的质问入口一律落到"无法回溯"。写清楚原因，是因为对比页最容易骗人：
+ * 并排摆放会让"谁更好"看起来像结论，而两边可能都是同一个空票池跑出来的。
+ */
+const compareEvidenceReason =
+  '对比表里的每个数都来自某次回测运行，而回测结果不落在 ingest.raw 里，' +
+  '所以没有"来源记录"可回溯。要质问这一行，该问的是：参与对比的每个回测，' +
+  '股票池 / 区间 / 费率是否可比，以及它们各自是不是有效运行。'
+
 const metricRows: MetricRow[] = [
   { key: 'total_return', label: '总收益', bestKey: 'total_return_id', format: e => fmtPercent(e.total_return), positive: e => e.total_return > 0, negative: e => e.total_return < 0 },
   { key: 'annual_return', label: '年化收益', bestKey: 'annual_return_id', format: e => fmtPercent(e.annual_return), positive: e => e.annual_return > 0 },

@@ -91,8 +91,9 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '证据质问' },
       },
       {
-        // TASKS.md P5-3: factor_cache row -> its evidence coordinates, with
-        // one-click hand-off to /evidence?content_hash=...
+        // TASKS.md P5-3: factor_cache row -> its evidence coordinates.
+        // A-06 改了交接方式：质问**就地开抽屉**，不再一跳去 /evidence；
+        // 完整页只剩抽屉里的深链兜底（那条跳是用户主动要的）。
         path: 'factors',
         name: 'factors',
         component: () => import('@/pages/FactorCitation.vue'),
