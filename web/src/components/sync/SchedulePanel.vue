@@ -21,8 +21,8 @@
     </NAlert>
 
     <NEmpty
-      v-if="store.schedules.length === 0 && !store.schedulesLoading"
-      description="还没有排程"
+      v-if="!store.schedulesLoading && store.schedules.length === 0"
+      :description="store.schedulesLoaded ? '还没有排程' : '排程未读取'"
       data-testid="schedule-empty"
     />
 
@@ -225,10 +225,16 @@ function formatNext(row: SyncSchedule): string {
   return next ? formatTime(next) : '—'
 }
 
+/**
+ * 本面板只自动取自己拥有的那一份数据（schedules）。
+ *
+ * stats 由读数区 own（它挂在这个页面里就会取）；这里原先也调一次 fetchStats，
+ * 于是同一批 /workers + /scheduler/stats 在页面加载时各打两遍 —— 限流桶是进程级
+ * 共享的（core OPS-01），空耗的预算会把真实请求挤成 429。改动排程确实会动 stats，
+ * 那条由 store 的 createSchedule/toggleSchedule/... 各自显式重读，不靠挂载时的多发。
+ */
 async function reload() {
   await store.fetchSchedules().catch(() => undefined)
-  // fetchStats 设计上不抛（两腿独立，失败进 statsError），所以这里不挂 catch。
-  await store.fetchStats()
 }
 
 function openCreate() {

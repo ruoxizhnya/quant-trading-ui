@@ -61,6 +61,10 @@ async function mountPanel(schedules: SyncSchedule[], jobs: unknown[] = [], regis
   api.getSchedulerStats.mockResolvedValue({ active_schedules: schedules.filter((x) => x.is_active).length, total_entries: 0 })
   const wrapper = mount(SchedulePanel, mountOptions)
   await flushPromises()
+  // stats 的自动触发点在读数区（一个数据集一个自动触发点，见下面那条"挂载不重取"的用例）；
+  // 本页面里两个面板同挂，所以这里显式喂一次，让"下拉取后端注册表"的断言继续有意义。
+  await useSyncStore().fetchStats()
+  await flushPromises()
   return wrapper
 }
 
@@ -89,6 +93,29 @@ beforeEach(() => {
 })
 
 describe('排程列表', () => {
+  it('挂载只取排程，不重取 stats —— 一个数据集一个自动触发点（浏览器实测各打两遍的回归腿）', async () => {
+    api.listSyncSchedules.mockResolvedValue({ count: 0, schedules: [] })
+    mount(SchedulePanel, mountOptions)
+    await flushPromises()
+    expect(api.listSyncSchedules).toHaveBeenCalledTimes(1)
+    expect(api.getWorkerStats).not.toHaveBeenCalled()
+    expect(api.getSchedulerStats).not.toHaveBeenCalled()
+  })
+
+  it('读到空表说"还没有排程"，读取失败说"排程未读取" —— 两句不能是同一句', async () => {
+    api.listSyncSchedules.mockResolvedValue({ count: 0, schedules: [] })
+    const w = mount(SchedulePanel, mountOptions)
+    await flushPromises()
+    expect(w.find('[data-testid="schedule-empty"]').text()).toBe('还没有排程')
+
+    api.listSyncSchedules.mockRejectedValue(new ApiError(500, '数据服务无响应'))
+    setActivePinia(createPinia())
+    const w2 = mount(SchedulePanel, mountOptions)
+    await flushPromises()
+    expect(w2.find('[data-testid="schedule-empty"]').text()).toBe('排程未读取')
+  })
+
+
   it('每条排程一行，状态标签用人话', async () => {
     const w = await mountPanel([s({ id: 1 }), s({ id: 2, name: 'nightly', is_active: false })])
     expect(w.find('[data-testid="schedule-row-1"]').exists()).toBe(true)

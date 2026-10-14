@@ -262,6 +262,26 @@ describe('fetchSchedules', () => {
     expect(store.error).toBeNull()
     expect(store.schedulesLoading).toBe(false)
   })
+
+  it('schedulesLoaded 初始为 false：没读过就不能被当成"读到空表"', async () => {
+    const store = useSyncStore()
+    expect(store.schedulesLoaded).toBe(false)
+  })
+
+  it('成功读到空表也算已读取（空表与没读是两件事，界面文案靠这个旗标分叉）', async () => {
+    api.listSyncSchedules.mockResolvedValue({ count: 0, schedules: [] })
+    const store = useSyncStore()
+    await store.fetchSchedules()
+    expect(store.schedules).toEqual([])
+    expect(store.schedulesLoaded).toBe(true)
+  })
+
+  it('读取失败时旗标不置真 —— 不然失败会被显示成"0 条排程"', async () => {
+    api.listSyncSchedules.mockRejectedValue(new Error('boom'))
+    const store = useSyncStore()
+    await expect(store.fetchSchedules()).rejects.toThrow('boom')
+    expect(store.schedulesLoaded).toBe(false)
+  })
 })
 
 describe('排程变更动作的编排（断言 2）', () => {
@@ -386,6 +406,47 @@ describe('cancel / retry 也不冲掉列表（与 run-now 同一条口径）', (
     api.getSyncJob.mockRejectedValue(new Error('read back failed'))
     await expect(store.cancelJob('c')).resolves.toBeUndefined()
     expect(store.error).toBeNull()
+  })
+})
+
+describe('single-flight：并发同请求只打一趟', () => {
+  it('两个面板同时 fetchSchedules ⇒ api 层只被调一次', async () => {
+    const store = useSyncStore()
+    let resolveList: (v: unknown) => void = () => {}
+    api.listSyncSchedules.mockImplementation(
+      () => new Promise((r) => { resolveList = r }),
+    )
+    const p1 = store.fetchSchedules()
+    const p2 = store.fetchSchedules()
+    resolveList({ count: 1, schedules: [makeSchedule()] })
+    await Promise.all([p1, p2])
+    expect(api.listSyncSchedules).toHaveBeenCalledTimes(1)
+    expect(store.schedules.map((s) => s.id)).toEqual([1])
+  })
+
+  it('同时 fetchStats ⇒ workers 与 scheduler/stats 各打一次', async () => {
+    const store = useSyncStore()
+    api.getWorkerStats.mockResolvedValue({ num_workers: 3, registered_types: [], is_running: true })
+    api.getSchedulerStats.mockResolvedValue({ active_schedules: 0, total_entries: 0 })
+    await Promise.all([store.fetchStats(), store.fetchStats(), store.fetchStats()])
+    expect(api.getWorkerStats).toHaveBeenCalledTimes(1)
+    expect(api.getSchedulerStats).toHaveBeenCalledTimes(1)
+  })
+
+  it('去重只针对**同时在路上**的请求，完成后再点刷新仍会真打（不是缓存）', async () => {
+    const store = useSyncStore()
+    api.listSyncSchedules.mockResolvedValue({ count: 0, schedules: [] })
+    await store.fetchSchedules()
+    await store.fetchSchedules()
+    expect(api.listSyncSchedules).toHaveBeenCalledTimes(2)
+  })
+
+  it('共享同一条请求时，失败对两个调用方都可见（不复用成功值）', async () => {
+    const store = useSyncStore()
+    api.listSyncSchedules.mockRejectedValue(new Error('boom'))
+    const results = await Promise.allSettled([store.fetchSchedules(), store.fetchSchedules()])
+    expect(results.every((r) => r.status === 'rejected')).toBe(true)
+    expect(store.schedulesError).toBe('boom')
   })
 })
 

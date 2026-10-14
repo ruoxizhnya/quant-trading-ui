@@ -66,6 +66,10 @@ export const useSyncStore = defineStore('sync', () => {
   const schedules = ref<SyncSchedule[]>([])
   const schedulesLoading = ref(false)
   const schedulesError = ref<string | null>(null)
+  // 「读到空表」与「没读到」是两个不同的事实，而 `schedules.length === 0` 无法区分
+  // 它们 —— 用它当代理指标，等于把一次失败读取说成「这个环境确实一条排程都没有」
+  // （A-08 断言 3 的反面：不许拿合法值当占位）。只在成功回包后置真。
+  const schedulesLoaded = ref(false)
   const workerStats = ref<WorkerStats | null>(null)
   const schedulerStats = ref<SchedulerStats | null>(null)
   const statsError = ref<string | null>(null)
@@ -269,18 +273,37 @@ export const useSyncStore = defineStore('sync', () => {
   // message), and a swallowed error there is a silent no-op.
   // ---------------------------------------------------------------------
 
+  /**
+   * Single-flight：同一批读数正在路上就复用同一条请求。
+   *
+   * 起因是浏览器实测（2026-10-14，页面加载的网络面板）：排程面板与读数面板都要
+   * schedules + workers + scheduler/stats，同一批接口各打**两遍**。面板各自声明
+   * "我要渲染这个数"是对的，重复的是请求本身——而限流桶是进程级共享的
+   * （见 core 侧 OPS-01 与本地栈记忆），空耗预算会把真实请求挤成 429。
+   *
+   * 只对实测重复的这两条做去重；jobs 没有并发读者，不加这层。
+   */
+  let schedulesInFlight: Promise<void> | null = null
+
   async function fetchSchedules(activeOnly?: boolean) {
+    if (schedulesInFlight) return schedulesInFlight
     schedulesLoading.value = true
     schedulesError.value = null
-    try {
-      const resp = await listSyncSchedules(activeOnly)
-      schedules.value = resp.schedules ?? []
-    } catch (err) {
-      schedulesError.value = apiMessage(err, 'Failed to fetch schedules')
-      throw err
-    } finally {
-      schedulesLoading.value = false
-    }
+    schedulesInFlight = (async () => {
+      try {
+        const resp = await listSyncSchedules(activeOnly)
+        schedules.value = resp.schedules ?? []
+        schedulesLoaded.value = true
+      } catch (err) {
+        schedulesError.value = apiMessage(err, 'Failed to fetch schedules')
+        throw err
+      } finally {
+        schedulesLoading.value = false
+      }
+    })().finally(() => {
+      schedulesInFlight = null
+    })
+    return schedulesInFlight
   }
 
   async function createSchedule(request: UpsertScheduleRequest): Promise<number> {
@@ -363,17 +386,25 @@ export const useSyncStore = defineStore('sync', () => {
    * A dead `/workers` must not blank out a live `/scheduler/stats`, and neither
    * failure should look like "the job queue is broken" (that is `error`'s job).
    */
+  let statsInFlight: Promise<void> | null = null
+
   async function fetchStats() {
+    if (statsInFlight) return statsInFlight
     statsError.value = null
-    const [workers, scheduler] = await Promise.allSettled([getWorkerStats(), getSchedulerStats()])
-    if (workers.status === 'fulfilled') workerStats.value = workers.value
-    if (scheduler.status === 'fulfilled') schedulerStats.value = scheduler.value
-    const failed = [workers, scheduler].find((r) => r.status === 'rejected') as
-      | PromiseRejectedResult
-      | undefined
-    if (failed) {
-      statsError.value = apiMessage(failed.reason, 'Failed to fetch sync stats')
-    }
+    statsInFlight = (async () => {
+      const [workers, scheduler] = await Promise.allSettled([getWorkerStats(), getSchedulerStats()])
+      if (workers.status === 'fulfilled') workerStats.value = workers.value
+      if (scheduler.status === 'fulfilled') schedulerStats.value = scheduler.value
+      const failed = [workers, scheduler].find((r) => r.status === 'rejected') as
+        | PromiseRejectedResult
+        | undefined
+      if (failed) {
+        statsError.value = apiMessage(failed.reason, 'Failed to fetch sync stats')
+      }
+    })().finally(() => {
+      statsInFlight = null
+    })
+    return statsInFlight
   }
 
   function clearError() {
@@ -392,6 +423,7 @@ export const useSyncStore = defineStore('sync', () => {
     schedules,
     schedulesLoading,
     schedulesError,
+    schedulesLoaded,
     workerStats,
     schedulerStats,
     statsError,
