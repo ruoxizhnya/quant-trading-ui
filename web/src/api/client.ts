@@ -296,6 +296,17 @@ class ApiClient {
     return this.request<T>(path, { ...options, method: 'DELETE' })
   }
 
+  // A-08: first PUT consumer in the SPA (PUT /api/sync/schedules/:id). Kept
+  // deliberately identical to post() — same headers, same auth injection,
+  // same body encoding — so the two verbs cannot drift.
+  put<T>(path: string, body?: unknown, options?: RequestOptions) {
+    return this.request<T>(path, {
+      ...options,
+      method: 'PUT',
+      body: body ? JSON.stringify(body) : undefined,
+    })
+  }
+
   /**
    * P2-1 (ODR-027): Raw blob download — bypasses JSON parsing so the caller
    * can save binary/text content (HTML report, future PDF, CSV, ...).
