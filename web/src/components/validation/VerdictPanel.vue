@@ -85,6 +85,28 @@ const grouped = computed(() =>
     items: (props.verdict?.challenges ?? []).filter((c) => c.severity === sev),
   })).filter((g) => g.items.length > 0),
 )
+
+/**
+ * 后端把这些消息交给模型写，所以带 markdown 强调（实测到 `**今天**`、
+ * `**自带前视成分**`）。原样渲染会把星号留在屏幕上，读起来像没渲染完的模板。
+ *
+ * 这里**只认 `**粗体**` 一种语法，且不走 v-html**：切成片段交给 Vue 渲染，
+ * 所以消息里出现 `<img onerror=...>` 也只是一串字。哪天后端加了别的语法，
+ * 屏幕上会原样露出来（可见的不足），而不是被当 HTML 执行（不可见的漏洞）。
+ */
+function prose(text: string): { t: string; em: boolean }[] {
+  const segs: { t: string; em: boolean }[] = []
+  let rest = text
+  for (;;) {
+    const m = /\*\*([^*]+)\*\*/.exec(rest)
+    if (!m) break
+    if (m.index > 0) segs.push({ t: rest.slice(0, m.index), em: false })
+    segs.push({ t: m[1], em: true })
+    rest = rest.slice(m.index + m[0].length)
+  }
+  if (rest) segs.push({ t: rest, em: false })
+  return segs.length ? segs : [{ t: '', em: false }]
+}
 </script>
 
 <template>
@@ -104,8 +126,7 @@ const grouped = computed(() =>
           <span v-else class="vp-prob vp-prob-none" data-testid="vp-probability">无已评估维度</span>
         </div>
         <p class="vp-explain">
-          综合概率 = 已评估各维的<b>最小值</b>，由上面六个数当场算出 —— 结论受限于最弱的
-          那一环。它不是平均，也不是"通过与否"。
+          综合概率 = 已评估各维的<b>最小值</b>，由上面六个数当场算出 —— 结论受限于最弱的那一环。它不是平均，也不是"通过与否"。
         </p>
       </div>
 
@@ -139,7 +160,14 @@ const grouped = computed(() =>
             {{ verdict.causal.passed }} · 被证伪 {{ verdict.causal.failed }}
           </span>
         </div>
-        <p class="vp-mechanism">{{ verdict.causal.mechanism || '模型未给出机制说明' }}</p>
+        <p class="vp-mechanism">
+          <template v-if="verdict.causal.mechanism"><span
+            v-for="(seg, i) in prose(verdict.causal.mechanism)"
+            :key="i"
+            :class="{ 'vp-em': seg.em }"
+          >{{ seg.t }}</span></template>
+          <template v-else>模型未给出机制说明</template>
+        </p>
       </div>
 
       <div v-if="grouped.length" class="vp-challenges" data-testid="vp-challenges">
@@ -148,7 +176,11 @@ const grouped = computed(() =>
           <ul>
             <li v-for="(c, i) in g.items" :key="i" class="vp-challenge">
               <span class="vp-challenge-dim">{{ dimensionLabel(c.dimension) }}</span>
-              <span class="vp-challenge-msg">{{ c.message }}</span>
+              <span class="vp-challenge-msg"><span
+                v-for="(seg, j) in prose(c.message)"
+                :key="j"
+                :class="{ 'vp-em': seg.em }"
+              >{{ seg.t }}</span></span>
             </li>
           </ul>
         </div>
@@ -356,6 +388,12 @@ const grouped = computed(() =>
   font-size: 12px;
   line-height: 1.6;
   color: var(--q-text);
+}
+
+/* 模型写的 markdown 强调落到这里只加粗，不改颜色 —— 强调不该靠颜色区分，
+   暗色主题下彩色文本与正文的对比差经常不到 3:1。 */
+.vp-em {
+  font-weight: 600;
 }
 
 .vp-no-challenges {

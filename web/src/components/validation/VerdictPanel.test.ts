@@ -226,3 +226,76 @@ describe('F5 其余契约：因果维与质疑分级', () => {
     expect(w.text()).toContain('本轮没有提出质疑条目')
   })
 })
+
+/**
+ * 2026-10-14 浏览器实测抓出来的：这些消息是模型写的，带 markdown 强调
+ * （`股票池按**今天**的上市名单取`），原样渲染会把星号留在屏幕上。
+ *
+ * 修法是"切片段交给 Vue 渲染"，所以这里第二件事比第一件事更重要：
+ * 消息里的 HTML 必须**仍然是字**，而不是节点。一旦有人为了"支持更多语法"
+ * 改成 v-html，下面那条就红。
+ */
+describe('VerdictPanel — AI 消息里的 markdown 强调', () => {
+  it('`**x**` 渲染成强调，屏幕上不留星号', () => {
+    const w = panel(
+      verdictOf({
+        challenges: [
+          {
+            dimension: 'bias',
+            severity: 'blocking',
+            message: '股票池按**今天**的上市名单取（0 只）—— 幸存者偏差最典型的形态。',
+          },
+        ],
+      }),
+    )
+    const msg = w.find('.vp-challenge-msg')
+    expect(msg.text()).toContain('按今天的上市名单')
+    expect(msg.text()).not.toContain('**')
+    const em = msg.find('.vp-em')
+    expect(em.exists()).toBe(true)
+    expect(em.text()).toBe('今天')
+    // 强调前后各留一段正文，没有被整条替换掉
+    expect(msg.findAll('span')).toHaveLength(3)
+  })
+
+  it('消息里的 HTML 只是字 —— 这条守的是"不走 v-html"这个选择', () => {
+    const w = panel(
+      verdictOf({
+        challenges: [
+          { dimension: 'bias', severity: 'note', message: '前复权<b>自带</b>前视成分 <img src=x onerror=alert(1)>' },
+        ],
+      }),
+    )
+    const msg = w.find('.vp-challenge-msg')
+    expect(msg.element.querySelector('b')).toBeNull()
+    expect(msg.element.querySelector('img')).toBeNull()
+    expect(msg.text()).toContain('<b>自带</b>')
+    expect(msg.text()).toContain('onerror=alert(1)')
+  })
+
+  it('未闭合的星号原样留着，不吞掉后半句', () => {
+    const w = panel(
+      verdictOf({
+        challenges: [{ dimension: 'economic', severity: 'note', message: '换手率**偏高 且没有配对基准' }],
+      }),
+    )
+    expect(w.find('.vp-challenge-msg').text()).toBe('换手率**偏高 且没有配对基准')
+  })
+
+  it('因果维的机制说明走同一套渲染', () => {
+    const w = panel(
+      verdictOf({
+        causal: {
+          mechanism: '动量靠**资金持续流入**驱动，可证伪',
+          testable: 3,
+          passed: 2,
+          failed: 1,
+          probability: 0.5,
+        },
+      }),
+    )
+    const mech = w.find('.vp-mechanism')
+    expect(mech.text()).toBe('动量靠资金持续流入驱动，可证伪')
+    expect(mech.find('.vp-em').text()).toBe('资金持续流入')
+  })
+})
