@@ -5,21 +5,47 @@ import type {
   DataImportRequest,
   DataSourceHealth,
   DataSourceStatus,
+  SchedulerStats,
   SyncJob,
   SyncJobStatus,
+  SyncSchedule,
+  UpsertScheduleRequest,
+  WorkerStats,
 } from '@/types/sync'
 import {
   cancelSyncJob,
   createSyncJob,
+  createSyncSchedule,
+  deleteSyncSchedule,
+  getSchedulerStats,
   getDataSourceHealth,
   getDataSourceStatus,
+  getWorkerStats,
   listSyncJobs,
+  listSyncSchedules,
   retrySyncJob,
+  runSyncScheduleNow,
   syncJobProgressStreamPath,
+  toggleSyncSchedule,
+  updateSyncSchedule,
 } from '@/api/sync'
 
 function isJobActive(job: SyncJob): boolean {
   return job.status === 'pending' || job.status === 'running' || job.status === 'retrying'
+}
+
+/**
+ * The one place that decides whether a schedule's next run may be shown.
+ *
+ * The backend does not clear `next_run_at` when a schedule is toggled off
+ * (measured 2026-10-14: is_active=false still carried
+ * next_run_at="2026-10-15T09:00:00Z"; real fix filed as core SYNC-03). Showing
+ * it anyway would put a future that can never happen on screen — so the gate
+ * lives here, once, rather than in every row template.
+ */
+export function visibleNextRun(schedule: SyncSchedule): string | null {
+  if (!schedule.is_active) return null
+  return schedule.next_run_at ?? null
 }
 
 export const useSyncStore = defineStore('sync', () => {
@@ -31,6 +57,16 @@ export const useSyncStore = defineStore('sync', () => {
   const error = ref<string | null>(null)
   const sseConnected = ref(false)
   const watchedJobId = ref<string | null>(null)
+
+  // A-08: schedules + pool/scheduler read-outs get their OWN loading/error
+  // flags. Reusing `isLoading`/`error` would make a queue poll flicker the
+  // schedule table (and let a stats failure be reported as "job queue broke").
+  const schedules = ref<SyncSchedule[]>([])
+  const schedulesLoading = ref(false)
+  const schedulesError = ref<string | null>(null)
+  const workerStats = ref<WorkerStats | null>(null)
+  const schedulerStats = ref<SchedulerStats | null>(null)
+  const statsError = ref<string | null>(null)
 
   let eventSource: EventSource | null = null
 
@@ -48,6 +84,13 @@ export const useSyncStore = defineStore('sync', () => {
   const isSyncRunning = computed(() => activeJob.value !== null && isJobActive(activeJob.value))
   const queueLength = computed(() => jobs.value.filter((j) => j.status === 'pending').length)
   const progressPercent = computed(() => activeJob.value?.progress_percent ?? 0)
+
+  // Rows in the schedule table that are switched on. **Not** the same number as
+  // schedulerStats.active_schedules: that one counts what cron actually took.
+  // The two may diverge (a schedule row can be is_active=true while the process
+  // never registered it), and keeping both visible is exactly how that divergence
+  // becomes a diagnosable fact instead of a silent 0.
+  const enabledScheduleRows = computed(() => schedules.value.filter((s) => s.is_active))
 
   // Actions
   async function fetchDataSourceStatus() {
@@ -199,6 +242,117 @@ export const useSyncStore = defineStore('sync', () => {
     sseConnected.value = false
   }
 
+  // ---------------------------------------------------------------------
+  // Schedules (A-08 断言 2) + read-outs (A-08 断言 3).
+  //
+  // Mutation actions rethrow: the form must show the backend's own words
+  // verbatim (an invalid cron comes back as 400 with ErrInvalidCron's
+  // message), and a swallowed error there is a silent no-op.
+  // ---------------------------------------------------------------------
+
+  async function fetchSchedules(activeOnly?: boolean) {
+    schedulesLoading.value = true
+    schedulesError.value = null
+    try {
+      const resp = await listSyncSchedules(activeOnly)
+      schedules.value = resp.schedules ?? []
+    } catch (err) {
+      schedulesError.value = err instanceof Error ? err.message : 'Failed to fetch schedules'
+      throw err
+    } finally {
+      schedulesLoading.value = false
+    }
+  }
+
+  async function createSchedule(request: UpsertScheduleRequest): Promise<number> {
+    schedulesError.value = null
+    try {
+      const created = await createSyncSchedule(request)
+      await fetchSchedules()
+      // Only an active row is taken by cron, so a create can move the stats.
+      await fetchStats()
+      return created.id
+    } catch (err) {
+      schedulesError.value = err instanceof Error ? err.message : 'Failed to create schedule'
+      throw err
+    }
+  }
+
+  async function updateSchedule(id: number, request: UpsertScheduleRequest) {
+    schedulesError.value = null
+    try {
+      await updateSyncSchedule(id, request)
+      await fetchSchedules()
+      await fetchStats()
+    } catch (err) {
+      schedulesError.value = err instanceof Error ? err.message : 'Failed to update schedule'
+      throw err
+    }
+  }
+
+  async function deleteSchedule(id: number) {
+    schedulesError.value = null
+    try {
+      await deleteSyncSchedule(id)
+      await fetchSchedules()
+      await fetchStats()
+    } catch (err) {
+      schedulesError.value = err instanceof Error ? err.message : 'Failed to delete schedule'
+      throw err
+    }
+  }
+
+  async function toggleSchedule(id: number, active: boolean) {
+    schedulesError.value = null
+    try {
+      await toggleSyncSchedule(id, active)
+      await fetchSchedules()
+      await fetchStats()
+    } catch (err) {
+      schedulesError.value = err instanceof Error ? err.message : 'Failed to toggle schedule'
+      throw err
+    }
+  }
+
+  /**
+   * run-now is the falsifiable leg: it creates the job row synchronously and
+   * returns its id, so the queue — not a toast — is where the result is shown.
+   * `watchJob` then rides the same single SSE leg the jobs already use; the
+   * schedule area does **not** get its own stream (A-08 断言 4).
+   */
+  async function runScheduleNow(id: number): Promise<string> {
+    schedulesError.value = null
+    try {
+      const resp = await runSyncScheduleNow(id)
+      await fetchSyncJobs()
+      watchJob(resp.job_id)
+      return resp.job_id
+    } catch (err) {
+      schedulesError.value = err instanceof Error ? err.message : 'Failed to trigger schedule'
+      throw err
+    }
+  }
+
+  /**
+   * Worker + scheduler read-outs, settled independently.
+   *
+   * Deliberately allSettled and non-throwing: these two are background gauges.
+   * A dead `/workers` must not blank out a live `/scheduler/stats`, and neither
+   * failure should look like "the job queue is broken" (that is `error`'s job).
+   */
+  async function fetchStats() {
+    statsError.value = null
+    const [workers, scheduler] = await Promise.allSettled([getWorkerStats(), getSchedulerStats()])
+    if (workers.status === 'fulfilled') workerStats.value = workers.value
+    if (scheduler.status === 'fulfilled') schedulerStats.value = scheduler.value
+    const failed = [workers, scheduler].find((r) => r.status === 'rejected') as
+      | PromiseRejectedResult
+      | undefined
+    if (failed) {
+      statsError.value = failed.reason instanceof Error ? failed.reason.message : 'Failed to fetch sync stats'
+    }
+  }
+
   function clearError() {
     error.value = null
   }
@@ -212,6 +366,12 @@ export const useSyncStore = defineStore('sync', () => {
     error,
     sseConnected,
     watchedJobId,
+    schedules,
+    schedulesLoading,
+    schedulesError,
+    workerStats,
+    schedulerStats,
+    statsError,
     // Getters
     isDataSourceEnabled,
     primaryDataSource,
@@ -219,6 +379,7 @@ export const useSyncStore = defineStore('sync', () => {
     isSyncRunning,
     queueLength,
     progressPercent,
+    enabledScheduleRows,
     // Actions
     fetchDataSourceStatus,
     fetchDataSourceHealth,
@@ -228,6 +389,13 @@ export const useSyncStore = defineStore('sync', () => {
     importData,
     cancelJob,
     retryJob,
+    fetchSchedules,
+    createSchedule,
+    updateSchedule,
+    deleteSchedule,
+    toggleSchedule,
+    runScheduleNow,
+    fetchStats,
     watchJob,
     unwatchJob,
     clearError,
