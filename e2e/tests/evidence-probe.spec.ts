@@ -54,15 +54,24 @@ test.describe('A-06 证据质问内嵌', () => {
     await expect(page.locator('main')).not.toContainText('查询失败');
   });
 
-  test('断言 1+4：回测报告每个指标都挂着质问入口，且「无法回溯」不点也看得见', async ({ page }) => {
+  test('断言 1+4：回测报告的每个指标都挂着质问入口，且「无法回溯」不点也看得见', async ({ page }) => {
     const id = await aCompletedBacktestID();
     await page.goto(`/backtest?id=${id}`);
+
     const probes = page.locator('[data-testid="ev-probe-trigger"]');
     await expect(probes).toHaveCount(5);
+
     // 关键：文案是**渲染出来的**，不是 hover 才出现的 title
     for (const probe of await probes.all()) {
       await expect(probe).toContainText('无法回溯');
     }
+
+    // 为什么是 5 而不是"页面上所有数字"：同页还有个「详细指标」区块
+    // （DetailMetrics.vue），但 `GET /api/backtest/:id/report` 的响应里
+    // **没有 metrics 这个键**，前端也从不给它赋值 ⇒ 它的 v-if 恒假、整块永不渲染。
+    // 那是个死组件，已另记（见 TASKS.md A-06 节）。给死代码加质问入口是
+    // 为不存在的场景写代码，所以这里只覆盖真的会渲染出来的那 5 个。
+    await expect(page.locator('.metrics-detail-grid')).toHaveCount(0);
   });
 
   test('断言 2：点质问入口开抽屉，URL 逐字不变（真后端）', async ({ page }) => {

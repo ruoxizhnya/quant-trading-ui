@@ -211,23 +211,25 @@ const asyncState = computed(() => asyncBacktest.state.value)
 const isRunning = computed(() => btRunning.value || ['pending', 'running'].includes(asyncState.value.status))
 
 const safeTrades = computed<Trade[]>(() => result.value?.trades || [])
+/**
+ * A-06 断言 1 + 4：回测报告的每个可质问数字都要有质问入口，而**这条链路上今天
+ * 没有证据坐标** —— `GET /api/backtest/:id/report` 的响应里零个 hash/citation
+ * （逐字段遍历过，2026-10-14 实测）。所以入口一律渲染"无法回溯"。
+ *
+ * 这是如实标注，不是占位：一个查不到来源的数照常显示，读的人会默认它查得到。
+ * 原因写具体，因为质问一个**派生数**的正确问法不是"哪条原始记录"，而是
+ * "这组输入下能不能重算出同一个数"。
+ */
+const BACKTEST_EVIDENCE_REASON =
+  '回测指标是这次运行的派生结果，不在 ingest.raw 里，所以没有「来源记录」可回溯。' +
+  '要质问它，该问的是：这组输入（策略 / 股票池 / 区间 / 费率）下能否重算出同一个数。'
+
 const safeMetrics = computed(() => result.value?.metrics || null)
 
 const resultMetrics = computed(() => {
   if (!result.value) return []
   const r = result.value
-  // A-06 断言 1 + 4：回测报告的每个指标都要有质问入口，而**这条链路上今天
-  // 没有证据坐标**（GET /api/backtest/:id/report 的响应里零个 hash/citation，
-  // 2026-10-14 实测）。所以入口一律渲染"无法回溯" —— 这是如实标注，不是占位：
-  // 一个查不到来源的数照常显示，读的人会默认它查得到。
-  // 原因写具体，因为"质问"派生数的正确问法不是"哪条原始记录"，而是"这组输入
-  // 下能不能重算出同一个数"。
-  const evidence = {
-    hash: null,
-    reason:
-      '回测指标是这次运行的派生结果，不在 ingest.raw 里，所以没有「来源记录」可回溯。' +
-      '要质问它，该问的是：这组输入（策略 / 股票池 / 区间 / 费率）下能否重算出同一个数。',
-  }
+  const evidence = { hash: null, reason: BACKTEST_EVIDENCE_REASON }
   return [
     { label: '总收益率', value: fmtPercent(r.total_return), cls: (r.total_return ?? 0) >= 0 ? 'positive' : 'negative', evidence },
     { label: '年化收益', value: fmtPercent(r.annual_return), cls: (r.annual_return ?? 0) >= 0 ? 'positive' : 'negative', evidence },

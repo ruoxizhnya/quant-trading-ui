@@ -19,9 +19,6 @@ export function useEvidenceLookup() {
   const record = ref<RawIngest | null>(null)
   const errorMessage = ref('')
 
-  /** 当前正在解析的 hash —— 用于判断"换了一个数字要重查"而不是沿用上一个结果 */
-  const resolvedHash = ref('')
-
   async function lookup(hash: string): Promise<void> {
     const trimmed = hash.trim()
     if (!trimmed) {
@@ -33,10 +30,8 @@ export function useEvidenceLookup() {
     errorMessage.value = ''
     try {
       record.value = await getEvidence(trimmed)
-      resolvedHash.value = trimmed
       state.value = 'found'
     } catch (err) {
-      resolvedHash.value = trimmed
       // 404 = 「这个坐标在 ingest.raw 里没有对应记录」。它是关于数据的一个
       // **结论**（未摄取），不是这次查询没做成。判据来自 ApiError.isNotFound，
       // 不靠 HTTP 文案猜。
@@ -53,8 +48,7 @@ export function useEvidenceLookup() {
     state.value = 'idle'
     record.value = null
     errorMessage.value = ''
-    resolvedHash.value = ''
   }
 
-  return { state, record, errorMessage, resolvedHash, lookup, reset }
+  return { state, record, errorMessage, lookup, reset }
 }
