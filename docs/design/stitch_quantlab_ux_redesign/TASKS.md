@@ -2,7 +2,7 @@
 
 > **版本**: 1.0（2026-10-13）
 > **定位**: 本文件是 UI 重构的**唯一任务台账**。每个任务用 **6 条可判定断言**描述（AGENTS.md §8.5.2 六字段的断言化：一条断言 = 一个可独立判真伪的事实，不是动作描述）。
-> **依据**: [ANNOTATIONS.md](ANNOTATIONS.md)（逐控件处置）· [../user-flows.md](../user-flows.md) v1.1（需求基线）· [obsidian_precision_quant/DESIGN.md](obsidian_precision_quant/DESIGN.md) v2.0（token 真相源）· [ODR-066](../../../../../quant-trading-docs/docs/archive/odr/odr-066-stitch-design-review-and-boundary-ruling.md)（裁决）
+> **依据**: [ANNOTATIONS.md](ANNOTATIONS.md)（逐控件处置）· [../user-flows.md](../user-flows.md) v1.1（需求基线）· [obsidian_precision_quant/DESIGN.md](obsidian_precision_quant/DESIGN.md) v2.0（token 真相源）· [ODR-066](../../../../quant-trading-docs/docs/archive/odr/odr-066-stitch-design-review-and-boundary-ruling.md)（裁决）
 > **不双写**: 本清单**不**复制进 core 仓 `quant-trading/docs/TASKS.md`。core 侧只登记后端缺口（G1–G8）自己的修复任务。
 
 ---
@@ -262,6 +262,44 @@ SVG 呈现属性**不解析 CSS 自定义属性**，直接把 `var()` 塞进 `co
 4. 无 `content_hash` 的数字显示"无法回溯"，且存在一条用例专门喂无 hash 数据断言该文案出现（诚实 > 好看）。
 5. `GET /api/evidence/{content_hash}` 返回 404 时呈现"未摄取"警示态而非错误态（沿用 ODR-060 的三态渲染）。
 6. `/evidence` 独立页保留为深链兜底且支持 `?content_hash=`，现有测试不退化。
+
+## A-06 证据质问内嵌（F6，横切）　✅ **已完成 2026-10-14**（浏览器真实数据实测）
+
+落点：`components/evidence/EvidenceProbe.vue`（质问入口 + 抽屉，8 条单测）
++ `composables/useEvidenceLookup.ts`（三态机，从 `EvidenceLookup.vue` 抽出）
++ `components/evidence/EvidenceRecord.vue`（记录展示，同样抽出共用）；
+三处接线 = `MetricsCards.vue`（回测报告）、`BacktestCompare.vue`、
+`FactorCitation.vue`。新增 `e2e/tests/evidence-probe.spec.ts`（6 条）。
+
+| # | 断言 | 取证 |
+|---|---|---|
+| 1 | 三处各有质问入口 | 浏览器实测：回测报告 5 张指标卡各 1 个入口（真数据 `?id=76a00397…`，Sharpe −27.43）；对比页 12 行 × 1 个（实测 `probes=12 / rowCount=12`）；因子侧每条 citation 1 个 |
+| 2 | 打开抽屉 **URL 不变** | 单元 1 条（断言 `push` 未被调用 + `location.href` 前后相等）+ e2e 1 条（真后端，`expect(page.url()).toBe(before)`）。**并撤掉一处既有违例**：`FactorCitation` 原先 `router.push('/evidence?…')`，点一下就被送出当前页 |
+| 3 | ≤2 次点击到原始记录 | 实测 1 次：点入口即开抽屉**并自动解析**，记录直接出现。e2e 用步骤数佐证（一次 `click()` 后 `[data-testid="evidence-record"]` 即可见） |
+| 4 | 无 hash 显示"无法回溯" | 该文案是**渲染出来的可见文字**，不是 hover/title；单元 + e2e 各有一条专门喂无 hash 数据。e2e 逐个数 5 个入口都写着"无法回溯" |
+| 5 | 404 = "未摄取"警示态 | 与 `/evidence` 页**共用同一份三态机**（`useEvidenceLookup`），三态名逐一对上 [ODR-060](../../../../quant-trading-docs/docs/archive/odr/odr-060-p5-1-frontend-evidence-api.md) 定义的 命中 / 未摄取(warning) / 其他失败(error)。破坏验证：把 404 当故障 → 新单测 2 条 + **一条原有** `EvidenceLookup` 测试 + e2e 2 条同时红 |
+| 6 | `/evidence` 深链兜底不退化 | 抽屉内"在证据页打开"仍在（那是用户**主动**要的跳转）；`/evidence?content_hash=` 用真记录验：取回 `akshare / akshare.stock_financial_abstract / 600519.SH/2024Q1`。全量 playwright **116 passed / 2 skipped / 0 failed** |
+
+**三处接线的现实差别（实测，不是设计假设）**
+
+- **回测报告**：`GET /api/backtest/:id/report` 响应里**零个** hash/citation
+  （逐字段遍历过，2026-10-14 实测）⇒ 五个指标一律"无法回溯"。原因写具体：
+  质问一个**派生数**的正确问法不是"哪条原始记录"，而是"这组输入下能否重算出同一个数"。
+- **多策略对比**：同上；入口挂在**行标签**而非每格 —— 每格一个会糊出
+  N 策略 × 12 行个按钮，而被质问的是同一个量，一次质问覆盖整行。
+- **因子侧**：唯一真带坐标的一路（citation 五元组）。但 `factor_cache` 今天
+  **0 行**（`GET /api/factors/momentum?…` → 404），所以抽屉的命中态只能用 mock 验。
+  **没有为了取证往那张表塞假行** —— 引擎启动即 warm 它（日志
+  `factor cache warming enabled`），一条假因子可能悄悄进真回测。
+
+**两处自查记录**
+
+1. 写 `reason` 字符串时我用了 `**派生结果**`，实测原样露出星号 —— 与 A-05 刚修的
+   同一类缺陷，隔一天在**自己新写的**字符串上复发。修法是别在用户可见字符串里
+   夹 markdown，而不是给 `reason` 加一套解析器。
+2. 登记断言 5 时调研一度报"ODR-060 不存在"（它只搜了 core 与 ui 两个仓）。
+   核对后确认该 ODR 在 `quant-trading-docs` 仓，三态定义与实现一致 ——
+   差点把"引用是死链"写进台账，那会是本轮第二次犯"没核实就下结论"。
 
 ## A-07 状态三值全站收口（K9 横切）
 
