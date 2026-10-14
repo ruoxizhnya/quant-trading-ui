@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { DIMENSION_ORDER, dimensionLabel, type Challenge, type Verdict } from '@/api/explore'
+import {
+  assessedProbability,
+  DIMENSION_ORDER,
+  dimensionLabel,
+  weakestDimension,
+  type Challenge,
+  type Verdict,
+} from '@/api/explore'
 
 /**
  * 验证器裁决 —— F5 横切组件（TASKS.md A-05）。
@@ -45,8 +52,7 @@ const dims = computed<DimRow[]>(() => {
   for (const k of unassessed) if (!keys.includes(k)) keys.push(k)
 
   const has = (k: string) => typeof given[k] === 'number' && !unassessed.has(k)
-  const assessed = keys.filter(has)
-  const weakest = assessed.length ? assessed.reduce((a, b) => (given[a] <= given[b] ? a : b)) : null
+  const weakest = weakestDimension(v)
 
   return keys.map((k) => ({
     key: k,
@@ -57,11 +63,8 @@ const dims = computed<DimRow[]>(() => {
   }))
 })
 
-/** 屏幕上的最小值即综合概率；一维都没评估时不给数（0 会被读成"零可信"） */
-const probability = computed<number | null>(() => {
-  const assessed = dims.value.filter((d) => d.assessed && d.p !== null)
-  return assessed.length ? Math.min(...assessed.map((d) => d.p as number)) : null
-})
+/** 与结果流上的 "P x.xx" 同一个函数算出来 —— 同一个 attempt 不得有两个数 */
+const probability = computed(() => assessedProbability(props.verdict))
 
 const weakestLabel = computed(() => dims.value.find((d) => d.isWeakest)?.label ?? null)
 

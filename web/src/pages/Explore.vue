@@ -18,6 +18,7 @@ import {
   NText,
 } from 'naive-ui'
 import {
+  assessedProbability,
   getExploreStatus,
   startExplore,
   stopExplore,
@@ -36,6 +37,15 @@ function probType(p: number): SeverityType {
   if (p < 0.2) return 'error'
   if (p < 0.5) return 'warning'
   return 'success'
+}
+
+/**
+ * 结果流上的 "P x.xx" 与裁决面板的"综合概率"必须是**同一个函数**算出来的同一个数。
+ * 此前这里直接读 verdict.probability（后端聚合字段），而面板按已评估维度取最小值 ——
+ * 两处口径不同，一旦后端那个字段与六个维度不一致，用户会在同一行看到两个概率。
+ */
+function attemptProbability(a: AttemptView): number | null {
+  return assessedProbability(a.verdict)
 }
 
 // P1-3 观察页：正在试什么 / 结果流 / 当前最优。
@@ -185,12 +195,12 @@ onUnmounted(stopTimer)
                   </NTag>
                   <!-- 裁决概率：Sharpe 是「跑出来多少」，概率是「这个数有多少可信」 -->
                   <NTag
-                    v-if="a.verdict"
-                    :type="probType(a.verdict.probability)"
+                    v-if="attemptProbability(a) !== null"
+                    :type="probType(attemptProbability(a) ?? 0)"
                     size="small"
                     :bordered="false"
                   >
-                    P {{ a.verdict.probability.toFixed(2) }}
+                    P {{ attemptProbability(a)?.toFixed(2) }}
                   </NTag>
                   <NText depth="2" style="font-size: 12px">{{ a.hypothesis }}</NText>
                 </NSpace>
