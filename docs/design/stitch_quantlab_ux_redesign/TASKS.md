@@ -175,9 +175,9 @@ SVG 呈现属性**不解析 CSS 自定义属性**，直接把 `var()` 塞进 `co
 5. 失败的尝试（无回测结果）**不渲染裁决**，不出现 0 分或"未通过"。
 6. 组件内不出现 `VALIDATED / VERIFIED / 校验通过 / 未通过` 四个词（S1 二值违例），grep 为 0。
 
-## A-05 六维验证器组件（F5，横切）　✅ **已完成 2026-10-14**（浏览器实测待后端起来补做）
+## A-05 六维验证器组件（F5，横切）　✅ **已完成 2026-10-14**（含浏览器真实数据实测，证据见下）
 
-落点：`web/src/components/validation/VerdictPanel.vue` + `VerdictPanel.test.ts`（19 条），
+落点：`web/src/components/validation/VerdictPanel.vue` + `VerdictPanel.test.ts`（23 条），
 `Explore.vue` 原来内联的裁决渲染整段换成该组件（Explore 的 102 条 lint warning 降到 81，
 未新增 error）。规范六维顺序由 `api/explore.ts` 的 `DIMENSION_ORDER` 固定。
 
@@ -196,7 +196,54 @@ SVG 呈现属性**不解析 CSS 自定义属性**，直接把 `var()` 塞进 `co
 2. **F5 的其余契约一并落地**：因果维显示机制 + `可证伪预测 N 条 · 应验 · 被证伪`（"讲得出但验不了的不算数"）；质疑按 `blocking / warning / note` 分组并带条数，**阻断级排最前**（不按后端数组顺序，避免被 note 埋掉）；无质疑条目时如实写"本轮没有提出质疑条目"，不留白。
 3. **配色走概率性通道**：整块用 `--q-ai-text` 且带"AI 评估"文字标注 —— DESIGN.md §3 硬规则，颜色不是唯一线索。
 
-**未做的一项**：浏览器真实数据实测。本地栈（PostgreSQL / Redis / analysis-service :8085）在 A-05 编码期间全部下线，`/explore` 现渲染"连不上后端服务"，组件拿不到裁决数据。**待栈起来后补做**，并在此处回填证据。（`/explore` 不在 12 张 visual 基线内，故本任务无需重生成基线。）
+**浏览器真实数据实测已补做（2026-10-14，本地栈全绿后）**
+
+栈：原生 PostgreSQL 17.5（`quant_trading`，5908 stocks / 3,926,510 根日线）+ Redis 7.4.11 +
+容器 data/strategy/analysis/ai 四服务 `local-stack.sh status` 全 healthy，Vite :5173。
+在 `/explore` 用「做一个动量策略 / 最多试 2 次」真跑了一轮（run `c46fa2ad`），
+两次尝试都成功落库并带裁决（`experiments` id 1117/1118），页面渲染的就是那份 JSON。
+
+屏幕上逐项核对通过（不是测试跑绿，是人看见）：
+
+| 断言 | 实测到的真数据表现 |
+|---|---|
+| 1 六行 | 统计/经济/稳健/偏差/冗余/因果 六行齐全，顺序正确 |
+| 2 未评估 | 后端 `unassessed` 给了 4 维 → 屏幕上 4 个「未评估」+ 一行「4 个维度未评估 —— 未评估不等于没问题」 |
+| 3 最小值 | `dimensions={bias:0.1304, robustness:0}` → 综合概率 **0.00**；结果流上的 chip 同为 `P 0.00`，**两处同一个数**（这正是审查轮抽公共函数要保的东西） |
+| 4 最弱一环 | 「最弱一环」标在 稳健 那一行（0 < 0.13），文字标注而非仅颜色 |
+| 5 失败无裁决 | 同一轮里 `b7ddde81` run 的尝试全部 `failed`（YAML 非表达式被拒），页面显示「这一条没有裁决 —— 失败的尝试没有可被证伪的东西」，没有 0 分 |
+| 6 无二值措辞 | 全文无「校验通过 / 未通过」 |
+| 质疑分级 | 阻断级（2）排在备注（6）前面，每条带维度标签 |
+
+**实测抓出并当场修掉的三个前端缺陷**（各一个 commit，破坏验证已做）：
+
+1. **一次 429 永久打死观察循环** —— 页面 1 秒一跳，把 analysis-service 每人 100 次/分钟
+   的预算吃掉 60 次，实测约 3 分钟后弹「请求过于频繁」，而 catch 里跟着 `stopTimer()`：
+   窗口从此冻在最后一帧。改 `POLL_MS=2500` + 连续 6 次失败才认断线，停下时明说
+   "屏幕上的是最后一次成功拿到的进展"。护栏：`MAX_POLL_FAILS` 调回 1 → e2e 红。
+2. **模型写的 markdown 星号直接上屏**（`股票池按**今天**的上市名单取`）。切片段渲染，
+   **不走 v-html**；护栏：换成 v-html → "消息里的 HTML 只是字" 那条红。
+3. 说明句源码换行被折成空格（"最弱的 那一环"）。
+
+新增 `e2e/tests/explore-verdict.spec.ts`（3 条，fixture 逐字段抄自真实落库的 verdict）
+把上面这份现场钉成回归；`/explore` 仍不在 12 张 visual 基线内。
+
+**实测同时暴露的后端问题（前端不动它们，按"前端不干预后端设计"登记待裁决）**：
+
+- **股票池恒为 0 只**：两次尝试的裁决里都有 blocking「股票池按**今天**的上市名单取
+  （0 只）」，回测 `universe_max_size=0 / zero_trades / garbage_metric` → `Status=invalid`。
+  也就是 `/explore` 现在**只能产出无效回测**，六维里四维因此永远未评估。这不是渲染问题，
+  是探索主链路拿不到有效结果 —— 归 G 组后端缺口。
+- **限流豁免表要不要纳入状态轮询**：`RateLimitExemptPaths` 的入选判据是"限流它会不会让
+  正常客户端分不清 429 与 401"。`/api/explore/runs/:id` 不满足这条，但一次 429 会让观察页
+  瞎掉。前端已按 2.5s + 连续失败才停自救；**是否放开豁免属后端裁决**，不在本任务擅改。
+- **ai-service 的构建/运行缺口**（拆仓阶段 2 遗留，共 4 条）已在本轮拉起时修掉，
+  分别提交在 `quant-trading-agent` 的 `fix/a05-env-ai-service-image`
+  （go.mod 缺 15 条 indirect、镜像缺 wait-for-deps.sh 与 config/ai-service.yaml）
+  与 core 的 `fix/a05-env-stack-startup`（`Dockerfile.service` 末行多余的 `\\` 让三个镜像
+  全建不出来、compose 缺 `AI_SERVICE_URL` 让四族 AI 路由在容器形态下全 503）。
+  前两条尤其值得注意：`docker compose ps` 显示三个服务 healthy，跑的却是那个 typo
+  落地**之前**构建的旧镜像 —— "起得来"和"是新的"是两件事。
 
 ## A-06 证据质问内嵌（F6，横切）
 
