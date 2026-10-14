@@ -425,6 +425,60 @@ SVG 呈现属性**不解析 CSS 自定义属性**，直接把 `var()` 塞进 `co
 5. 稿上的湖仓/集群/L2 元素（Parquet、Iceberg、DuckDB、GPU、SLA、Level2 逐笔）**一个都不实现**，grep 为 0。
 6. PIT 时间轴与幸存者偏差两块**保留**（ANNOTATIONS 判为唯一精华），各有一条用例。
 
+### A-08 实施计划（六字段，2026-10-14 起草，**待批准后再动代码**）
+
+**① 目标**：`/data-sync` 成为作业控制台 —— 一条可筛可续的队列、一块排程管理、一组真实的
+worker/scheduler 读数，且**屏幕上每个数都能指到一条端点或明写"未摄取"**。
+
+**② 上下文（2026-10-14 当场实测，不是引用断言）**
+
+| 端点 | 状态 | 前端现状 |
+|---|---|---|
+| `GET /api/sync/jobs` / `GET /jobs/{id}` / `POST /jobs/{id}/cancel` / `POST /jobs/{id}/retry` | 实测 200（`count:20`，内含 `aud49_…` 纳秒 ID 作业） | ✅ 已有：`api/sync.ts` 四函数 + `stores/sync.ts` 的 `cancelJob`/`retryJob`/`watchJob`/`unwatchJob`，消费在 `SyncStatusPanel.vue`(146 行) |
+| `GET /api/sync/jobs/{id}/progress`（SSE） | 已有 | ✅ `syncJobProgressStreamPath` + store 的 watch/unwatch（全站唯一 SSE 腿） |
+| `/api/sync/schedules` 系 **7 条**（list/get/create/update/delete/toggle/run-now） | 实测 200；后端在 `quant-trading/cmd/data/main.go:149-155`，经 analysis 网关代理可达 | ❌ **`web/src` 对 `schedules` 零命中** ⇒ 这一整块是**纯新增**，不是改造 |
+| `GET /api/sync/workers` | 实测 200（`num_workers:3` + 7 类 registered_types） | ❌ 无消费点 |
+| `GET /api/sync/scheduler/stats` | 实测 200，但 **恒 `{"active_schedules":0,"total_entries":0}`** | ❌ 无消费点。**根因见 core 仓工单 SYNC-01**：`pkg/sync/scheduler.go:47` 的 `Scheduler.Start()` 全仓**零调用方（生产与测试都是 0）** ⇒ cron 从未启动。`active_schedules=0` 与数据一致（唯一那条排程 `is_active:false`），`total_entries=0` 是结构缺陷 |
+
+页面现状：`pages/DataSync.vue`(34 行) 只是三块拼装 —— `DataSourcePanel`(139) /
+`SyncStatusPanel`(146) / `DataImportForm`(93)；`api/sync.ts` 另有 datasource
+`status`/`health` 两个消费点。**改造不是从零，是把已有的队列层重排 + 补齐三块空白。**
+
+**③ 要求（六步，每步一个可独立测试通过的 commit）**
+
+0. **前置归因（不写 UI）**：三件事各自出结论后才开工 —— (a) SYNC-01 是否在本轮修（不修则下述措辞约束生效）；(b) V-3 的基线策略二选一（本任务会**动掉 `data-sync` 这张视觉基线**，而它本来就因渲染活后台状态而不可复现 —— 不先定策略就等于改完没有回归网）；(c) 实测幸存者偏差的数据前提：`stocks.delist_date` 有多少非空行（代码路径已在：`pkg/data/tushare.go:217` 请求列含该字段、`:276` 注明修复、`pkg/domain/market/types.go:40`、`pkg/storage/postgres.go:389-394`，**但行数为 0 还是几百，直接决定那块显示什么**）。
+1. **API 层补齐**：`api/sync.ts` 加排程 7 函数 + `workers` + `scheduler/stats`（命名与既有 `listSyncJobs`/`cancelSyncJob` 同风格；类型落 `types/api.ts`，**不在组件里就地声明**。
+2. **store 层**：`stores/sync.ts` 增加排程切片与统计切片；SSE 仍**只有** `watchJob/unwatchJob` 一条腿，不得为排程另开轮询以外的第二条推送。
+3. **队列区**（断言 1）：列表 + 筛选（状态/类型）+ 详情抽屉 + cancel/retry 动作，动作后必须回到"这条作业的最新状态"，不靠乐观更新。
+4. **排程区**（断言 2）：CRUD + toggle + run-now；run-now 后跳去队列看那条新作业（不是弹一句"已触发"就算）。表单侧 cron 表达式**原样透传后端校验**（`ErrInvalidCron` → 400 的措辞要显示出来，不在前端猜合法性）。
+5. **读数区**（断言 3）+ **PIT / 幸存者**（断言 6）：读数是 `workers`/`stats` 的真值；PIT 三时刻（财务期末 / 公告披露 `ann_date` / 因子可交易起始）从 `GET :8081/fundamentals/:symbol/history` 取 —— **今天它返回 `{"history":null}`**，故这块渲染**显式空态**（"未摄取"，同 ODR-060 三态口径），**不造行**（与 A-06 对 `factor_cache` 的裁决同规则：摄取缺口是 core 的 EQD-P1-2，不是前端可以填的空）。
+
+**④ 约束与非目标**
+
+- **措辞硬约束（SYNC-01 未修前生效）**：排程面板与 stats 读数**不得**出现「调度运行中」「下次执行 …」这类暗示 cron 会在后台触发的文案或字段位。可以显示"已注册 N 条 / 已排定"吗？—— 不行，"排定"就是那个暗示。只允许显示后端**确实量到**的东西：条目数、`is_active` 状态、以及"本环境的调度器未启动（见 core SYNC-01）"这句事实。
+- **不做**：稿上湖仓/集群/L2 全部（Parquet、Iceberg、DuckDB、GPU、SLA 99.999%、Level2 逐笔）—— 断言 5 以 grep 判定；不引入 `Tailwind`/新依赖；不加新端点假设（每条请求都能指到 `cmd/data/main.go` 的注册行或 openapi）；不碰 `docker-compose.yml`；不在前端改 `stats` 字段语义来"让它好看"。
+- **不退化**：`DataSourcePanel` / `DataImportForm` 的现有能力（数据源状态与创建作业）在新 IA 里必须仍有落点，删除任一功能要在本台账写明理由，不静默丢弃。
+- 每条用户可见字符串**不夹 markdown**（A-05/A-06 两次复发的老坑）；大对象用 `shallowRef`；DOM 访问前 `await nextTick()`。
+
+**⑤ 验收（断言 → 取证方式，写清哪条用真数据、哪条只能 mock）**
+
+| 断言 | 取证 |
+|---|---|
+| 1 队列四操作各一次真实调用 | e2e（真后端）：列表可见、点开详情、cancel 与 retry 后状态变化 —— 用 `GET /api/sync/jobs` 里的真作业；**cancel/retry 需要一条非终态作业**，取不到则造一条 `POST /api/sync/jobs` 真作业（这是真实 API 调用，不是往库里塞假行） |
+| 2 排程 7 条端点可达 | 单测（api 层 mock 逐条断 URL/方法）+ e2e 用 route 拦截走一遍 CRUD 序列；**toggle 的真后端用例受 SYNC-01 影响，见下方"实测边界"** |
+| 3 worker/stats 有展示位 | e2e 真后端读 `num_workers:3` 断渲染一致；`total_entries` 恒 0 的处置：显示 0 并附"调度器未启动"的事实句，**不美化** |
+| 4 SSE 只出现在单作业进度 | 源码扫描守卫（fail-closed 白名单，同 A-07 断言 1 那条机械腿的写法）：全 `src/` 里 `EventSource` 命中文件必须等于登记集 |
+| 5 湖仓/集群/L2 零实现 | grep 判据（用例断 0 命中），列出被 grep 的 6 个词 |
+| 6 PIT + 幸存者各一条用例 | 各一条单测断"数据缺席时走显式空态、有数据时三时刻齐全"，空态那条是**今天唯一能真跑的** |
+
+**⑥ 边界**：只做 `/data-sync` 一屏 + 其 api/store/组件；core 侧 SYNC-01、EQD-P1-2 归 core；V-3 的策略决定若需要测试基础设施改动，落 AUD-61 而不是夹在本任务里。
+
+**实测边界（提前声明，避免事后写假结论）**：排程 toggle 之后 `scheduler/stats` 的
+`active_schedules` **会变 1**（`ToggleSchedule` 真的把条目加进了 cron），但因为没有
+`cron.Start()`，那一格**永远不会跑**。所以 A-08 若用"stats 计数变化"当验收，会在缺陷状态下
+照样变绿 —— 验收必须落在「**是否出现了由排程产生的作业行**」这种可证伪的事实上，这条正是
+core SYNC-01 的验收第 1、2 条要防的形状，本任务不能替它绕过。
+
 ## A-09 `execution` 重画为纸交易观测台（F16）
 
 1. 页面四块齐备：订单 / 持仓 / 账户 / 外部信号流，对应 `core` 的 `orders`、`positions`、`account`、`signals` 端点（稿上后三块缺失）。
