@@ -1,0 +1,18 @@
+# 换行符统一为 LF —— 与 core 仓 AUD-27 同一处置（quant-trading/.gitattributes）。
+#
+# 事实基础（2026-10-14 实测，`git ls-files --eol`）：
+#   - index 侧**本来就全是 LF**：151 个 `i/lf`、12 个 `i/-text`（playwright 视觉
+#     基线 PNG，`text=auto` 会继续判为二进制而跳过）、3 个 `i/none`。
+#     零个 `i/crlf` ⇒ 加这个文件**不产生任何 diff**，它只约束 checkout 怎么写。
+#   - CRLF 只出现在工作区，来源是本机 `core.autocrlf=true`（PortableGit 的
+#     etc/gitconfig，系统级，不在 repo/global 里）。实测已经漂出 **1 个**：
+#     `web/src/pages/BacktestEngine.vue` 是 `i/lf w/crlf`。
+#
+# 为什么必须管：这个仓的门禁是 `npm run lint` / `typecheck` / `npm test` +
+# playwright。`w/crlf` 的文件在 Windows 上写、在 Linux CI 上读，diff 会整文件
+# 变红；而 A-03 那轮扫色值时靠的是**逐字匹配**，行尾不一致会让"这条规则匹配
+# 不到"和"这条规则不该匹配"长得一模一样 —— 静默漏检比报错更难查。
+#
+# 仓库内没有需要 CRLF 的 .bat / .cmd / .ps1（`git ls-files` 实测），
+# 因此全部文本文件统一 LF，无需例外。
+* text=auto eol=lf
