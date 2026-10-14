@@ -21,3 +21,9 @@ coverage/
 .idea/
 .DS_Store
 *.log
+
+# Stitch 逐屏导出的位图**不入库**（2026-10-14 裁决）：同一屏的结构化导出
+# `code.html` 已经入库，位图是它的有损投影，且 5.2 MB 二进制正撞
+# AGENTS.md 的禁区清单。从 Stitch 重新导出时 screen.png 会落在这里 ——
+# 看一眼可以，别 add。要留参考件就留 code.html。
+docs/design/stitch_quantlab_ux_redesign/**/screen.png
