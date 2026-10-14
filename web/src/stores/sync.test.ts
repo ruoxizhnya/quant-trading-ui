@@ -357,6 +357,39 @@ describe('enabledScheduleRows 与 cron 登记数是两个数（不合并）', ()
   })
 })
 
+describe('refreshJob（动作后回读的单条腿，A-08 步骤 3）', () => {
+  it('回读结果覆盖列表里同 id 的那条，而不是追加一行', async () => {
+    api.listSyncJobs.mockResolvedValue({ jobs: [makeJob({ id: 'a', status: 'running' })], count: 1 })
+    api.getSyncJob.mockResolvedValue(makeJob({ id: 'a', status: 'cancelled' }))
+    const store = useSyncStore()
+    await store.fetchSyncJobs()
+    const job = await store.refreshJob('a')
+    expect(store.jobs).toHaveLength(1)
+    expect(job.status).toBe('cancelled')
+    expect(store.jobs[0].status).toBe('cancelled')
+  })
+
+  it('列表里还没有这条时（run-now 刚建的），回读把它补进队首', async () => {
+    api.listSyncJobs.mockResolvedValue({ jobs: [], count: 0 })
+    api.getSyncJob.mockResolvedValue(makeJob({ id: 'scheduled-9', status: 'pending' }))
+    const store = useSyncStore()
+    await store.fetchSyncJobs()
+    await store.refreshJob('scheduled-9')
+    expect(store.jobs.map((j) => j.id)).toEqual(['scheduled-9'])
+  })
+})
+
+describe('fetchSyncJobs 的状态筛选走后端参数（不是前端挑）', () => {
+  it('status/limit 原样透传给 api 层', async () => {
+    api.listSyncJobs.mockResolvedValue({ jobs: [], count: 0 })
+    const store = useSyncStore()
+    await store.fetchSyncJobs('failed', 50)
+    expect(api.listSyncJobs).toHaveBeenCalledWith('failed', 50)
+    await store.fetchSyncJobs()
+    expect(api.listSyncJobs).toHaveBeenLastCalledWith(undefined, undefined)
+  })
+})
+
 describe('visibleNextRun（core SYNC-03 的前端防御）', () => {
   it('停用排程即使带着残留 next_run_at 也不显示', () => {
     expect(visibleNextRun(makeSchedule({ is_active: false, next_run_at: '2026-10-15T09:00:00Z' }))).toBeNull()

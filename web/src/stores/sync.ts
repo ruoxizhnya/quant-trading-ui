@@ -20,6 +20,7 @@ import {
   getSchedulerStats,
   getDataSourceHealth,
   getDataSourceStatus,
+  getSyncJob,
   getWorkerStats,
   listSyncJobs,
   listSyncSchedules,
@@ -115,11 +116,11 @@ export const useSyncStore = defineStore('sync', () => {
     }
   }
 
-  async function fetchSyncJobs() {
+  async function fetchSyncJobs(status?: SyncJobStatus, limit?: number) {
     isLoading.value = true
     error.value = null
     try {
-      const resp = await listSyncJobs()
+      const resp = await listSyncJobs(status, limit)
       jobs.value = resp.jobs
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to fetch sync jobs'
@@ -127,6 +128,19 @@ export const useSyncStore = defineStore('sync', () => {
     } finally {
       isLoading.value = false
     }
+  }
+
+  /**
+   * 动作后的单条回读（A-08 步骤 3「不靠乐观更新」的落点）。
+   *
+   * cancel/retry 之后整表重读太粗：抽屉里正看着这条作业，列表刷新不会保证
+   * 抽屉内容与后端一致。回读单条 + applyJobUpdate 才让"我点了取消之后看到的
+   * 状态"是后端写成的状态，而不是前端猜的。
+   */
+  async function refreshJob(jobId: string): Promise<SyncJob> {
+    const job = await getSyncJob(jobId)
+    applyJobUpdate(job)
+    return job
   }
 
   // Upsert one job — the merge point for SSE progress events and polling.
@@ -384,6 +398,7 @@ export const useSyncStore = defineStore('sync', () => {
     fetchDataSourceStatus,
     fetchDataSourceHealth,
     fetchSyncJobs,
+    refreshJob,
     applyJobUpdate,
     createJob,
     importData,

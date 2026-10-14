@@ -183,9 +183,10 @@ test.describe('D7-28: Data Sync — Full Workflow (Create → Execute → Comple
     // Verify key components exist
     await expect(page.locator('.data-sync-page')).toBeVisible();
 
-    // Verify sync status section exists
-    const statusSection = page.locator('text=同步状态');
-    await expect(statusSection).toBeVisible();
+    // A-08 步骤 3 改判：`text=同步状态` 指向的 SyncStatusPanel 已删除，能力并入
+    // 作业队列面板。选择器改用 data-testid —— 按文案找元素，重构一次就碎一次（AUD-61 教训）。
+    await expect(page.locator('[data-testid="queue-panel"]')).toBeVisible();
+    await expect(page.locator('[data-testid="queue-table"], [data-testid="queue-empty"]')).toBeVisible();
   });
 
   test('UI: Data source panel displays correctly', async ({ page }) => {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { NSpace, NGrid, NGridItem, NH1 } from 'naive-ui'
+import JobQueuePanel from '@/components/sync/JobQueuePanel.vue'
 import DataSourcePanel from '@/components/sync/DataSourcePanel.vue'
-import SyncStatusPanel from '@/components/sync/SyncStatusPanel.vue'
 import DataImportForm from '@/components/sync/DataImportForm.vue'
 </script>
 
@@ -9,19 +9,22 @@ import DataImportForm from '@/components/sync/DataImportForm.vue'
   <div class="data-sync-page">
     <NH1>数据管理</NH1>
 
-    <NGrid :cols="2" :x-gap="16" :y-gap="16" responsive="screen">
-      <NGridItem>
-        <DataSourcePanel />
-      </NGridItem>
+    <!-- A-08：主区是作业队列（列表 / 筛选 / 详情 / 取消 / 重试），
+         数据源与导入是辅区 —— 导入本身就是"往队列里加一条作业"，
+         所以它排在队列后面，看得见自己刚创建的那条。 -->
+    <JobQueuePanel />
 
-      <NGridItem>
-        <SyncStatusPanel />
-      </NGridItem>
+    <NSpace vertical :size="16" class="data-sync-secondary">
+      <NGrid :cols="2" :x-gap="16" :y-gap="16" responsive="screen">
+        <NGridItem>
+          <DataSourcePanel />
+        </NGridItem>
 
-      <NGridItem>
-        <DataImportForm />
-      </NGridItem>
-    </NGrid>
+        <NGridItem>
+          <DataImportForm />
+        </NGridItem>
+      </NGrid>
+    </NSpace>
   </div>
 </template>
 
@@ -30,5 +33,10 @@ import DataImportForm from '@/components/sync/DataImportForm.vue'
   padding: 24px;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+.data-sync-secondary {
+  margin-top: 16px;
+  width: 100%;
 }
 </style>
