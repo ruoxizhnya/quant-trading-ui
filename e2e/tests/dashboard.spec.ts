@@ -37,9 +37,9 @@ test.describe('Dashboard Page (Vue SPA)', () => {
 
     await expect(navItems.filter({ hasText: '控制台' })).toBeVisible();
     await expect(navItems.filter({ hasText: '回测引擎' })).toBeVisible();
-    await expect(navItems.filter({ hasText: '选股器' })).toBeVisible();
+    await expect(navItems.filter({ hasText: '选股与市场' })).toBeVisible();
     await expect(navItems.filter({ hasText: '策略 Copilot' })).toBeVisible();
-    await expect(navItems.filter({ hasText: '策略实验室' })).toBeVisible();
+    await expect(navItems.filter({ hasText: '策略库' })).toBeVisible();
   });
 
   test('header shows logo, API status and clock', async ({ page }) => {
@@ -100,7 +100,7 @@ test.describe('Dashboard Page (Vue SPA)', () => {
     expect(count).toBe(4);
 
     await expect(tiles.filter({ hasText: '回测引擎' })).toBeVisible();
-    await expect(tiles.filter({ hasText: '选股器' })).toBeVisible();
+    await expect(tiles.filter({ hasText: '选股与市场' })).toBeVisible();
     await expect(tiles.filter({ hasText: '策略 Copilot' })).toBeVisible();
     await expect(tiles.filter({ hasText: '因子分析' })).toBeVisible();
   });

@@ -14,7 +14,7 @@ test.describe('Cross-page Navigation & Integration (Vue SPA)', () => {
     await page.waitForSelector('.dashboard-page', { timeout: 15000 });
     await expect(page.locator('.dashboard-page')).toBeVisible();
 
-    await page.locator('.nav-item').filter({ hasText: '回测引擎' }).click();
+    await page.locator('[data-nav-path="/backtest"]').click();
     await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('.bt-page', { timeout: 20000 });
     await expect(page).toHaveURL(/\/backtest/);
@@ -51,14 +51,16 @@ test.describe('Cross-page Navigation & Integration (Vue SPA)', () => {
     await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('.dashboard-page', { timeout: 15000 });
 
+    // 用 data-nav-path 而不是文案：A-04 把标签收敛成一套（选股器→选股与市场、
+    // 策略实验室→策略库），按文案点导航的用例当场就断了 —— 这正是 AUD-61 说的"靠文案即碎"
     const routes = [
-      { label: '选股器', urlPattern: /\/screener/, selector: '.screener-page' },
-      { label: '策略 Copilot', urlPattern: /\/copilot/, selector: '.copilot-page' },
-      { label: '策略实验室', urlPattern: /\/strategy-lab/, selector: '.strategy-lab-page' },
+      { path: '/screener', urlPattern: /\/screener/, selector: '.screener-page' },
+      { path: '/copilot', urlPattern: /\/copilot/, selector: '.copilot-page' },
+      { path: '/strategy-lab', urlPattern: /\/strategy-lab/, selector: '.strategy-lab-page' },
     ];
 
     for (const route of routes) {
-      await page.locator('.nav-item').filter({ hasText: route.label }).click();
+      await page.locator(`[data-nav-path="${route.path}"]`).click();
       await page.waitForLoadState('domcontentloaded');
       await page.waitForSelector(route.selector, { timeout: 20000 });
       await expect(page).toHaveURL(route.urlPattern);
@@ -115,10 +117,10 @@ test.describe('Cross-page Navigation & Integration (Vue SPA)', () => {
     await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('.nav-item', { timeout: 15000 });
 
-    await page.locator('.nav-item').filter({ hasText: '选股器' }).click();
+    await page.locator('[data-nav-path="/screener"]').click();
     await page.waitForLoadState('domcontentloaded');
 
-    await page.locator('.nav-item').filter({ hasText: '策略 Copilot' }).click();
+    await page.locator('[data-nav-path="/copilot"]').click();
     await page.waitForLoadState('domcontentloaded');
 
     // Initial page load + possible lazy-loaded component loads

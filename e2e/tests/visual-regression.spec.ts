@@ -75,7 +75,7 @@ test.describe('Visual Regression — Key Pages', () => {
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('.dashboard-page', { timeout: 15000 });
-    await page.locator('.nav-item').filter({ hasText: '回测引擎' }).click();
+    await page.locator('[data-nav-path="/backtest"]').click();
     await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('.bt-page', { timeout: 20000 });
     await page.waitForTimeout(500);
@@ -86,7 +86,7 @@ test.describe('Visual Regression — Key Pages', () => {
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('.dashboard-page', { timeout: 15000 });
-    await page.locator('.nav-item').filter({ hasText: '回测引擎' }).click();
+    await page.locator('[data-nav-path="/backtest"]').click();
     await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('.bt-page', { timeout: 20000 });
     const form = page.locator('.n-card').first();
@@ -125,7 +125,7 @@ test.describe('Visual Regression — Key Pages', () => {
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('.dashboard-page', { timeout: 15000 });
-    await page.locator('.nav-item').filter({ hasText: '选股器' }).click();
+    await page.locator('[data-nav-path="/screener"]').click();
     await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(500);
     await expect(page).toHaveScreenshot('stock-screener.png');
@@ -137,7 +137,7 @@ test.describe('Visual Regression — Key Pages', () => {
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('.dashboard-page', { timeout: 15000 });
-    await page.locator('.nav-item').filter({ hasText: '数据同步' }).click();
+    await page.locator('[data-nav-path="/data-sync"]').click();
     await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(500);
     await expect(page).toHaveScreenshot('data-sync.png');
@@ -164,7 +164,7 @@ test.describe('Visual Regression — Key Pages', () => {
     await page.goto('/');
     await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('.dashboard-page', { timeout: 15000 });
-    await page.locator('.nav-item').filter({ hasText: '回测引擎' }).click();
+    await page.locator('[data-nav-path="/backtest"]').click();
     await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('.bt-page', { timeout: 20000 }).catch(() => {});
     await page.waitForTimeout(500);

@@ -14,7 +14,7 @@ test.describe('Strategy Lab Page (Vue SPA)', () => {
     await page.waitForSelector('.strategy-lab-page', { timeout: 15000 });
 
     await expect(page.locator('.strategy-lab-page')).toBeVisible();
-    await expect(page.locator('.lab-header h1')).toContainText('策略实验室');
+    await expect(page.locator('.lab-header h1')).toContainText('策略库');
   });
 
   test('header shows title and action buttons', async ({ page }) => {
