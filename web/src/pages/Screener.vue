@@ -1,6 +1,6 @@
 <template>
   <div class="screener-page">
-    <n-card title="🔍 选股器">
+    <n-card title="选股与市场">
       <n-form :model="form" label-placement="left" :label-width="100">
         <n-grid :cols="4" :x-gap="16" :y-gap="16" responsive="screen">
           <n-grid-item>

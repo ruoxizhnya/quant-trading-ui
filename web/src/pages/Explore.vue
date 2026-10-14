@@ -155,7 +155,7 @@ onUnmounted(stopTimer)
 
 <template>
   <div class="explore-page">
-    <NH1>探索观察台</NH1>
+    <NH1>探索观察</NH1>
 
     <NCard size="small" class="controls">
       <NSpace align="center" :wrap="true">

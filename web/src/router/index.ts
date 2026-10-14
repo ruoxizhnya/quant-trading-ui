@@ -43,7 +43,7 @@ const routes: RouteRecordRaw[] = [
         path: 'screener',
         name: 'screener',
         component: () => import('@/pages/Screener.vue'),
-        meta: { title: '选股器' },
+        meta: { title: '选股与市场' },
       },
       {
         path: 'copilot',
@@ -56,13 +56,13 @@ const routes: RouteRecordRaw[] = [
         path: 'explore',
         name: 'explore',
         component: () => import('@/pages/Explore.vue'),
-        meta: { title: '探索观察台' },
+        meta: { title: '探索观察' },
       },
       {
         path: 'strategy-lab',
         name: 'strategy-lab',
         component: () => import('@/pages/StrategyLab.vue'),
-        meta: { title: '策略实验室' },
+        meta: { title: '策略库' },
       },
       {
         // P3: visual drag-drop multi-factor strategy builder.
@@ -75,7 +75,7 @@ const routes: RouteRecordRaw[] = [
         path: 'data-sync',
         name: 'data-sync',
         component: () => import('@/pages/DataSync.vue'),
-        meta: { title: '数据同步' },
+        meta: { title: '数据管理' },
       },
       {
         path: 'alerts',
@@ -88,7 +88,7 @@ const routes: RouteRecordRaw[] = [
         path: 'evidence',
         name: 'evidence',
         component: () => import('@/pages/Evidence.vue'),
-        meta: { title: '证据查询' },
+        meta: { title: '证据质问' },
       },
       {
         // TASKS.md P5-3: factor_cache row -> its evidence coordinates, with
@@ -96,7 +96,7 @@ const routes: RouteRecordRaw[] = [
         path: 'factors',
         name: 'factors',
         component: () => import('@/pages/FactorCitation.vue'),
-        meta: { title: '因子证据' },
+        meta: { title: '因子研究' },
       },
     ],
   },

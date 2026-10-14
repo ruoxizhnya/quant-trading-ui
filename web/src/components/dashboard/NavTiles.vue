@@ -36,9 +36,9 @@ interface NavTile {
 // AI Copilot 必须走概率通道 --q-ai-text —— 这条不是配色偏好，是 DESIGN.md §3 双通道硬规则。
 const tiles: NavTile[] = [
   { to: '/backtest', icon: h(NIcon, null, () => h(AnalyticsOutline)), title: '回测引擎', desc: '单股票/组合回测分析', color: 'var(--q-primary)' },
-  { to: '/screener', icon: h(NIcon, null, () => h(SearchOutline)), title: '因子选股', desc: '多因子筛选与排名', color: 'var(--q-series-2)' },
-  { to: '/strategy-lab', icon: h(NIcon, null, () => h(SettingsOutline)), title: '策略实验室', desc: '策略管理与参数优化', color: 'var(--q-series-3)' },
-  { to: '/copilot', icon: h(NIcon, null, () => h(ChatbubblesOutline)), title: 'AI Copilot', desc: '智能策略生成助手', color: 'var(--q-ai-text)' },
+  { to: '/screener', icon: h(NIcon, null, () => h(SearchOutline)), title: '选股与市场', desc: '多因子筛选与排名', color: 'var(--q-series-2)' },
+  { to: '/strategy-lab', icon: h(NIcon, null, () => h(SettingsOutline)), title: '策略库', desc: '策略管理与参数优化', color: 'var(--q-series-3)' },
+  { to: '/copilot', icon: h(NIcon, null, () => h(ChatbubblesOutline)), title: '策略 Copilot', desc: '智能策略生成助手', color: 'var(--q-ai-text)' },
   { to: '/dashboard?tab=batch', icon: h(NIcon, null, () => h(FlashOutline)), title: '批量回测', desc: '多策略多标的对比', color: 'var(--q-series-5)' },
 ]
 </script>

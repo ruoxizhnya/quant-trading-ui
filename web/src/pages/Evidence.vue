@@ -14,7 +14,7 @@ const contentHash = computed(() =>
 
 <template>
   <div class="evidence-page">
-    <NH1>证据查询</NH1>
+    <NH1>证据质问</NH1>
     <EvidenceLookup :initial-hash="contentHash" />
   </div>
 </template>

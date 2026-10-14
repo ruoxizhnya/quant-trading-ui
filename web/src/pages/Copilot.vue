@@ -1,6 +1,6 @@
 <template>
   <div class="copilot-page">
-    <n-card title="🤖 策略 Copilot">
+    <n-card title="策略 Copilot">
       <div class="chat-container">
         <div class="messages" ref="messagesRef">
           <div v-for="(msg, i) in messages" :key="i" :class="['msg', msg.role]">
