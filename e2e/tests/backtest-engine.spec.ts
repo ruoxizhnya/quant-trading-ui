@@ -532,8 +532,11 @@ test.describe('K9: status 三值 — invalid 显式警示（全 stub，不需要
     await expect(invalidAlert).toBeVisible({ timeout: 15000 });
     const items = page.locator('[data-testid="invalid-reason-item"]');
     await expect(items).toHaveCount(2);
-    await expect(items.nth(0)).toHaveText('empty_universe');
-    await expect(items.nth(1)).toHaveText('zero_trades');
+    // A-07 断言 2/3：原因走 `utils/runStatus` 全站唯一口径 —— 这一页显示的是
+    // 人话，与快速回测卡片逐字相同。原先这里断的是原始 Code（empty_universe），
+    // 两份措辞并存正是本任务要收的东西，所以断言随**行为改动**一起改。
+    await expect(items.nth(0)).toHaveText('股票池为空');
+    await expect(items.nth(1)).toHaveText('一次成交都没有');
 
     // 状态标签由 status 三值决定（不是 result.id 推出来的「成功」）
     await expect(page.locator('[data-testid="result-status-tag"]')).toContainText('无效运行');

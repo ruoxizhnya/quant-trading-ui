@@ -142,8 +142,11 @@ describe('BacktestEngine.vue — status 三值判据', () => {
     expect(wrapper.find('[data-testid="result-invalid"]').exists()).toBe(true)
     const items = wrapper.findAll('[data-testid="invalid-reason-item"]')
     expect(items.length).toBe(2)
-    expect(items[0].text()).toBe('empty_universe')
-    expect(items[1].text()).toBe('zero_trades')
+    // A-07 起原因走 utils/runStatus 的全站唯一口径：这一页显示"股票池为空"，
+    // 与快速回测卡片逐字相同。原先这里断的是原始 Code —— 两份措辞并存正是
+    // 这次要收的东西，所以断言随行为一起改，不是为了让测试变绿。
+    expect(items[0].text()).toBe('股票池为空')
+    expect(items[1].text()).toBe('一次成交都没有')
     expect(wrapper.find('[data-testid="result-failed"]').exists()).toBe(false)
     // 状态标签由 status 决定：「无效运行」，不是 result.id 推出来的绿色成功。
     expect(wrapper.find('[data-testid="result-status-tag"]').text()).toContain('无效运行')

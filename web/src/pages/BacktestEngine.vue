@@ -42,8 +42,8 @@
         <n-space align="center">
           <!-- K9：状态标签由 result.status 三值决定（不是 result.id 是否存在 ——
                id 是身份不是结论，invalid / failed 的运行同样带 id） -->
-          <n-tag :type="statusTagType" size="small" data-testid="result-status-tag">
-            {{ statusTagLabel }}{{ result.id ? ` · ID: ${result.id}` : ' · 未持久化' }}
+          <n-tag :type="statusTag.type" size="small" data-testid="result-status-tag">
+            {{ statusTag.label }}{{ result.id ? ` · ID: ${result.id}` : ' · 未持久化' }}
           </n-tag>
           <n-text depth="3" style="font-size: 12px">
             <n-checkbox v-model:checked="compareSelected" :disabled="!result.id">
@@ -83,8 +83,8 @@
         title="无效运行 —— 结果不可用作成功观测"
         data-testid="result-invalid"
       >
-        <ul data-testid="invalid-reasons">
-          <li v-for="code in invalidReasons" :key="code" data-testid="invalid-reason-item">{{ code }}</li>
+        <ul data-testid="invalid-reasons" class="invalid-reasons">
+          <li v-for="code in invalidReasons" :key="code" data-testid="invalid-reason-item">{{ invalidReasonLabel(code) }}</li>
         </ul>
       </n-alert>
       <n-alert v-if="isFailedResult" type="error" title="回测失败" data-testid="result-failed">
@@ -131,6 +131,8 @@ import { useBacktestStore } from '@/stores/backtest'
 import { runBacktest as apiRunBacktest, getBacktestReport, getOHLCV, exportHtml, type OHLCVAPIResponse, type OHLCVDataPoint } from '@/api/backtest'
 import { getStrategies } from '@/api/strategy'
 import { fmtPercent, fmtNumber } from '@/utils/format'
+// A-07：三值的颜色/措辞与无效原因的人话化都在 utils/runStatus，全站一份
+import { invalidReasonLabel, statusTagFor } from '@/utils/runStatus'
 import { loadCompareIds, saveCompareIds } from '@/constants/backtest'
 import type { BacktestResult, PortfolioPoint, Trade, Strategy } from '@/types/api'
 import BacktestForm from '@/components/backtest/BacktestForm.vue'
@@ -247,22 +249,7 @@ const isInvalidResult = computed(() => resultStatus.value === 'invalid')
 const isFailedResult = computed(() => resultStatus.value === 'failed')
 const invalidReasons = computed(() => result.value?.invalid_reasons ?? [])
 
-const statusTagType = computed(() => {
-  switch (resultStatus.value) {
-    case 'completed': return 'success'
-    case 'invalid': return 'warning'
-    case 'failed': return 'error'
-    default: return 'default'
-  }
-})
-const statusTagLabel = computed(() => {
-  switch (resultStatus.value) {
-    case 'completed': return '已完成'
-    case 'invalid': return '无效运行'
-    case 'failed': return '失败'
-    default: return '未知状态'
-  }
-})
+const statusTag = computed(() => statusTagFor(resultStatus.value))
 
 watch(() => asyncState.value.result, (newResult) => {
   if (newResult) {
@@ -481,6 +468,8 @@ function goCompare() {
   gap: 20px;
 }
 .results-section { display: flex; flex-direction: column; gap: 16px; }
+/* A-07 断言 6：invalid 的原因列表用站点给 invalid 定的色（--q-warning） */
+.invalid-reasons { color: var(--q-warning); }
 .empty-state { padding: 60px 0; }
 .mode-toggle { display: flex; justify-content: flex-end; }
 </style>

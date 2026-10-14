@@ -118,6 +118,18 @@ export interface CompareMissing {
   reason: string
 }
 
+/**
+ * 「跑完了但无效」（ResultSpec `status=invalid`，OBS-01）的运行在对比视图里的
+ * 呈现 —— 后端**已经**把它从 `entries` 里摘出来单独发（`pkg/backtest/reporting/compare.go`
+ * 的 `CompareInvalidEntry`），原因就在字段里。此前本类型压根没有这个字段，
+ * 于是契约里有、界面上没有：一次无效运行从对比表里消失，不留一句解释。
+ */
+export interface CompareInvalid {
+  id: string
+  strategy: string
+  invalid_reasons?: string[]
+}
+
 export interface CompareBest {
   total_return_id?: string
   sharpe_ratio_id?: string
@@ -133,6 +145,8 @@ export interface CompareReport {
   requested: number
   resolved: number
   entries: CompareEntry[]
+  /** 跑完但无效的运行：不进 entries，但必须在界面上留名和原因（A-07 断言 4） */
+  invalid: CompareInvalid[]
   missing: CompareMissing[]
   best: CompareBest
 }

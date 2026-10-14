@@ -63,6 +63,32 @@
         </n-space>
       </n-alert>
 
+      <!-- A-07 断言 4：被排除项与其原因必须显式呈现。这条与上面那条**不能合并**
+           —— "没加载出来"和"跑完了但被判无效"是两回事，混成一框等于把
+           "这项不可信"降级成"这项缺席"。后端早就把 invalid 从 entries 里摘出来
+           单发了（compare.go 的 CompareInvalidEntry），而前端类型里没这个字段，
+           于是它从对比表里消失且不留解释 —— 正是"少一项也不许静默"要拦的那类。
+           原因文案走 `utils/runStatus` 全站唯一口径：同一条 `empty_universe`
+           在快速回测显示"股票池为空"、在这里显示原始 Code，等于又开第二套口径。 -->
+      <n-alert
+        v-if="report.invalid.length > 0"
+        type="warning"
+        title="已排除的无效运行 —— 它们跑完了，但结果不可用作成功观测"
+        :show-icon="true"
+        data-testid="compare-invalid"
+        style="margin-bottom: 16px"
+      >
+        <ul class="excluded-list" data-testid="compare-invalid-list">
+          <li v-for="iv in report.invalid" :key="iv.id" data-testid="compare-invalid-item">
+            <n-tag type="warning" size="small" :bordered="false">{{ iv.strategy || '—' }}</n-tag>
+            <n-text depth="3" class="excluded-id">{{ iv.id }}</n-text>
+            <n-text class="excluded-reasons">
+              {{ invalidReasonsText(iv.invalid_reasons) }}
+            </n-text>
+          </li>
+        </ul>
+      </n-alert>
+
       <n-grid :cols="4" :x-gap="12" responsive="screen" item-responsive>
         <n-gi span="4 m:2 l:1">
           <n-card size="small" class="metric-card">
@@ -170,6 +196,7 @@ import { Chart, registerables } from 'chart.js'
 import { compareBacktests, type CompareReport, type CompareEntry } from '@/api/backtest'
 import { loadCompareIds, clearCompareIds } from '@/constants/backtest'
 import { fmtPercent, fmtNumber } from '@/utils/format'
+import { invalidReasonsText } from '@/utils/runStatus'
 import { chartPalette } from '@/styles/palette'
 import EvidenceProbe from '@/components/evidence/EvidenceProbe.vue'
 
@@ -383,6 +410,29 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+.excluded-list {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  list-style: none;
+}
+.excluded-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+.excluded-id {
+  font-family: var(--q-mono);
+  font-size: 11px;
+}
+.excluded-reasons {
+  font-size: 12px;
+  /* A-07 断言 6：invalid 的原因行用站点给 invalid 定的色（--q-warning），
+     与 QuickBacktest / BacktestEngine / StrategyBuilder 同一画法 */
+  color: var(--q-warning);
+}
+
 .compare-page {
   max-width: 1400px;
   margin: 0 auto;

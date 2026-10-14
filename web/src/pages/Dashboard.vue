@@ -46,7 +46,7 @@ import { useBacktestStore } from '@/stores/backtest'
 import { getMarketIndex } from '@/api/market'
 import { getStrategies } from '@/api/strategy'
 import { runBacktest as apiRunBacktest } from '@/api/backtest'
-import type { Strategy, MarketIndex } from '@/types/api'
+import type { Strategy, MarketIndex, BacktestResult } from '@/types/api'
 import MarketMetrics from '@/components/dashboard/MarketMetrics.vue'
 import QuickBacktest from '@/components/dashboard/QuickBacktest.vue'
 import NavTiles from '@/components/dashboard/NavTiles.vue'
@@ -63,13 +63,7 @@ const marketLoading = ref(false)
 const marketMetrics = ref<MarketIndex | Record<string, unknown>>({})
 const strategiesCache = ref<string[]>([])
 const quickRunning = ref(false)
-const quickResult = ref<QuickResult | null>(null)
-
-interface QuickResult {
-  id: string
-  total_return?: number
-  sharpe_ratio?: number
-}
+const quickResult = ref<BacktestResult | null>(null)
 
 const quickForm = reactive({
   strategy: 'momentum',
@@ -117,10 +111,13 @@ async function runQuickBacktest() {
       commission_rate: 0.0003,
       slippage_rate: 0.0001,
     })
-    if (!res || !res.id) {
-      throw new Error('回测返回结果无效：缺少ID')
+    // 这里**不判成功**：只确认响应认得出自己（id 是身份，不是结论）。
+    // 成功与否由 status 决定，交给 QuickBacktest 按三值分别渲染 ——
+    // 包括 status 缺失/不认识的情况，那种时候不许默认成"已完成"。
+    if (!res?.id) {
+      throw new Error('回测响应缺少 id，无法定位这次运行')
     }
-    quickResult.value = { id: res.id, total_return: res.total_return, sharpe_ratio: res.sharpe_ratio }
+    quickResult.value = res
     backtestStore.addToHistory(res)
   } catch (e: unknown) {
     message.error('快速回测失败: ' + (e instanceof Error ? e.message : String(e)))

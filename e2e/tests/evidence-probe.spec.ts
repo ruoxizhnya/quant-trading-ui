@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { apiRequest, waitForBackendReady } from '../helpers/api';
+import { apiRequest, getJsonWithBackoff, waitForBackendReady } from '../helpers/api';
 import { isolateTestEnvironment } from '../helpers/isolation';
 
 /**
@@ -22,11 +22,15 @@ const ABSENT_HASH = '0'.repeat(64);
 /** 拿一条真完成的回测 id；拿不到就让测试红，不静默 skip */
 async function aCompletedBacktestID(): Promise<string> {
   const ctx = await apiRequest();
-  const res = await ctx.get('/api/backtest?limit=20');
-  expect(res.ok()).toBe(true);
-  const body = (await res.json()) as { jobs?: { id: string; status: string }[] };
+  // 只对 429 退避（本地限流桶是全进程共享的，见 helpers/api.ts 的注记）；
+  // 其他状态码原样交给下面的断言去红。body 必须在 dispose 之前读。
+  const res = await getJsonWithBackoff(ctx, '/api/backtest?limit=20');
+  const body = res.ok()
+    ? ((await res.json()) as { jobs?: { id: string; status: string }[] })
+    : null;
   await ctx.dispose();
-  const hit = (body.jobs ?? []).find((j) => j.status === 'completed');
+  expect(body, `GET /api/backtest 未成功（末次状态码 ${res.status()}）`).toBeTruthy();
+  const hit = (body!.jobs ?? []).find((j) => j.status === 'completed');
   expect(hit, '本地库里没有 completed 回测，A-06 的回测报告用例无法取证').toBeTruthy();
   return hit!.id;
 }

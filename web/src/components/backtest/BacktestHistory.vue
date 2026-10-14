@@ -91,6 +91,7 @@
 import { computed } from 'vue'
 import { NCard, NCollapse, NCollapseItem, NTable, NTag, NSpace, NButton, NEmpty } from 'naive-ui'
 import { fmtPercent, fmtNumber, formatDate } from '@/utils/format'
+import { runStatusTag } from '@/utils/runStatus'
 import type { HistoryEntry, TradeDisplay } from '@/types/api'
 
 const props = defineProps<{
@@ -138,15 +139,9 @@ function itemDesc(item: HistoryEntry): string {
   return desc
 }
 
-// K9：由 status 三值派生的明细标识（仅非 completed 时返回，completed 不加噪）。
-// 返回 null 表示「无标识」——旧数据无 status 字段，同样落到这里。
-function statusTag(item: HistoryEntry): { type: 'warning' | 'error'; label: string } | null {
-  switch (item.status) {
-    case 'invalid': return { type: 'warning', label: '无效运行' }
-    case 'failed': return { type: 'error', label: '失败' }
-    default: return null
-  }
-}
+// K9 三值标识改用全站唯一口径（`utils/runStatus`）。原先这里是本地一份，
+// 与控制台的历史列表各写各的 —— 同一条无效运行从两个页面看会不一样。
+const statusTag = (item: HistoryEntry) => runStatusTag(item.status)
 
 function directionLabel(dir: string): string {
   switch (dir) {
