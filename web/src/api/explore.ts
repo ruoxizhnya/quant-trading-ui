@@ -50,6 +50,21 @@ export const DIMENSION_LABELS: Record<string, string> = {
   causal: '因果',
 }
 
+/**
+ * 六维的**固定展示顺序**（A-05 断言 1）。
+ *
+ * 为什么不靠 DIMENSION_LABELS 的键序：那是对象属性顺序，虽然现代引擎稳定，但"六维恒为
+ * 六行"是契约级要求，不该挂在一个语言特性的巧合上。
+ */
+export const DIMENSION_ORDER: string[] = [
+  'statistical',
+  'economic',
+  'robustness',
+  'bias',
+  'redundancy',
+  'causal',
+]
+
 export function dimensionLabel(d: string): string {
   return DIMENSION_LABELS[d] ?? d
 }
