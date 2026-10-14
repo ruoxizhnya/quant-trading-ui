@@ -2,6 +2,8 @@
 import { NSpace, NGrid, NGridItem, NH1 } from 'naive-ui'
 import JobQueuePanel from '@/components/sync/JobQueuePanel.vue'
 import SchedulePanel from '@/components/sync/SchedulePanel.vue'
+import SyncReadoutPanel from '@/components/sync/SyncReadoutPanel.vue'
+import DataQualityPanel from '@/components/sync/DataQualityPanel.vue'
 import DataSourcePanel from '@/components/sync/DataSourcePanel.vue'
 import DataImportForm from '@/components/sync/DataImportForm.vue'
 </script>
@@ -21,13 +23,17 @@ import DataImportForm from '@/components/sync/DataImportForm.vue'
     <NSpace vertical :size="16" class="data-sync-secondary">
       <NGrid :cols="2" :x-gap="16" :y-gap="16" responsive="screen">
         <NGridItem>
-          <DataSourcePanel />
+          <SyncReadoutPanel />
         </NGridItem>
 
         <NGridItem>
-          <DataImportForm />
+          <DataSourcePanel />
         </NGridItem>
       </NGrid>
+
+      <DataQualityPanel />
+
+      <DataImportForm />
     </NSpace>
   </div>
 </template>
