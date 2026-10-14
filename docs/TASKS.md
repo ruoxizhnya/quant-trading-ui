@@ -25,6 +25,42 @@
   |---|---|---|---|---|---|
   | （阶段一实测后填写） | | | | | |
 
+- **实测登记（2026-10-14，A-07 收口时顺手取的真实读数；阶段一的 fixme 转换仍未做）**：
+  - **179 条用例 = 61 failed / 116 passed / 2 skipped**（`workers: 1`，本地栈齐全）。
+    **本节 ② 里"127 passed / 34 failed"那份 2026-09-26 的历史读数已经过时**，
+    红条数在涨（34 → 61），而涨的部分主要是下面第 ④ 类（共享限流）与第 ① 类（死选择器）。
+  - **一处方法学错误必须先认**：此前两次"全量套件 0 failed"的读数**都是错的** ——
+    命令写成 `npx playwright test | tail -30`，**管道把退出码换成 `tail` 的 0**，
+    而截断恰好把红清单整段切掉。判据只能是不截断重跑 + 读 playwright 自己的退出码
+    （`EXIT=1`）。台账里 A-06 那条"全量 0 failed"已按此更正。
+  - 按 spec 的红分布（共 61）：copilot-e2e 9、backtest-engine 9、data-sync-error 6、
+    data-sync 6、rbac-open-access 5、dashboard 5、evidence-probe 4、critical-e2e 4、
+    visual-regression 3、strategy-selector 2、status-tristate 2、api-negative 2、
+    api-backtest 2、data-sync-schedule 1、cross-navigation 1。
+  - 四类根因，各附**当场核过**的证据：
+    ① **死选择器 / 结构漂移**（阶段二的活）。例：`dashboard.spec.ts:75` 等
+    `.quick-bt-card` —— `git show HEAD:web/src/components/dashboard/QuickBacktest.vue`
+    里**这个类名 0 命中**，全仓也 0 命中 ⇒ 这条红与本轮改动无关，早于本轮。
+    ② **strict-mode 撞上后加的结构**。例：`backtest-engine.spec.ts:49` 断
+    `.n-button--primary-type` 唯一，但 `BacktestEngine.vue` 的同步/异步切换
+    （`asyncMode = ref(true)`，HEAD 里 `:155` 就是这个默认值）让页面上有**两枚**
+    primary 按钮 ⇒ 选择器必须换 `data-testid` 或 `getByRole(name)`。
+    ③ **纯 API 用例的数据期望**。例：`api-backtest.spec.ts:174` 断
+    `typeof report.win_rate === 'number'` 实得 `undefined` —— 这与 OBS-01 同源：
+    被判 `invalid` 的运行**指标键是缺席的**（2026-10-14 实测：`POST /api/backtest`
+    拿 `["csi300"]` 当票池，返回里没有 `total_return`/`sharpe_ratio`，却带着
+    `sortino_ratio=1.79e+308`）。用例假设"每次运行都带全指标"，那个假设已经不成立。
+    ④ **共享限流**。本地 analysis-service 的限流桶是**全进程共享**的，一次全量套件
+    里 `GET /api/backtest` 会 429，于是 `expect(res.ok())` 在**与自己改动无关**处变红。
+    本轮已把我自己写的两条 spec（`evidence-probe` / `status-tristate`）的取值 helper
+    改成走 `helpers/api.ts` 新增的 `getJsonWithBackoff` —— **只对 429 退避**
+    （404/500 照旧响），且退避预算必须远小于 30s 用例超时（第一版写 8×5s=40s，
+    把"429 红"变成了"超时红"，归因更难，已改）。其余 spec 的同类改造属阶段一/二，
+    **不在这里全仓铺开**。
+  - 红线不变：不得为消红放宽断言或删用例。上面 ③ 那条若要改期望值，必须先在
+    core 侧确认"invalid 运行不带指标"是**契约**而非缺陷（`contracts.CheckValidity`
+    与 ResultSpec 的口径支持前者），改的时候在登记行写明依据。
+
 - **④ 约束与非目标**：
   - DO NOT 放宽/删除断言、改期望值迁就现状、把红改成裸 `skip`——消红唯一合法路径是对齐选择器与期望。
   - DO NOT 在设计系统重构落地前做阶段二的重对齐（防白做工）。

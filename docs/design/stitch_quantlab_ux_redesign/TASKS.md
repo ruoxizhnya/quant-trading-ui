@@ -278,7 +278,7 @@ SVG 呈现属性**不解析 CSS 自定义属性**，直接把 `var()` 塞进 `co
 | 3 | ≤2 次点击到原始记录 | 实测 1 次：点入口即开抽屉**并自动解析**，记录直接出现。e2e 用步骤数佐证（一次 `click()` 后 `[data-testid="evidence-record"]` 即可见） |
 | 4 | 无 hash 显示"无法回溯" | 该文案是**渲染出来的可见文字**，不是 hover/title；单元 + e2e 各有一条专门喂无 hash 数据。e2e 逐个数 5 个入口都写着"无法回溯" |
 | 5 | 404 = "未摄取"警示态 | 与 `/evidence` 页**共用同一份三态机**（`useEvidenceLookup`），三态名逐一对上 [ODR-060](../../../../quant-trading-docs/docs/archive/odr/odr-060-p5-1-frontend-evidence-api.md) 定义的 命中 / 未摄取(warning) / 其他失败(error)。破坏验证：把 404 当故障 → 新单测 2 条 + **一条原有** `EvidenceLookup` 测试 + e2e 2 条同时红 |
-| 6 | `/evidence` 深链兜底不退化 | 抽屉内"在证据页打开"仍在（那是用户**主动**要的跳转）；`/evidence?content_hash=` 用真记录验：取回 `akshare / akshare.stock_financial_abstract / 600519.SH/2024Q1`。全量 playwright **116 passed / 2 skipped / 0 failed** |
+| 6 | `/evidence` 深链兜底不退化 | 抽屉内"在证据页打开"仍在（那是用户**主动**要的跳转）；`/evidence?content_hash=` 用真记录验：取回 `akshare / akshare.stock_financial_abstract / 600519.SH/2024Q1`。<br>⚠️ **本行原先还写着"全量 playwright 116 passed / 2 skipped / 0 failed"，那是错的读数，A-07 当日证伪并更正**：命令是 `npx playwright test \| tail -30`，**管道把退出码换成了 `tail` 的 0**，而截断只剩最后 30 行，红清单整体被切掉了。A-07 用不截断的重跑实测：**61 failed / 116 passed / 2 skipped**（共 179）。**这 61 条不是 A-06/A-07 引入的**，归因见 [AUD-61](../../TASKS.md) 的 2026-10-14 实测登记（死选择器、async 默认态导致的 strict-mode、纯 API 用例的数据期望、共享限流 429）。A-06 自己的 6 条在本轮改成"只对 429 退避"后**逐条绿** |
 
 **三处接线的现实差别（实测，不是设计假设）**
 
@@ -322,6 +322,99 @@ SVG 呈现属性**不解析 CSS 自定义属性**，直接把 `var()` 塞进 `co
 4. 含 `invalid` 的混合结果集进入对比页时，被排除项与其原因被显式呈现（抄 `compare` 稿的 `GATE EXCLUDED` 画法）。
 5. 三值各有独立单测用例（3 条用例，不是 1 条参数化打天下）。
 6. `--q-warning` 在实现中被 `invalid` 态实际消费（当前该 token 历史消费数为 0）。
+
+## A-07 状态三值全站收口（K9 横切）　✅ **已完成 2026-10-14**（真后端 + **真无效运行**实测）
+
+落点：新增 `utils/runStatus.ts` —— 三值的**唯一**展示口径（`statusTagFor` 详情视角、
+`runStatusTag` 列表视角、`invalidReasonLabel`/`invalidReasonsText` 原因人话、
+`backtestValidityNote` 流水线产物措辞）。接线 6 处：`QuickBacktest.vue`、
+`ConsoleHistory.vue`、`BacktestHistory.vue`、`BacktestEngine.vue`、
+`BacktestCompare.vue`、`Copilot.vue`；另删掉 `Dashboard.vue` 与 `QuickBacktest.vue`
+各自那份 `interface QuickResult`（投影把 `status` 丢了，见断言 1）。
+新增单测 `runStatus.test.ts`(26) + `QuickBacktest.test.ts`(11) +
+`ConsoleHistory.test.ts`(6)，新增 `e2e/tests/status-tristate.spec.ts`(2)。
+
+| # | 断言 | 取证 |
+|---|---|---|
+| 1 | 不存在以 `result.id` 存在判成功的代码路径 | 全部 7 处 `*.id` 判定逐条读过：`BacktestEngine.vue:46`（只是把 id 印在标签后）、`:165`（是否已在对比集 —— 没 id 就**不能**加入对比）、`:403`（报告缺 id 时用路由参数回填）、`Dashboard.vue:117`（缺 id 抛错：id 是**身份**不是结论）、`stores/backtest.ts:69`（id 是历史条目的主键）、`BacktestCompare.vue:134`（最佳标记）、`StrategyBuilder.vue:262`（拖拽载荷）。**没有一处**是"有 id ⇒ 成功"。机械腿见断言 5 下的源码扫描 |
+| 2 | 三态在类型 / 组件 / 文案三处同口径 | 类型层 `RunStatus = 'completed'\|'invalid'\|'failed'`（`types/api.ts:44`，b28d5b6）；组件层六处全部 import 同一个 `utils/runStatus`；文案层由一条单测**钉住不漂移**：`statusTagFor('invalid')` 与 `runStatusTag('invalid')` 必须 `toEqual`（两个视角读同一张表，措辞不可能各自跑开） |
+| 3 | `invalid` 渲染警示样式**且**列出 `invalid_reasons` | 单测各一条断 `NTag` 的 `type` prop（断 class 是**空断言** —— naive-ui 不加 type 修饰类，走 CSS 变量）；真实数据：控制台卡片跑 `stock_pool=["csi300"]` ⇒ 屏幕上是「无效运行」+「股票池为空 · 一次成交都没有 · 指标是不可用值」，**一个指标都不显示** |
+| 4 | 混合结果集进对比页时被排除项与原因可见 | `e2e/tests/status-tristate.spec.ts` 两条：真后端走 `missing` 通道（用不存在的 id，理由见该文件注记）、mock 走 `invalid` 通道（本地库 **0 条 invalid 作业**，见下方"实测边界"）。两条都断"策略名 + 原因"，不只看 id |
+| 5 | 三值各有独立单测用例（不是 1 条参数化） | `QuickBacktest.test.ts` 三个独立 `describe`（completed / invalid / failed）+ 一个"status 缺失或第四种值"；`runStatus.test.ts` 同样分态。参数化写法看不出**默认落在哪一支**，而"缺 status 就当成功"正是本轮修的 bug 形状 |
+| 6 | `--q-warning` 被 `invalid` 态实际消费 | 断的是浏览器里的**计算色**：`toHaveCSS('color', 'rgb(245, 158, 11)')`（对比页原因行）+ 实测 `getComputedStyle` 读回同一值（快速回测卡的无效原因行）。措辞老实一点：那枚标签的色**早就**是这个值 —— `palette.ts` 的 `warning:'#f59e0b'` 经 `App.vue:67` 的 themeOverrides 喂给 naive-ui；本轮真正补上的是**原因文本**（原先是次级灰 `--q-text2`） |
+
+**另有一处扫描器现在能机械抓住的东西**：`QuickBacktest.vue` 与 `Dashboard.vue`
+原先各写一份 `interface QuickResult { id; total_return?; sharpe_ratio? }`。
+投影丢掉 `status` 的代价不是少个标签，而是一次 `status=invalid` 的运行会带着
+0 / 垃圾值进到这个卡片，被渲染成一枚绿色「收益 +0.00%」，与一次真成功的回测
+**逐像素相同**。现在 props 就是 `BacktestResult`。
+
+**断言 1 的机械腿（源码扫描，fail-closed 白名单）**：`runStatus.test.ts` 里
+「凡渲染 `total_return` 的文件必须**真的读 status**」，两条腿都做过破坏验证 ——
+① 探针文件不进清单 ⇒ 「清单本身没漏」红；② 探针进了清单但只在**注释**里写
+`status` ⇒ 逐文件断言红。第二条是本轮加固的：第一版正则写的是 `\bstatus\b`，
+那是**假护栏**（一句 `// 见 K9 status 口径` 就能骗绿），现在要求出现比较、
+`switch(...status)` 或口径 helper。`Copilot.vue` 就是这条扫描器当场抓出来的
+第三处现场。
+
+**实测边界（哪些是真数据、哪些只能 mock，写清楚）**
+
+- **真数据 · 真无效运行**：`POST /api/backtest` 用 `["csi300"]` 当票池（core 侧
+  `docs/TASKS.md` §八 5 号条目查清的机制：字面量进 `StockPool` 而非 `IndexCode`
+  ⇒ 展开分支不可达 ⇒ 票池归零）。浏览器实测三处：快速回测卡（无效标签 + 人话原因，
+  指标一位不露）、控制台历史（该行标签是「无效运行」而不是方向「多」）、
+  回测报告页（状态标签 + 警示条 + 5 张指标卡全 `-`）。**这就是断言 3 的正证据**。
+- **实测顺手抓到的后端实情**（已写进 `ConsoleHistory.vue` 的注释，别再当假设）：
+  无效响应的指标键是**缺席**的 —— 返回 JSON 里没有 `total_return` / `sharpe_ratio`，
+  却带着 `sortino_ratio: 1.7976931348623157e+308`（MaxFloat64，正是 `garbage_metric`
+  那条 Code 的来由）。所以"invalid 保留数字"这句原先的说法**不准确**，
+  实际渲染是「收益: - | 夏普: -」。目前没有任何在渲染的界面会显示那个垃圾
+  `sortino_ratio`（唯一会显示它的 `DetailMetrics` 是死组件，A-06 已登记）。
+- **只能 mock**：对比页的 `invalid` 通道 —— 本地 `backtest_jobs` 里
+  **0 条 invalid**（`GET /api/backtest` 只回 completed），而 `limit` 顶到 100
+  也捞不到那 17 条 failed（它们比最新 100 条更老，接口没有 offset）。
+  **没有为取证往库里塞假行**（同 A-06 对 `factor_cache` 的裁决）。
+
+**自查记录（本轮自己犯的 / 自己抓的，都留档）**
+
+1. **破坏验证时我把组件改坏了**：为验证"unknown 不默认成成功"，把
+   `v-else-if="status==='completed'"` 改成 `v-else` —— 那与后面那支未知态
+   构成**两个兄弟 v-else**，Vue 模板直接编译失败，测试跑出 `no tests`；
+   还原时 Edit 又匹配到 2 处而失败。当时最危险的念头是 `git checkout` 该文件，
+   而那会把整个三值模板一起丢掉（A-07 全部未提交）。**教训**：变异要选
+   **不改变模板结构**的等价写法（最终用 `status !== 'invalid' && status !== 'failed'`，
+   两条未知态用例干净转红），还原锚点用分支上方那段唯一注释。
+2. **假护栏一处**：见上，`\bstatus\b` 换成"真的读 status"。
+   判据是"改坏能不能变红"，不是"看起来像在检查"。
+3. **复查自己的 A-07 代码又抓到两处二口径**：`BacktestCompare.vue` 把
+   `invalid_reasons` 原样 `join(' / ')` 贴给用户（同一份原因在快速回测卡是
+   「股票池为空」），`BacktestEngine.vue` 自带一份 `statusTagType`/`statusTagLabel`
+   switch（措辞与 `runStatus` 逐字相同但各改各的）。两处都收进 `utils/runStatus`。
+   为此改了**一条既有断言**：`BacktestEngine.test.ts` 原先断 `empty_universe`
+   原样出现在屏幕上 —— 那是行为被本任务**故意**改掉的那一种，按 §规范记为
+   "改测试因为需求变了"，不是为了让测试变绿。
+4. **e2e 的 429 不是代码问题，但红在无关处一样有毒**：`pickJob` 连打
+   `GET /api/backtest` 被**共享限流**打中，两条用例在与本次改动无关的地方红
+   （实测两轮）。只给 **429** 加退避重试，其他状态码照旧响 —— 500 是真坏了。
+   写第一版重试时我先 `dispose()` 再 `json()`，得到 `Response has been disposed`，
+   自己踩自己挖的坑；已在注释里留这句。**同类 flake 大概率遍布 e2e 套件**，
+   已按归属登记给 AUD-61，不在这里全仓铺开。
+5. **一条被我写歪的理由及时改准**：CSS 注释初稿说"naive-ui 的 warning 是它自己的
+   琥珀、外部覆盖不动"。实测 `getComputedStyle` 读回 `rgb(245,158,11)` —— 因为
+   `palette.ts` 早把 `warning` 映射成同一个值了。所以本轮补的**不是**"接上 token"，
+   而是"原因文本别再用次级灰"。注释与本文都已按实情改写。
+
+**门禁读数（A-07 收口时，如实分开写）**
+
+- 单测：`npx vitest run` **354 passed / 28 files**（本轮 +31）。
+- `npm run typecheck` **0 错**；`eslint` 对改动文件 **0 error**（warning 是全站存量的
+  属性换行风格，非本轮引入的写法问题）。
+- 本轮自己的 e2e：`status-tristate`（2）+ `evidence-probe`（6）**逐条绿**。
+- **全量 e2e 不是绿的**：`61 failed / 116 passed / 2 skipped`（179 条，退出码 1）。
+  这 61 条**不是 A-07 引入的**（归因与逐条证据见 [AUD-61](../../TASKS.md) 的
+  2026-10-14 实测登记）。我此前两次报"全量 0 failed"是把
+  `npx playwright test | tail -30` 的输出当成结论 —— **管道给的是 `tail` 的退出码**，
+  而截断切掉了红清单。判据只能是不截断重跑并读 playwright 自己的退出码。
 
 ## A-08 `data_sync` 整屏重做为作业控制台（F13）
 
@@ -474,3 +567,4 @@ A-10 → A-11          （补屏与字体）
 | 2026-10-14 | **A-01/A-02 自审复盘**，两处问题直接修掉：① 扫页判据全按 **hex** 抓 ⇒ `rgba()` 形式旧色全程不可见，其中包含**每页都渲染**的侧栏激活态。新增断言 8 + `RETIRED_RGBA_BASELINE` 守卫（废弃 hex 表→RGB 三元组，匹配任意 `rgba?(r,g,b,…)`），并补录 **7 处**进 A-03 工作清单。**清单本身也必须机器生成** —— 我第一版手抄 grep 成 6 条，脚本实测 7 条。破坏验证双向已做（注入红 / 不记账红 / 还原 36 绿）。② `DESIGN.md` §0.1 与 frontmatter 把 `--q-warning` 写成"升格为三值之一/一等公民"，实测 `var(--q-warning)` **消费仍为 0**（success/danger 各 9）—— 那是 A-07 的计划不是现状，已改为"色值修正 + 语义预留"并标注接线任务。另：`index.md` 第 2 项加"visual.md 是人读视图，真相源在 DESIGN.md"的导航注记 |
 | 2026-10-14 (2) | **A-03 完成**（8 文件扫页 + 三组棘轮基线全部收缩为空 ⇒ 永久门禁）。三处新登缺陷：① `NavTiles` 的 `.tile-icon` 整条规则**从未生效**（scoped 属性打不到 `h()` 造的 VNode），改 `:deep()` 后图标才真的着色；② `class-name` 不是 NIcon 的 prop，会落成字面属性且**不报错**，正确写法是 `class`；③ visual 基线不可复现的三个根因里 **V-1（页头秒级时钟）已用 `page.clock.setFixedTime` 修掉**（刻意不用 `clock.install` —— 那会冻结待触发的 setTimeout，把依赖轮询的页面打成空态），**V-2 盲等 `waitForTimeout`、V-3 `data-sync` 渲染活后台状态（纳秒作业 ID / 限流告警）另立待办**，属测试设计决策，不在扫页里顺手改。教训：**颜色改动的验收不能只看 grep** —— 断言 1/2/8 全是静态的，三个缺陷里两个静态断言永远抓不到 |
 | 2026-10-14 (3) | **A-03 自审第二轮**，四处直接修掉：① §0.2.2 声称的"等重量 alpha"实测**并不等量**（`primary-soft` 只有旧值 0.78×）—— 根因是我把合成后的绝对亮度当成 ΔL 记进文档、且从上次扫描输出里挑数而没当场重跑，这是"估算当实测"第三次犯，已按实测重解为 0.10 / 0.16 并连带重生成 12 张基线；② `palette.test.ts` 抬头一直写着三方对账，实际**从不核对 DESIGN.md** —— 补守卫后上线即抓到 7 处真漂移（`--q-series-1..6` + `--q-ai-light` 实现里有、基准里从未立项）；③ `BacktestHistory` 三条 `.pnl-*` 规则**永不匹配**（模板不产该类名，真正用的是 `TradeTable.vue`），我扫页时机械替换的是死代码；④ 用脚本扫完 A-01~A-03 全部 10 个文件的 scoped 选择器，另抓到一处**谎报**：侧栏 Redis/Postgres 状态点写死 `online`、`.offline` 规则永不命中 ⇒ 界面恒久宣称基础设施在线却什么都没查，登记为 **A-04 断言 7**（并补断言 8：12 项归并到 9 项）。四个盲点同一条教训：**静态 grep 命中 ≠ 该样式在页面上起作用** |
+| 2026-10-14 (7) | **A-07 完成**（详见该节）。三件事值得单独记：① 三值口径收进 `utils/runStatus.ts` 一份表，**动了别人的断言** —— `BacktestEngine.test.ts` 与 `backtest-engine.spec.ts` 各有一条在断屏幕上出现原始 Code（`empty_universe`），那是被本任务**故意**改掉的行为，不是为了让测试变绿；② 断言 1 的机械腿第一版 `\bstatus\b` 是**假护栏**（注释就能骗绿），改成"必须真的读 status"并用探针文件双向破坏验证；③ 真数据抓到无效响应的实情：指标键是**缺席**而非零值，同时带着 `sortino_ratio=1.79e+308`（MaxFloat64）—— 我原先写在 `ConsoleHistory` 注释里的"invalid 保留数字（它算出来了）"因此**不准确**，已按实测改写。另：`pickJob` 被**共享限流**打成无关处变红，只给 429 加退避（其他码照旧响），同类 flake 按归属登记给 AUD-61；④ **更正我自己写过的假结论** —— A-06 台账那句"全量 playwright 116 passed / 0 failed"是把 `npx playwright test \| tail -30` 的输出当结论（管道给的是 `tail` 的退出码，截断又切掉了红清单）。不截断重跑实测 **61 failed / 116 passed / 2 skipped**（退出码 1），该 61 条经逐类取证（死选择器 / strict-mode 撞 async 默认态 / 纯 API 用例的指标假设 / 共享限流）**均非 A-06~A-07 引入**，已登记给 AUD-61 |
