@@ -16,10 +16,13 @@
 **前端设计系统（根下）**
 
 1. [设计原则](principles.md) — 核心设计理念与决策准则
-2. [视觉规范](visual.md) — 色彩、字体、间距、布局
+2. [视觉规范](visual.md) — 色彩、字体、间距、布局（⚠️ **人读视图**；token 唯一真相源已收敛到 [DESIGN.md v2.0](stitch_quantlab_ux_redesign/obsidian_precision_quant/DESIGN.md)，运行时实现是 `web/src/styles/variables.css` + `palette.ts`）
 3. [组件库](components.md) — 自定义组件使用规范
 4. [交互规范](interaction.md) — 状态、动画、反馈模式
-5. [页面设计文档](pages/)
+5. [用户流程与场景规划](user-flows.md) — UI 重构的 user flows / scenarios / API 映射 / 后端缺口（2026-10-13）
+   - [Stitch 设计稿逐屏标注](stitch_quantlab_ux_redesign/ANNOTATIONS.md) — 12 屏逐控件 → API 端点处置清单（留/改/删/待后端/装饰 + 横切 6 项 + 缺屏 5 项 + 施工优先级），依 [ODR-066](../../../quant-trading-docs/docs/archive/odr/odr-066-stitch-design-review-and-boundary-ruling.md)（2026-10-13）
+   - [重构任务台账 TASKS](stitch_quantlab_ux_redesign/TASKS.md) — **UI 重构唯一任务台账**：A-01~A-11 可做 / B-01~B-06 延后（ai-service 未就绪）/ G1~G9 后端缺口，每任务 6 条可判定断言 + 取证方式（2026-10-13）
+6. [页面设计文档](pages/)
    - [控制台 Dashboard](pages/dashboard.md)
    - [回测引擎 BacktestEngine](pages/backtest-engine.md)
    - [选股器 Screener](pages/screener.md)
@@ -29,7 +32,7 @@
 
 **后端架构设计（子目录）**
 
-6. [模块化内核目标架构](kernel/target-architecture-modular-kernel.md) — 回测/实盘同构 + 双模式策略接口 + 四层表达力（2026-10-08，Draft 已拍板 D1–D5）
+7. [模块化内核目标架构](kernel/target-architecture-modular-kernel.md) — 回测/实盘同构 + 双模式策略接口 + 四层表达力（2026-10-08，Draft 已拍板 D1–D5）
 
 ---
 

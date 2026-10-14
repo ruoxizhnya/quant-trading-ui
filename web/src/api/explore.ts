@@ -50,8 +50,50 @@ export const DIMENSION_LABELS: Record<string, string> = {
   causal: '因果',
 }
 
+/**
+ * 六维的**固定展示顺序**（A-05 断言 1）。
+ *
+ * 为什么不靠 DIMENSION_LABELS 的键序：那是对象属性顺序，虽然现代引擎稳定，但"六维恒为
+ * 六行"是契约级要求，不该挂在一个语言特性的巧合上。
+ */
+export const DIMENSION_ORDER: string[] = [
+  'statistical',
+  'economic',
+  'robustness',
+  'bias',
+  'redundancy',
+  'causal',
+]
+
 export function dimensionLabel(d: string): string {
   return DIMENSION_LABELS[d] ?? d
+}
+
+/**
+ * 综合概率 = **已评估**维度的最小值；一维都没评估时返回 null（不是 0）。
+ *
+ * 为什么放在 api 层而不是组件里：结果流上的 "P 0.42" 与裁决面板里的"综合概率"是
+ * **同一个数**，两处各写一遍算法就会有一天不一致 —— 而用户看到的是同一个 attempt。
+ *
+ * `unassessed` 有否决权：被列为未评估的维度即使混进了数值也不参与。契约上二者不该
+ * 冲突，真冲突时只能往"没查"那侧失败安全 —— 把未评估维度算进可信度等于替 AI 编造。
+ */
+export function assessedProbability(v: Verdict | null | undefined): number | null {
+  if (!v) return null
+  const skipped = new Set(v.unassessed ?? [])
+  const assessed = Object.entries(v.dimensions)
+    .filter(([k, p]) => !skipped.has(k) && typeof p === 'number')
+    .map(([, p]) => p)
+  return assessed.length ? Math.min(...assessed) : null
+}
+
+/** 最弱一环的维度键；与 assessedProbability 同一套口径，同样不采信后端 weakest 字段 */
+export function weakestDimension(v: Verdict | null | undefined): string | null {
+  if (!v) return null
+  const skipped = new Set(v.unassessed ?? [])
+  const entries = Object.entries(v.dimensions).filter(([k, p]) => !skipped.has(k) && typeof p === 'number')
+  if (!entries.length) return null
+  return entries.reduce((a, b) => (a[1] <= b[1] ? a : b))[0]
 }
 
 export interface AttemptView {

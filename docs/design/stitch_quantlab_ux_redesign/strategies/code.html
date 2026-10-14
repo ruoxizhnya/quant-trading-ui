@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "background": "#090a0c",
+          "surface": "#101216",
+          "surface-container-lowest": "#07080a",
+          "surface-container-low": "#0c0e12",
+          "surface-container": "#13161c",
+          "surface-container-high": "#1a1e26",
+          "surface-container-highest": "#242934",
+          "surface-bright": "#2e3442",
+          "titanium-pure": "#f5f7fa",
+          "titanium-bright": "#e6eaf0",
+          "titanium-metal": "#cbd2db",
+          "titanium-muted": "#8b929e",
+          "titanium-dark": "#4a5160",
+          "mineral-amber": "#d1b894",
+          "mineral-amber-muted": "#9e886b",
+          "on-surface": "#e6eaf0",
+          "on-surface-variant": "#8b929e",
+          "outline": "#4a5160",
+          "outline-variant": "rgba(255,255,255,0.06)",
+          "primary": "#cbd2db",
+          "primary-container": "#f5f7fa",
+          "on-primary-container": "#090a0c",
+          "secondary": "#a2abb8",
+          "secondary-container": "#1a1e26",
+          "on-secondary-container": "#e6eaf0",
+          "tertiary": "#8b929e",
+          "tertiary-container": "#13161c",
+          "error": "#d47878",
+          "error-container": "#241517",
+          "on-error-container": "#fca5a5"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.125rem",
+          "lg": "0.25rem",
+          "xl": "0.375rem",
+          "full": "0.5rem"
+        },
+        "spacing": {
+          "space-xl": "1.75rem",
+          "gutter": "0.75rem",
+          "space-lg": "1.25rem",
+          "margin": "1rem",
+          "space-xs": "0.25rem",
+          "space-md": "0.75rem",
+          "margin-desktop": "1.5rem",
+          "gutter-desktop": "1rem",
+          "space-sm": "0.375rem"
+        },
+        "fontFamily": {
+          "mono-data-lg": [
+            "JetBrains Mono", "monospace"
+          ],
+          "body-sm": [
+            "Geist", "system-ui", "sans-serif"
+          ],
+          "body-md": [
+            "Geist", "system-ui", "sans-serif"
+          ],
+          "mono-data-sm": [
+            "JetBrains Mono", "monospace"
+          ],
+          "headline-lg-mobile": [
+            "Geist", "system-ui", "sans-serif"
+          ],
+          "label-caps": [
+            "JetBrains Mono", "monospace"
+          ],
+          "headline-md": [
+            "Geist", "system-ui", "sans-serif"
+          ],
+          "mono-data-md": [
+            "JetBrains Mono", "monospace"
+          ],
+          "display-lg": [
+            "Geist", "system-ui", "sans-serif"
+          ],
+          "headline-lg": [
+            "Geist", "system-ui", "sans-serif"
+          ],
+          "title-sm": [
+            "Geist", "system-ui", "sans-serif"
+          ]
+        },
+        "fontSize": {
+          "mono-data-lg": [
+            "14px",
+            {
+              "lineHeight": "18px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "500"
+            }
+          ],
+          "body-sm": [
+            "12px",
+            {
+              "lineHeight": "16px",
+              "fontWeight": "400"
+            }
+          ],
+          "body-md": [
+            "13px",
+            {
+              "lineHeight": "18px",
+              "fontWeight": "400"
+            }
+          ],
+          "mono-data-sm": [
+            "11px",
+            {
+              "lineHeight": "14px",
+              "letterSpacing": "0.02em",
+              "fontWeight": "400"
+            }
+          ],
+          "headline-lg-mobile": [
+            "20px",
+            {
+              "lineHeight": "28px",
+              "fontWeight": "600"
+            }
+          ],
+          "label-caps": [
+            "10px",
+            {
+              "lineHeight": "12px",
+              "letterSpacing": "0.08em",
+              "fontWeight": "600"
+            }
+          ],
+          "headline-md": [
+            "18px",
+            {
+              "lineHeight": "24px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "600"
+            }
+          ],
+          "mono-data-md": [
+            "12px",
+            {
+              "lineHeight": "16px",
+              "fontWeight": "400"
+            }
+          ],
+          "display-lg": [
+            "30px",
+            {
+              "lineHeight": "38px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "600"
+            }
+          ],
+          "headline-lg": [
+            "22px",
+            {
+              "lineHeight": "28px",
+              "letterSpacing": "-0.015em",
+              "fontWeight": "600"
+            }
+          ],
+          "title-sm": [
+            "13.5px",
+            {
+              "lineHeight": "19px",
+              "fontWeight": "500"
+            }
+          ]
+        }
+      },
+    },
+  }</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased selection:bg-surface-container-highest selection:text-titanium-pure"><aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-lowest z-50 flex flex-col justify-between border-r border-white/[0.05] shadow-[1px_0_0_0_rgba(255,255,255,0.02)]"><div class="flex flex-col h-[calc(100vh-84px)]"><div class="h-14 px-margin flex items-center gap-space-sm bg-surface-container-lowest shrink-0 border-b border-white/[0.04]"><div class="w-6 h-6 rounded bg-surface-container-highest flex items-center justify-center border border-white/[0.06]"><span class="material-symbols-outlined text-titanium-metal text-[16px]">grid_view</span></div><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-md text-headline-md tracking-tight text-titanium-pure font-semibold">Quant Lab</span><span class="font-label-caps text-label-caps px-1 py-0.5 rounded bg-surface-container-high text-titanium-muted tracking-widest border border-white/[0.04]">A-SHARE</span></div><span class="font-label-caps text-label-caps text-titanium-muted/80 uppercase tracking-wider">Self-hosted Alpha Lab</span></div></div><div class="px-space-md py-space-sm overflow-y-auto"><nav class="flex flex-col gap-0.5"><div class="px-space-sm pt-space-sm pb-space-xs font-label-caps text-label-caps text-titanium-muted uppercase tracking-wider flex items-center justify-between"><span>Research Mainline (P0)</span><span class="font-mono-data-sm text-mono-data-sm text-titanium-metal">ACT-4</span></div><a class="flex items-center justify-between px-space-sm py-1.5 rounded text-titanium-muted hover:bg-surface-container-high hover:text-titanium-pure transition-colors font-body-sm text-body-sm" data-path="review-desk" href="#"><span>审阅台 Review Desk</span><span class="font-mono-data-sm text-mono-data-sm px-1.5 py-0.2 rounded bg-surface-container-highest text-titanium-metal border border-white/[0.06]">3</span></a><a class="flex items-center justify-between px-space-sm py-1.5 rounded text-titanium-muted hover:bg-surface-container-high hover:text-titanium-pure transition-colors font-body-sm text-body-sm" data-path="explore" href="#"><span>探索观察台 Explore</span><span class="flex items-center gap-1 font-mono-data-sm text-mono-data-sm text-titanium-metal"><span class="w-1.5 h-1.5 rounded-full bg-titanium-muted"></span>LIVE</span></a><a class="flex items-center px-space-sm py-1.5 rounded text-titanium-muted hover:bg-surface-container-high hover:text-titanium-pure transition-colors font-body-sm text-body-sm" data-path="journal" href="#"><span>研究日志与采纳记录 Journal</span></a><div class="px-space-sm pt-space-md pb-space-xs font-label-caps text-label-caps text-titanium-muted uppercase tracking-wider"><span>Instruments (仪器房)</span></div><a class="flex items-center px-space-sm py-1.5 rounded text-titanium-muted hover:bg-surface-container-high hover:text-titanium-pure transition-colors font-body-sm text-body-sm" data-path="backtest" href="#"><span>回测引擎 Backtest</span></a><a class="flex items-center px-space-sm py-1.5 rounded text-titanium-muted hover:bg-surface-container-high hover:text-titanium-pure transition-colors font-body-sm text-body-sm" data-path="compare" href="#"><span>多策略对比 Compare</span></a><a aria-current="page" class="flex items-center px-space-sm py-1.5 rounded transition-colors bg-surface-container-highest text-titanium-pure font-medium border border-white/[0.08]" data-path="strategies" href="#"><span>策略库 Strategies</span></a><a class="flex items-center px-space-sm py-1.5 rounded text-titanium-muted hover:bg-surface-container-high hover:text-titanium-pure transition-colors font-body-sm text-body-sm" data-path="factors" href="#"><span>因子研究 Factors</span></a><a class="flex items-center px-space-sm py-1.5 rounded text-titanium-muted hover:bg-surface-container-high hover:text-titanium-pure transition-colors font-body-sm text-body-sm" data-path="screener" href="#"><span>选股与市场 Screener</span></a><a class="flex items-center px-space-sm py-1.5 rounded text-titanium-muted hover:bg-surface-container-high hover:text-titanium-pure transition-colors font-body-sm text-body-sm" data-path="data-sync" href="#"><span>数据管道 Data Sync</span></a><div class="px-space-sm pt-space-md pb-space-xs font-label-caps text-label-caps text-titanium-muted uppercase tracking-wider"><span>Monitoring &amp; Risk</span></div><a class="flex items-center px-space-sm py-1.5 rounded text-titanium-muted hover:bg-surface-container-high hover:text-titanium-pure transition-colors font-body-sm text-body-sm" data-path="alerts-health" href="#"><span>风险告警与健康 Alerts &amp; Health</span></a><a class="flex items-center px-space-sm py-1.5 rounded text-titanium-muted hover:bg-surface-container-high hover:text-titanium-pure transition-colors font-body-sm text-body-sm" data-path="execution" href="#"><span>交易执行 Execution</span></a><a class="flex items-center px-space-sm py-1.5 rounded text-titanium-muted hover:bg-surface-container-high hover:text-titanium-pure transition-colors font-body-sm text-body-sm" data-path="macro-industry" href="#"><span>宏观与产业链 Macro</span></a></nav></div></div><div class="p-space-sm bg-surface-container-lowest shrink-0 border-t border-white/[0.04]"><div class="p-space-sm rounded bg-surface-container-low flex flex-col gap-space-xs border border-white/[0.04]"><div class="flex items-center justify-between"><span class="font-label-caps text-label-caps text-titanium-muted uppercase">LOCAL NODE</span><span class="font-mono-data-sm text-mono-data-sm text-titanium-metal flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-titanium-metal"></span>ONLINE</span></div><div class="font-mono-data-sm text-mono-data-sm text-titanium-pure">上海机房 A-102</div><div class="flex items-center justify-between text-titanium-muted font-label-caps text-label-caps pt-0.5"><span>PORT: 9840</span><span>LATENCY: 0.42ms</span></div></div></div></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-14 bg-surface-container-lowest/90 backdrop-blur-xl z-40 border-b border-white/[0.05]"><div class="h-14 w-full px-gutter-desktop flex items-center justify-between"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-sm px-space-sm py-1.5 rounded bg-surface-container text-titanium-muted hover:text-titanium-pure cursor-pointer border border-white/[0.04]"><span class="material-symbols-outlined text-[15px]">search</span><span class="font-body-sm text-body-sm">⌘K 给方向 (30秒发起探索)</span><kbd class="font-mono-data-sm text-mono-data-sm bg-surface-container-high px-1 py-0.5 rounded text-titanium-muted border border-white/[0.04]">⌘K</kbd></div><div class="hidden xl:flex items-center gap-space-md pl-space-sm"><div class="flex items-center gap-space-xs"><span class="w-1.5 h-1.5 rounded-full bg-titanium-metal"></span><span class="font-label-caps text-label-caps text-titanium-muted">HERMES AGENT:</span><span class="font-mono-data-sm text-mono-data-sm text-titanium-metal">运行中 (380尝试/h)</span></div><div class="flex items-center gap-space-xs"><span class="w-1.5 h-1.5 rounded-full bg-titanium-muted"></span><span class="font-label-caps text-label-caps text-titanium-muted">确定性底座:</span><span class="font-mono-data-sm text-mono-data-sm text-titanium-metal">正常</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-titanium-muted text-[14px]">pending_actions</span><span class="font-label-caps text-label-caps text-titanium-muted">待审阅:</span><span class="font-mono-data-sm text-mono-data-sm text-titanium-pure font-medium">3</span></div></div></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs font-mono-data-sm text-mono-data-sm text-titanium-muted px-2 py-1 rounded bg-surface-container-low border border-white/[0.04]"><span class="material-symbols-outlined text-[15px] text-titanium-metal">memory</span><span>SHANGHAI·SSE</span></div><div class="flex items-center gap-space-sm pl-space-sm"><div class="flex flex-col text-right"><span class="font-title-sm text-title-sm text-titanium-pure leading-tight">实验室主任</span><span class="font-label-caps text-label-caps text-mineral-amber leading-none">ADMIN MODE</span></div><div class="w-7 h-7 rounded bg-surface-container-highest border border-white/[0.06] flex items-center justify-center"><span class="material-symbols-outlined text-titanium-metal text-[16px]">terminal</span></div></div></div></div></header><main class="relative pt-14 bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- Top Context Header Bar -->
+<div class="w-full bg-surface-container-lowest px-gutter-desktop py-space-sm flex flex-col xl:flex-row xl:items-center justify-between gap-space-md border-b border-white/[0.04]">
+<div class="flex flex-col sm:flex-row sm:items-center gap-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-7 h-7 rounded bg-surface-container-highest text-titanium-pure flex items-center justify-center border border-white/[0.06]">
+<span class="material-symbols-outlined text-[16px]">account_tree</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h1 class="font-headline-md text-headline-md text-titanium-pure tracking-tight">策略库 Strategies &amp; Labs</h1>
+<span class="font-mono-data-sm text-mono-data-sm px-1.5 py-0.5 rounded bg-surface-container-high text-titanium-muted border border-white/[0.04]">F11 CONSOLIDATED</span>
+</div>
+<p class="font-mono-data-sm text-mono-data-sm text-titanium-muted">合并管理 · 可视化构建 · Copilot 协同 · Q-AST 编译引擎</p>
+</div>
+</div>
+<nav class="flex items-center gap-1 p-0.5 rounded bg-surface-container-low border border-white/[0.04]">
+<button class="px-2.5 py-1 rounded bg-surface-container-highest text-titanium-pure font-body-sm text-body-sm flex items-center gap-1.5 transition-colors border border-white/[0.06]">
+<span>全部在研策略</span>
+<span class="font-mono-data-sm text-mono-data-sm text-titanium-metal px-1 rounded bg-surface-container-low">24</span>
+</button>
+<button class="px-2.5 py-1 rounded text-titanium-muted hover:text-titanium-pure font-body-sm text-body-sm transition-colors">
+<span>可视化编辑器</span>
+</button>
+<button class="px-2.5 py-1 rounded text-titanium-muted hover:text-titanium-pure font-body-sm text-body-sm flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-titanium-muted text-[14px]">bolt</span>
+<span>Copilot 提案流</span>
+<span class="font-mono-data-sm text-mono-data-sm text-titanium-metal px-1 rounded bg-surface-container">3</span>
+</button>
+<button class="px-2.5 py-1 rounded text-titanium-muted hover:text-titanium-pure font-body-sm text-body-sm flex items-center gap-1.5 transition-colors">
+<span>已拍板实盘候选</span>
+<span class="font-mono-data-sm text-mono-data-sm text-mineral-amber px-1 rounded bg-surface-container">6</span>
+</button>
+</nav>
+</div>
+<div class="flex items-center gap-space-sm flex-wrap">
+<button class="px-2.5 py-1.5 rounded bg-surface-container text-titanium-metal hover:text-titanium-pure hover:bg-surface-container-high font-body-sm text-body-sm flex items-center gap-1.5 transition-colors border border-white/[0.05]">
+<span class="material-symbols-outlined text-[15px] text-titanium-muted">code_blocks</span>
+<span>导入 Python/Q-AST</span>
+</button>
+<button class="px-2.5 py-1.5 rounded bg-surface-container text-titanium-metal hover:text-titanium-pure hover:bg-surface-container-high font-body-sm text-body-sm flex items-center gap-1.5 transition-colors border border-white/[0.05]">
+<span class="material-symbols-outlined text-[15px] text-mineral-amber">psychology</span>
+<span>Copilot 快速生成</span>
+<kbd class="font-mono-data-sm text-mono-data-sm bg-surface-container-highest px-1 rounded text-titanium-muted border border-white/[0.04]">⌘J</kbd>
+</button>
+<!-- Primary Action: Titanium Platinum Highlight -->
+<button class="px-3.5 py-1.5 rounded bg-titanium-pure text-background hover:bg-white font-body-sm text-body-sm font-medium flex items-center gap-1.5 transition-all shadow-[0_1px_8px_rgba(255,255,255,0.08)]">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>+ 新建策略</span>
+</button>
+</div>
+</div>
+<!-- Main 12-Column Quant Workspace -->
+<div class="w-full px-gutter-desktop py-space-md grid grid-cols-12 gap-gutter-desktop">
+<!-- Left Column (Cols 1-5): Strategy Repository Cards & Filtering -->
+<div class="col-span-12 xl:col-span-5 flex flex-col gap-space-md min-w-0">
+<!-- Filters and Search Toolbar -->
+<div class="p-space-sm rounded bg-surface-container-low flex flex-col gap-space-sm border border-white/[0.04]">
+<div class="flex items-center justify-between gap-space-sm">
+<div class="flex-1 flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-surface-container text-titanium-muted focus-within:text-titanium-pure border border-white/[0.04]">
+<span class="material-symbols-outlined text-[15px]">search</span>
+<input class="bg-transparent border-0 outline-none w-full font-body-sm text-body-sm text-titanium-pure placeholder:text-titanium-muted/70" placeholder="检索策略名 / AST节点 / 证据指纹..." type="text"/>
+<span class="font-mono-data-sm text-mono-data-sm text-titanium-muted/50">/</span>
+</div>
+<div class="flex items-center gap-1">
+<button class="p-1.5 rounded bg-surface-container text-titanium-muted hover:text-titanium-pure border border-white/[0.04] transition-colors">
+<span class="material-symbols-outlined text-[15px]">tune</span>
+</button>
+<button class="p-1.5 rounded bg-surface-container text-titanium-muted hover:text-titanium-pure border border-white/[0.04] transition-colors">
+<span class="material-symbols-outlined text-[15px]">swap_vert</span>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="font-label-caps text-label-caps text-titanium-muted uppercase">SECTOR:</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest text-titanium-pure font-mono-data-sm text-mono-data-sm cursor-pointer border border-white/[0.06]">CPO光模块</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container text-titanium-muted font-mono-data-sm text-mono-data-sm cursor-pointer hover:text-titanium-pure hover:bg-surface-container-high transition-colors border border-white/[0.04]">低波动动量</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container text-titanium-muted font-mono-data-sm text-mono-data-sm cursor-pointer hover:text-titanium-pure hover:bg-surface-container-high transition-colors border border-white/[0.04]">均值回归</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container text-titanium-muted font-mono-data-sm text-mono-data-sm cursor-pointer hover:text-titanium-pure hover:bg-surface-container-high transition-colors border border-white/[0.04]">宏观对冲</span>
+</div>
+<div class="flex items-center justify-between pt-0.5">
+<div class="flex items-center gap-1.5 font-mono-data-sm text-mono-data-sm text-titanium-muted">
+<span class="text-titanium-metal">6 Validated</span>
+<span class="text-titanium-dark">/</span>
+<span>14 Active</span>
+<span class="text-titanium-dark">/</span>
+<span class="text-error/80">2 Blocked</span>
+<span class="text-titanium-dark">/</span>
+<span>2 Archived</span>
+</div>
+<span class="font-label-caps text-label-caps text-titanium-muted/70 uppercase tracking-wider">A-SHARE T+1 MATCHED</span>
+</div>
+</div>
+<!-- Strategy Cards Container -->
+<div class="flex flex-col gap-space-sm overflow-y-auto max-h-[calc(100vh-210px)] pr-1">
+<!-- Strategy Card 1 (Active / Production Candidate) -->
+<div class="p-space-md rounded bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-space-sm relative group cursor-pointer border border-white/[0.04] hover:border-white/[0.08]">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex flex-col gap-0.5 min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-titanium-metal"></span>
+<span class="font-title-sm text-title-sm text-titanium-pure font-semibold truncate">CPO-VolSurge 800G 光模块日内急量修正</span>
+</div>
+<div class="flex items-center gap-2 font-mono-data-sm text-mono-data-sm text-titanium-muted">
+<span>Seq 342 · Run #2026-1012-G</span>
+<span class="text-titanium-dark">•</span>
+<span>Hash: <code class="text-titanium-metal font-mono-data-sm text-mono-data-sm">c8f92a</code></span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-surface-container-highest text-titanium-metal font-mono-data-sm text-mono-data-sm shrink-0 border border-white/[0.06]">
+              拍板采纳 · 实盘模拟中
+            </span>
+</div>
+<!-- Deterministic Metrics: Quiet Monochrome Data System -->
+<div class="grid grid-cols-4 gap-1 p-2 rounded bg-surface-container border border-white/[0.03]">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-titanium-muted">SHARPE</span>
+<span class="font-mono-data-lg text-mono-data-lg text-titanium-pure font-medium">2.41</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-titanium-muted">CAGR</span>
+<span class="font-mono-data-lg text-mono-data-lg text-titanium-metal">+38.4%</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-titanium-muted">MAX DRAWDOWN</span>
+<span class="font-mono-data-lg text-mono-data-lg text-titanium-muted">-8.6%</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-caps text-label-caps text-titanium-muted">置信度</span>
+<span class="font-mono-data-lg text-mono-data-lg text-mineral-amber flex items-center gap-0.5">
+                71% <span class="material-symbols-outlined text-[13px] text-mineral-amber">verified</span>
+</span>
+</div>
+</div>
+<!-- Sparkline representation & Action row -->
+<div class="flex items-center justify-between pt-0.5">
+<div class="flex items-center gap-2">
+<svg class="w-28 h-5 text-titanium-metal/70" fill="none" viewbox="0 0 100 20">
+<path d="M0 16 L12 14 L24 17 L36 11 L48 13 L60 8 L72 10 L84 4 L100 2" stroke="currentColor" stroke-linecap="round" stroke-width="1.2"></path>
+</svg>
+<span class="font-mono-data-sm text-mono-data-sm text-titanium-muted">250D 净值走势</span>
+</div>
+<div class="flex items-center gap-1">
+<button class="px-2 py-0.5 rounded bg-surface-container-high text-titanium-metal font-mono-data-sm text-mono-data-sm hover:text-titanium-pure hover:bg-surface-bright flex items-center gap-0.5 border border-white/[0.04] transition-colors">
+<span class="material-symbols-outlined text-[13px]">play_arrow</span>回测
+              </button>
+<button class="px-2 py-0.5 rounded bg-surface-container-high text-titanium-muted hover:text-titanium-pure font-mono-data-sm text-mono-data-sm flex items-center gap-0.5 border border-white/[0.04] transition-colors">
+<span class="material-symbols-outlined text-[13px]">hub</span>拆解
+              </button>
+<button class="px-2 py-0.5 rounded bg-surface-container-high text-titanium-metal font-mono-data-sm text-mono-data-sm hover:text-titanium-pure hover:bg-surface-bright flex items-center gap-0.5 border border-white/[0.04] transition-colors">
+<span class="material-symbols-outlined text-[13px]">policy</span>证据
+              </button>
+</div>
+</div>
+</div>
+<!-- Strategy Card 2 (In Calibration / Tuning) -->
+<div class="p-space-md rounded bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-space-sm relative group cursor-pointer border border-white/[0.04] hover:border-white/[0.08]">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex flex-col gap-0.5 min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-titanium-muted"></span>
+<span class="font-title-sm text-title-sm text-titanium-pure font-semibold truncate">InP-Substrate 磷化铟交付周期先行反转</span>
+</div>
+<div class="flex items-center gap-2 font-mono-data-sm text-mono-data-sm text-titanium-muted">
+<span>Seq 189 · Run #2026-1011-B</span>
+<span class="text-titanium-dark">•</span>
+<span>Hash: <code class="text-titanium-metal font-mono-data-sm text-mono-data-sm">7e29bb</code></span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-surface-container text-titanium-muted font-mono-data-sm text-mono-data-sm shrink-0 border border-white/[0.04]">
+              待调参 · 鲁棒性验证中
+            </span>
+</div>
+<div class="grid grid-cols-4 gap-1 p-2 rounded bg-surface-container border border-white/[0.03]">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-titanium-muted">SHARPE</span>
+<span class="font-mono-data-lg text-mono-data-lg text-titanium-pure font-medium">1.82</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-titanium-muted">CAGR</span>
+<span class="font-mono-data-lg text-mono-data-lg text-titanium-metal">+21.3%</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-titanium-muted">MAX DRAWDOWN</span>
+<span class="font-mono-data-lg text-mono-data-lg text-titanium-muted">-12.1%</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-caps text-label-caps text-titanium-muted">置信度</span>
+<span class="font-mono-data-lg text-mono-data-lg text-titanium-muted flex items-center gap-0.5">
+                54% <span class="material-symbols-outlined text-[13px] text-titanium-muted">pending</span>
+</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-0.5">
+<div class="flex items-center gap-2">
+<svg class="w-28 h-5 text-titanium-muted/60" fill="none" viewbox="0 0 100 20">
+<path d="M0 15 L20 12 L35 16 L55 10 L70 14 L85 9 L100 6" stroke="currentColor" stroke-linecap="round" stroke-width="1.2"></path>
+</svg>
+<span class="font-mono-data-sm text-mono-data-sm text-titanium-muted">多周期穿透中</span>
+</div>
+<div class="flex items-center gap-1">
+<button class="px-2 py-0.5 rounded bg-surface-container-high text-titanium-metal font-mono-data-sm text-mono-data-sm hover:text-titanium-pure hover:bg-surface-bright flex items-center gap-0.5 border border-white/[0.04] transition-colors">
+<span class="material-symbols-outlined text-[13px]">tune</span>网格调参
+              </button>
+<button class="px-2 py-0.5 rounded bg-surface-container-high text-titanium-muted hover:text-titanium-pure font-mono-data-sm text-mono-data-sm flex items-center gap-0.5 border border-white/[0.04] transition-colors">
+<span class="material-symbols-outlined text-[13px]">hub</span>因子
+              </button>
+<button class="px-2 py-0.5 rounded bg-surface-container-high text-titanium-metal font-mono-data-sm text-mono-data-sm hover:text-titanium-pure hover:bg-surface-bright flex items-center gap-0.5 border border-white/[0.04] transition-colors">
+<span class="material-symbols-outlined text-[13px]">policy</span>证据
+              </button>
+</div>
+</div>
+</div>
+<!-- Strategy Card 3 (Active / Verified) -->
+<div class="p-space-md rounded bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-space-sm relative group cursor-pointer border border-white/[0.04] hover:border-white/[0.08]">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex flex-col gap-0.5 min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-titanium-metal"></span>
+<span class="font-title-sm text-title-sm text-titanium-pure font-semibold truncate">Dual-Momentum 创业板指与中证1000动量轮动</span>
+</div>
+<div class="flex items-center gap-2 font-mono-data-sm text-mono-data-sm text-titanium-muted">
+<span>Seq 504 · Run #2026-1010-A</span>
+<span class="text-titanium-dark">•</span>
+<span>Hash: <code class="text-titanium-metal font-mono-data-sm text-mono-data-sm">31a0dc</code></span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-surface-container-highest text-titanium-metal font-mono-data-sm text-mono-data-sm shrink-0 border border-white/[0.06]">
+              运行中 · 实盘对冲
+            </span>
+</div>
+<div class="grid grid-cols-4 gap-1 p-2 rounded bg-surface-container border border-white/[0.03]">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-titanium-muted">SHARPE</span>
+<span class="font-mono-data-lg text-mono-data-lg text-titanium-pure font-medium">2.15</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-titanium-muted">CAGR</span>
+<span class="font-mono-data-lg text-mono-data-lg text-titanium-metal">+29.7%</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-titanium-muted">MAX DRAWDOWN</span>
+<span class="font-mono-data-lg text-mono-data-lg text-titanium-muted">-10.2%</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-caps text-label-caps text-titanium-muted">置信度</span>
+<span class="font-mono-data-lg text-mono-data-lg text-mineral-amber flex items-center gap-0.5">
+                82% <span class="material-symbols-outlined text-[13px] text-mineral-amber">verified_user</span>
+</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-0.5">
+<div class="flex items-center gap-2">
+<svg class="w-28 h-5 text-titanium-metal/70" fill="none" viewbox="0 0 100 20">
+<path d="M0 18 L15 15 L30 14 L45 11 L60 9 L75 8 L90 5 L100 3" stroke="currentColor" stroke-linecap="round" stroke-width="1.2"></path>
+</svg>
+<span class="font-mono-data-sm text-mono-data-sm text-titanium-muted">低换手 稳健</span>
+</div>
+<div class="flex items-center gap-1">
+<button class="px-2 py-0.5 rounded bg-surface-container-high text-titanium-metal font-mono-data-sm text-mono-data-sm hover:text-titanium-pure hover:bg-surface-bright flex items-center gap-0.5 border border-white/[0.04] transition-colors">
+<span class="material-symbols-outlined text-[13px]">play_arrow</span>回测
+              </button>
+<button class="px-2 py-0.5 rounded bg-surface-container-high text-titanium-muted hover:text-titanium-pure font-mono-data-sm text-mono-data-sm flex items-center gap-0.5 border border-white/[0.04] transition-colors">
+<span class="material-symbols-outlined text-[13px]">hub</span>拆解
+              </button>
+<button class="px-2 py-0.5 rounded bg-surface-container-high text-titanium-metal font-mono-data-sm text-mono-data-sm hover:text-titanium-pure hover:bg-surface-bright flex items-center gap-0.5 border border-white/[0.04] transition-colors">
+<span class="material-symbols-outlined text-[13px]">policy</span>证据
+              </button>
+</div>
+</div>
+</div>
+<!-- Strategy Card 4 (Invalid / Blocked Risk Case) -->
+<div class="p-space-md rounded bg-surface-container-low hover:bg-surface-container transition-all flex flex-col gap-space-sm relative group cursor-pointer border border-white/[0.04] border-l border-l-error/70">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex flex-col gap-0.5 min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-error/80"></span>
+<span class="font-title-sm text-title-sm text-titanium-pure font-semibold truncate">Optical-Drift 高速光收发模块风格漂移对冲</span>
+</div>
+<div class="flex items-center gap-2 font-mono-data-sm text-mono-data-sm text-titanium-muted">
+<span class="text-error/90">[INVALID] 换手率超标 142.8x 穿透坍塌</span>
+<span class="text-titanium-dark">•</span>
+<span>Hash: <code class="font-mono-data-sm text-mono-data-sm text-titanium-muted">f023a1</code></span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-error-container text-error font-mono-data-sm text-mono-data-sm shrink-0 border border-error/20">
+              闸门拦截已归档
+            </span>
+</div>
+<div class="p-2 rounded bg-surface-container flex items-center justify-between text-titanium-muted font-mono-data-sm text-mono-data-sm border border-white/[0.03]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-error/80 text-[15px]">report</span>
+<span>冲击成本滑点估算衰减 -42.8bps，实盘预期转负</span>
+</div>
+<button class="text-titanium-metal underline hover:text-titanium-pure transition-colors">审计拦截证据</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Center/Right Column (Cols 6-12): Visual Builder + Copilot Assistant -->
+<div class="col-span-12 xl:col-span-7 flex flex-col gap-space-md min-w-0">
+<!-- Segment 1: Visual Strategy Architecture Diagram / Block Pipeline -->
+<div class="p-space-md rounded bg-surface-container-low flex flex-col gap-space-sm border border-white/[0.04] relative overflow-hidden">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md text-titanium-pure font-semibold">可视化策略流水线架构 (Block Pipeline)</span>
+<span class="font-mono-data-sm text-mono-data-sm px-1.5 py-0.5 rounded bg-surface-container-high text-titanium-metal border border-white/[0.04]">LIVE AST V2.4</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="font-body-sm text-body-sm text-titanium-muted hover:text-titanium-pure flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[15px]">zoom_in</span>100%
+            </button>
+<button class="px-2 py-1 rounded bg-surface-container text-titanium-muted hover:text-titanium-pure font-body-sm text-body-sm hover:bg-surface-container-high flex items-center gap-1 border border-white/[0.04] transition-colors">
+<span class="material-symbols-outlined text-[15px]">replay</span>重置布局
+            </button>
+</div>
+</div>
+<!-- Interactive Visual Pipeline Flow Diagram: Clean Scandinavian Tone -->
+<div class="w-full bg-surface-container-lowest rounded p-space-md overflow-x-auto flex items-center gap-2.5 border border-white/[0.03]">
+<!-- Node 1: Universe Selector -->
+<div class="min-w-[155px] p-2.5 rounded bg-surface-container flex flex-col gap-1.5 border border-white/[0.05] hover:border-titanium-metal/40 transition-all cursor-pointer">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-titanium-muted uppercase">UNIVERSE</span>
+<span class="w-1.5 h-1.5 rounded-full bg-titanium-metal"></span>
+</div>
+<span class="font-body-sm text-body-sm text-titanium-pure font-medium">中证光通信 &amp; CPO 800G</span>
+<div class="font-mono-data-sm text-mono-data-sm text-titanium-muted truncate">Tickers: 42 标的 (A股)</div>
+</div>
+<span class="material-symbols-outlined text-titanium-dark text-[16px] shrink-0">arrow_forward</span>
+<!-- Node 2: Factor Pipeline -->
+<div class="min-w-[210px] p-2.5 rounded bg-surface-container flex flex-col gap-1.5 border border-white/[0.05] hover:border-titanium-metal/40 transition-all cursor-pointer">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-titanium-muted uppercase">FACTOR PIPELINE</span>
+<span class="font-mono-data-sm text-mono-data-sm text-titanium-muted">Q-AST</span>
+</div>
+<span class="font-body-sm text-body-sm text-titanium-pure font-medium">复合动量因子</span>
+<div class="p-1 rounded bg-surface-container-lowest font-mono-data-sm text-mono-data-sm text-titanium-metal truncate border border-white/[0.02]">
+              Ts_Rank(Vol, 20) * Δ(Flow, 3)
+            </div>
+</div>
+<span class="material-symbols-outlined text-titanium-dark text-[16px] shrink-0">arrow_forward</span>
+<!-- Node 3: Filter Condition -->
+<div class="min-w-[160px] p-2.5 rounded bg-surface-container flex flex-col gap-1.5 border border-white/[0.05] hover:border-titanium-metal/40 transition-all cursor-pointer">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-titanium-muted uppercase">FILTER CRITERIA</span>
+<span class="material-symbols-outlined text-titanium-muted text-[14px]">tune</span>
+</div>
+<span class="font-body-sm text-body-sm text-titanium-pure font-medium">市场拥挤度抑制</span>
+<div class="font-mono-data-sm text-mono-data-sm text-titanium-muted">两融拥挤度 &lt; 80%</div>
+</div>
+<span class="material-symbols-outlined text-titanium-dark text-[16px] shrink-0">arrow_forward</span>
+<!-- Node 4: Position Sizer -->
+<div class="min-w-[155px] p-2.5 rounded bg-surface-container flex flex-col gap-1.5 border border-white/[0.05] hover:border-titanium-metal/40 transition-all cursor-pointer">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-titanium-muted uppercase">POSITION SIZER</span>
+<span class="material-symbols-outlined text-titanium-muted text-[14px]">pie_chart</span>
+</div>
+<span class="font-body-sm text-body-sm text-titanium-pure font-medium">半凯利仓位分配</span>
+<div class="font-mono-data-sm text-mono-data-sm text-titanium-muted">Kelly Fraction: 0.5</div>
+</div>
+<span class="material-symbols-outlined text-titanium-dark text-[16px] shrink-0">arrow_forward</span>
+<!-- Node 5: Risk Exit -->
+<div class="min-w-[140px] p-2.5 rounded bg-surface-container flex flex-col gap-1.5 border border-white/[0.05] hover:border-titanium-metal/40 transition-all cursor-pointer">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-titanium-muted uppercase">HARD STOP EXIT</span>
+<span class="material-symbols-outlined text-error/80 text-[14px]">gpp_maybe</span>
+</div>
+<span class="font-body-sm text-body-sm text-titanium-pure font-medium">硬止损闸门</span>
+<div class="font-mono-data-sm text-mono-data-sm text-error/90">Hard Stop: -4.5%</div>
+</div>
+</div>
+<!-- Strategy AST Meta Details Bar -->
+<div class="flex items-center justify-between text-titanium-muted font-mono-data-sm text-mono-data-sm pt-0.5">
+<div class="flex items-center gap-3">
+<span>AST 树深度: 4 级</span>
+<span class="text-titanium-dark">·</span>
+<span>依赖计算项: 12 项</span>
+<span class="text-titanium-dark">·</span>
+<span>内存执行周期: 1.84ms / 截面</span>
+</div>
+<button class="text-titanium-metal hover:text-titanium-pure flex items-center gap-0.5 transition-colors">
+<span class="material-symbols-outlined text-[14px]">terminal</span>查看完整 Q-AST 拓扑代码
+          </button>
+</div>
+</div>
+<!-- Segment 2: AI Copilot Natural Language Proposal Stream (F11 Natural Language Generator) -->
+<div class="p-space-md rounded bg-surface-container-low flex flex-col gap-space-md border border-white/[0.04] relative overflow-hidden">
+<!-- Copilot Header & Agent Mode indicator -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded bg-surface-container-highest flex items-center justify-center text-titanium-metal border border-white/[0.06]">
+<span class="material-symbols-outlined text-[15px]">smart_toy</span>
+</div>
+<div>
+<span class="font-title-sm text-title-sm text-titanium-pure font-semibold">Hermes Copilot 策略生成与假设推导</span>
+<span class="font-label-caps text-label-caps text-mineral-amber ml-2 px-1.5 py-0.5 rounded bg-surface-container-high border border-white/[0.04]">AGENT AUTONOMOUS</span>
+</div>
+</div>
+<span class="font-mono-data-sm text-mono-data-sm text-titanium-muted">响应延迟: 180ms</span>
+</div>
+<!-- User Prompt Simulation Bubble -->
+<div class="p-space-sm rounded bg-surface-container flex items-start gap-space-sm border border-white/[0.04]">
+<span class="material-symbols-outlined text-titanium-muted text-[17px] shrink-0 mt-0.5">chat_bubble</span>
+<div class="flex flex-col gap-1 w-full">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-titanium-muted uppercase">RESEARCHER INSTRUCTION (自然语言输入)</span>
+<span class="font-mono-data-sm text-mono-data-sm text-titanium-muted/70">14:38:12</span>
+</div>
+<p class="font-body-md text-body-md text-titanium-pure">
+              “针对光模块题材尾盘拉升但次日冲高回落的现象，生成一个尾盘14:30后的量价背离阻尼因子策略，规避假突破。”
+            </p>
+</div>
+</div>
+<!-- Probabilistic Aura AI Proposal Card -->
+<div class="p-space-md rounded bg-surface-container-lowest flex flex-col gap-space-sm border border-white/[0.05] relative group">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-mineral-amber"></span>
+<span class="font-title-sm text-title-sm text-titanium-pure font-medium">AI 实验员提案 · 可证伪主张 (非确定性生成)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-surface-container text-titanium-metal font-mono-data-sm text-mono-data-sm flex items-center gap-1 border border-white/[0.04]">
+<span class="material-symbols-outlined text-[13px] text-titanium-metal">check_circle</span>沙箱编译通过 (0.12s)
+              </span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-titanium-muted font-mono-data-sm text-mono-data-sm border border-white/[0.04]">
+                AST Ref #CP-902
+              </span>
+</div>
+</div>
+<!-- Hypothesis Statement -->
+<p class="font-body-sm text-body-sm text-titanium-muted leading-relaxed">
+            【假设主张】A股高频量化机构在 14:30~14:55 存在尾盘被动跟踪与逼空行为。若价格斜率突破 2σ 但主力主动买单量（BigOrder_Flow）未跟随放大，则大概率为短线流动性虚耗，次日开盘 9:35 前均值回归概率为 74.2%。
+          </p>
+<!-- Q-AST Proposed Code Block -->
+<div class="p-space-sm rounded bg-surface-container flex flex-col gap-1 font-mono-data-sm text-mono-data-sm border border-white/[0.03]">
+<div class="flex items-center justify-between text-titanium-muted text-[11px] pb-1 border-b border-white/[0.03]">
+<span>PROPOSED_Q_AST.py</span>
+<span class="text-titanium-metal">SYNTAX: COMPATIBLE Q-ENGINE 3.1</span>
+</div>
+<div class="space-y-0.5 leading-5 text-titanium-metal/90 pt-1">
+<div><span class="text-titanium-muted">class</span> <span class="text-titanium-pure">LateSessionVolumeDivergence</span>(AlphaStrategy):</div>
+<div class="pl-4"><span class="text-titanium-dark"># 14:30 后量价背离计算</span></div>
+<div class="pl-4">def <span class="text-titanium-bright">compute_signals</span>(self, context, market_data):</div>
+<div class="pl-8">vwap_late = market_data.resample(<span class="text-mineral-amber">\'5min\'</span>).vwap</div>
+<div class="pl-8">active_flow = market_data[<span class="text-mineral-amber">\'flow_in_ratio\'</span>]</div>
+<div class="pl-8">divergence = ts_regression_slope(vwap_late, window=6) - zscore(active_flow)</div>
+<div class="pl-8"><span class="text-titanium-muted">return</span> where((divergence &gt; <span class="text-titanium-pure">1.8</span>) &amp; (market_data.time &gt;= <span class="text-mineral-amber">\'14:30\'</span>), -1.0, 0.0)</div>
+</div>
+</div>
+<!-- Estimation & Confidence Juxtaposition -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-sm p-space-sm rounded bg-surface-container border border-white/[0.03]">
+<div>
+<span class="font-label-caps text-label-caps text-titanium-muted block">ESTIMATED SHARPE (PROBABILISTIC)</span>
+<span class="font-mono-data-lg text-mono-data-lg text-titanium-pure">2.20 ~ 2.51</span>
+<span class="font-mono-data-sm text-mono-data-sm text-titanium-muted/70 block">Monte-Carlo 500 次模拟</span>
+</div>
+<div>
+<span class="font-label-caps text-label-caps text-titanium-muted block">T+1 回撤约束 (MAX DD)</span>
+<span class="font-mono-data-lg text-mono-data-lg text-titanium-pure">&lt; -6.8%</span>
+<span class="font-mono-data-sm text-mono-data-sm text-titanium-muted/70 block">硬止损闸门开启下</span>
+</div>
+<div>
+<span class="font-label-caps text-label-caps text-titanium-muted block">过拟合检测惩罚分</span>
+<span class="font-mono-data-lg text-mono-data-lg text-titanium-metal">0.14 (LOW)</span>
+<span class="font-mono-data-sm text-mono-data-sm text-titanium-muted/70 block">PBO &lt; 5%</span>
+</div>
+</div>
+<!-- Intervention Action Row -->
+<div class="flex items-center justify-between pt-1 flex-wrap gap-2">
+<div class="flex items-center gap-2">
+<span class="font-label-caps text-label-caps text-titanium-muted">INTERVENE / 决策干预:</span>
+<button class="px-2.5 py-1 rounded bg-surface-container text-titanium-metal font-body-sm text-body-sm hover:text-titanium-pure hover:bg-surface-container-high flex items-center gap-1 transition-colors border border-white/[0.04]">
+<span class="material-symbols-outlined text-[14px]">tune</span>指方向微调
+              </button>
+<button class="px-2.5 py-1 rounded bg-surface-container text-titanium-metal font-body-sm text-body-sm hover:text-titanium-pure hover:bg-surface-container-high flex items-center gap-1 transition-colors border border-white/[0.04]">
+<span class="material-symbols-outlined text-[14px]">help_outline</span>追问底层假设逻辑
+              </button>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3.5 py-1.5 rounded bg-surface-container-highest text-titanium-pure hover:bg-surface-bright font-body-sm text-body-sm font-medium flex items-center gap-1.5 transition-all border border-white/[0.08]">
+<span class="material-symbols-outlined text-[15px] text-mineral-amber">flash_on</span>
+<span>一键采纳并创建回测 (⌘Enter)</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Quick Prompt Preset Pills -->
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="font-label-caps text-label-caps text-titanium-muted">方向引导模板:</span>
+<button class="px-2 py-0.5 rounded bg-surface-container text-titanium-muted hover:text-titanium-pure font-mono-data-sm text-mono-data-sm border border-white/[0.04] transition-colors">
+            + 补充龙虎榜机构席位协同因子
+          </button>
+<button class="px-2 py-0.5 rounded bg-surface-container text-titanium-muted hover:text-titanium-pure font-mono-data-sm text-mono-data-sm border border-white/[0.04] transition-colors">
+            + 限制日内最大单票持仓至 5%
+          </button>
+<button class="px-2 py-0.5 rounded bg-surface-container text-titanium-muted hover:text-titanium-pure font-mono-data-sm text-mono-data-sm border border-white/[0.04] transition-colors">
+            + 对冲中证500期指 (IC) 基差贴水
+          </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Workspace Status & Versioning Footer Bar -->
+<footer class="w-full bg-surface-container-lowest px-gutter-desktop py-space-xs flex flex-col sm:flex-row items-center justify-between gap-space-sm text-titanium-muted font-mono-data-sm text-mono-data-sm border-t border-white/[0.04]">
+<div class="flex items-center gap-space-md flex-wrap">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-titanium-metal"></span>
+<span>策略池内存占用: <strong class="text-titanium-pure font-normal">1.2 GB / 64 GB</strong></span>
+</div>
+<span class="text-titanium-dark">·</span>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-titanium-muted">commit</span>
+<span>历史版本快照: <code class="text-titanium-metal">Git Commit 3a98e10</code> (已签名)</span>
+</div>
+<span class="text-titanium-dark">·</span>
+<span>当前编译沙箱: <span class="text-titanium-pure">PyPy 7.3 JIT / C++ AST Core</span></span>
+</div>
+<div class="flex items-center gap-space-sm">
+<button class="hover:text-titanium-pure transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">download</span>
+<span>导出策略包 (.qpkg)</span>
+</button>
+<span class="text-titanium-dark">·</span>
+<button class="hover:text-titanium-pure transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">terminal</span>
+<span>打开策略终端交互 (CLI)</span>
+</button>
+</div>
+</footer>
+</div>
+<script>
+  // Simple interactive keyboard hook for quick prompt generation Cmd/Ctrl + J
+  document.addEventListener('keydown', function(e) {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'j') {
+      e.preventDefault();
+      const input = document.querySelector('input[type="text"]');
+      if (input) {
+        input.focus();
+        input.placeholder = "Copilot 快速生成模式: 请输入 Alpha 假说或交易直觉...";
+      }
+    }
+  });
+</script></main></div></body></html>

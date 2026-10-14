@@ -7,7 +7,7 @@ import DataImportForm from '@/components/sync/DataImportForm.vue'
 
 <template>
   <div class="data-sync-page">
-    <NH1>数据同步中心</NH1>
+    <NH1>数据管理</NH1>
 
     <NGrid :cols="2" :x-gap="16" :y-gap="16" responsive="screen">
       <NGridItem>

@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;font-family:'Inter',sans-serif;}body{overscroll-behavior:none;background-color:#090a0c;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}.font-mono-num{font-family:'JetBrains Mono',monospace;font-feature-settings:"tnum";font-variant-numeric:tabular-nums;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "background": "#090a0c",
+          "surface": "#101216",
+          "surface-container-lowest": "#060709",
+          "surface-container-low": "#0d0f13",
+          "surface-container": "#13161c",
+          "surface-container-high": "#1a1d24",
+          "surface-container-highest": "#222630",
+          "titanium-light": "#f1f3f7",
+          "titanium-mid": "#c4c8d3",
+          "titanium-dark": "#7e8494",
+          "graphite-border": "#1c202a",
+          "graphite-subtle": "#161920",
+          "accent-silver": "#e2e6ee",
+          "accent-emerald": "#34d399",
+          "accent-amber": "#fbbf24",
+          "accent-rose": "#f87171"
+        },
+        "fontFamily": {
+          "mono": ["'JetBrains Mono'", "monospace"],
+          "sans": ["'Inter'", "sans-serif"]
+        }
+      }
+    }
+  }</script></head><body class="bg-background font-sans text-titanium-mid antialiased selection:bg-titanium-light/10 selection:text-titanium-light"><!-- Navigation Sidebar (Minimal Nordic Titanium Gray) -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-lowest z-50 flex flex-col justify-between border-r border-graphite-border/70"><div class="flex flex-col h-[calc(100vh-80px)]"><div class="h-14 px-5 flex items-center gap-3 bg-surface-container-low/60 shrink-0 border-b border-graphite-border/50"><div class="w-6 h-6 rounded-sm bg-surface-container-highest/80 border border-graphite-border flex items-center justify-center"><span class="material-symbols-outlined text-titanium-light text-[15px]">terminal</span></div><div class="flex flex-col"><div class="flex items-center gap-1.5"><span class="text-[13px] tracking-tight text-titanium-light font-semibold uppercase">Quant Lab</span><span class="text-[9px] px-1 py-0.5 rounded-sm bg-surface-container-high text-titanium-dark tracking-widest border border-graphite-border/60">A-SHARE</span></div><span class="text-[9px] text-titanium-dark/70 font-mono tracking-wider uppercase">Self-hosted Core</span></div></div><div class="px-3 py-3 overflow-y-auto"><nav class="flex flex-col gap-0.5"><div class="px-2 pt-2 pb-1.5 text-[10px] font-mono uppercase tracking-wider text-titanium-dark/60 flex items-center justify-between"><span>Research Mainline</span><span class="text-[10px] text-titanium-mid/50 font-mono">04</span></div><a class="flex items-center justify-between px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="review-desk" href="#"><span>审阅台 Review Desk</span><span class="font-mono text-[10px] px-1.5 py-0.2 rounded-sm bg-surface-container-high text-titanium-light border border-graphite-border">3</span></a><a class="flex items-center justify-between px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="explore" href="#"><span>探索观察台 Explore</span><span class="flex items-center gap-1.5 text-[10px] font-mono text-titanium-mid"><span class="w-1 h-1 rounded-full bg-titanium-light"></span>ACT</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="journal" href="#"><span>研究日志与采纳记录</span></a><div class="px-2 pt-4 pb-1.5 text-[10px] font-mono uppercase tracking-wider text-titanium-dark/60"><span>Instruments</span></div><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="backtest" href="#"><span>回测引擎 Backtest</span></a><a class="flex items-center justify-between px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="compare" href="#"><span>多策略对比 Compare</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="strategies" href="#"><span>策略库 Strategies</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="factors" href="#"><span>因子研究 Factors</span></a><a class="flex items-center justify-between px-2.5 py-1.5 rounded-sm bg-surface-container-high/60 text-titanium-light border-l border-titanium-light transition-all text-xs font-medium" data-path="screener" href="#"><span>选股与市场 Screener</span><span class="material-symbols-outlined text-[13px] text-titanium-dark">chevron_right</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="data-sync" href="#"><span>数据管道 Data Sync</span></a><div class="px-2 pt-4 pb-1.5 text-[10px] font-mono uppercase tracking-wider text-titanium-dark/60"><span>Risk &amp; Execution</span></div><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="alerts-health" href="#"><span>风险告警与健康</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="execution" href="#"><span>交易执行 Execution</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-titanium-dark hover:text-titanium-light hover:bg-surface-container transition-all text-xs" data-path="macro-industry" href="#"><span>宏观与产业链 Macro</span></a></nav></div></div><div class="p-3 bg-surface-container-lowest shrink-0 border-t border-graphite-border/70"><div class="p-2.5 rounded-sm bg-surface-container-low border border-graphite-border/60 flex flex-col gap-1.5"><div class="flex items-center justify-between"><span class="text-[9px] font-mono uppercase tracking-wider text-titanium-dark">LOCAL NODE</span><span class="text-[10px] font-mono text-titanium-mid flex items-center gap-1.5"><span class="w-1 h-1 rounded-full bg-accent-emerald"></span>ONLINE</span></div><div class="text-xs font-mono text-titanium-light">SHA-DC-A102</div><div class="flex items-center justify-between text-[10px] font-mono text-titanium-dark/70"><span>PORT 9840</span><span>0.42ms</span></div></div></div></aside><div class="pl-64"><!-- Top Header: Restrained Monochromatic Titanium -->
+<header class="fixed top-0 left-64 right-0 h-14 bg-surface-container-lowest/90 backdrop-blur-md z-40 border-b border-graphite-border/70"><div class="h-14 w-full px-6 flex items-center justify-between"><div class="flex items-center gap-5"><div class="flex items-center gap-2 px-3 py-1.5 rounded-sm bg-surface-container-low border border-graphite-border text-titanium-dark hover:border-titanium-dark/40 transition-colors cursor-pointer"><span class="material-symbols-outlined text-[15px]">search</span><span class="text-xs text-titanium-mid">⌘K 给方向 (指令级探查)</span><kbd class="font-mono text-[10px] bg-surface-container-highest/60 px-1 py-0.5 rounded-sm text-titanium-dark border border-graphite-border/50">⌘K</kbd></div><div class="hidden xl:flex items-center gap-5 pl-2 text-xs font-mono"><div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-titanium-light/80"></span><span class="text-titanium-dark uppercase text-[10px]">HERMES</span><span class="text-titanium-mid">380 probe/h</span></div><div class="h-3 w-px bg-graphite-border"></div><div class="flex items-center gap-2"><span class="text-titanium-dark uppercase text-[10px]">DETERMINISTIC</span><span class="text-titanium-light">STABLE</span></div><div class="h-3 w-px bg-graphite-border"></div><div class="flex items-center gap-2"><span class="text-titanium-dark uppercase text-[10px]">QUEUE</span><span class="text-titanium-light font-medium">3</span></div></div></div><div class="flex items-center gap-4"><div class="flex items-center gap-2 text-xs font-mono text-titanium-dark px-2.5 py-1 rounded-sm bg-surface-container-low border border-graphite-border"><span class="material-symbols-outlined text-[14px] text-titanium-mid">dns</span><span>SSE · L2 FEED</span></div><div class="flex items-center gap-2.5 pl-2"><div class="flex flex-col text-right"><span class="text-xs text-titanium-light font-medium leading-none">实验室主任</span><span class="text-[9px] font-mono text-titanium-dark uppercase tracking-widest mt-1">RESEARCH MODE</span></div><div class="w-7 h-7 rounded-sm bg-surface-container-high border border-graphite-border flex items-center justify-center text-titanium-mid"><span class="material-symbols-outlined text-[15px]">person</span></div></div></div></div></header><main class="relative pt-14 bg-background min-h-screen pb-16"><div class="flex flex-col w-full max-w-[1720px] mx-auto px-6 py-6 gap-6">
+<!-- 1. Top Command & Filter HUD: Pure Titanium / Obsidian Clean Canvas -->
+<section class="flex flex-col gap-4 rounded-sm bg-surface-container-low/70 p-5 border border-graphite-border/80">
+<!-- Tab Strip & Scan CTA -->
+<div class="flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-1.5 overflow-x-auto pb-0.5">
+<button class="px-3.5 py-1.5 rounded-sm bg-titanium-light text-background font-mono text-xs font-medium flex items-center gap-2 shrink-0 transition-opacity hover:opacity-90">
+<span>高景气算力核心</span>
+<span class="text-[10px] px-1.5 py-0.2 rounded-sm bg-black/15 font-mono">32</span>
+</button>
+<button class="px-3.5 py-1.5 rounded-sm bg-surface-container border border-graphite-border text-titanium-dark hover:text-titanium-light hover:border-titanium-dark/50 transition-all font-mono text-xs flex items-center gap-2 shrink-0">
+<span>低波分红稳健</span>
+<span class="text-[10px] text-titanium-dark/70 font-mono">85</span>
+</button>
+<button class="px-3.5 py-1.5 rounded-sm bg-surface-container border border-graphite-border text-titanium-dark hover:text-titanium-light hover:border-titanium-dark/50 transition-all font-mono text-xs flex items-center gap-2 shrink-0">
+<span>尾盘动量异动</span>
+<span class="text-[10px] text-titanium-dark/70 font-mono">14</span>
+</button>
+<button class="px-3.5 py-1.5 rounded-sm bg-surface-container border border-graphite-border text-titanium-dark hover:text-titanium-light hover:border-titanium-dark/50 transition-all font-mono text-xs flex items-center gap-2 shrink-0">
+<span>质问排雷黑名单</span>
+<span class="text-[10px] text-titanium-dark/70 font-mono">68</span>
+</button>
+<button class="px-2.5 py-1.5 rounded-sm border border-dashed border-graphite-border hover:border-titanium-dark/60 text-titanium-dark hover:text-titanium-light transition-all font-mono text-xs flex items-center gap-1 shrink-0">
+<span class="material-symbols-outlined text-[13px]">add</span>
+<span>新建筛选器</span>
+</button>
+</div>
+<!-- Titanium Action Cluster -->
+<div class="flex items-center gap-2 shrink-0">
+<button class="px-4 py-1.5 rounded-sm bg-surface-container-highest hover:bg-surface-container-highest/80 border border-titanium-mid/30 text-titanium-light font-mono text-xs flex items-center gap-2 transition-all shadow-sm active:scale-95" id="scanBtn">
+<span class="material-symbols-outlined text-[14px] animate-spin hidden" id="scanSpinner">sync</span>
+<span class="material-symbols-outlined text-[14px] text-titanium-light" id="scanIcon">bolt</span>
+<span class="font-medium tracking-wide">立即扫描</span>
+<span class="text-[10px] font-mono text-titanium-dark">(0.28s)</span>
+</button>
+<button class="px-3 py-1.5 rounded-sm bg-surface-container border border-graphite-border text-titanium-mid hover:text-titanium-light hover:border-titanium-dark/50 transition-all font-mono text-xs flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[13px]">bookmark_border</span>
+<span>存为动态池</span>
+</button>
+<button class="px-3 py-1.5 rounded-sm bg-surface-container border border-graphite-border text-titanium-mid hover:text-titanium-light hover:border-titanium-dark/50 transition-all font-mono text-xs flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[13px]">play_circle</span>
+<span>发至回测</span>
+</button>
+<button class="p-1.5 rounded-sm bg-surface-container border border-graphite-border text-titanium-dark hover:text-titanium-light hover:border-titanium-dark/50 transition-all flex items-center" title="导出CSV">
+<span class="material-symbols-outlined text-[15px]">download</span>
+</button>
+</div>
+</div>
+<!-- Precision Filter Criteria Chips (No Garish Badges, Monochromatic Clean Tagging) -->
+<div class="pt-2 border-t border-graphite-border/50 flex flex-wrap items-center gap-2">
+<span class="text-[10px] font-mono uppercase tracking-widest text-titanium-dark/70 mr-1">ACTIVE COND</span>
+<div class="flex items-center gap-2 px-2.5 py-1 rounded-sm bg-surface-container border border-graphite-border font-mono text-xs text-titanium-light">
+<span class="text-titanium-dark">PE(TTM)</span>
+<span class="text-titanium-dark/60">&lt;</span>
+<span class="text-titanium-light font-mono-num font-medium">40.0</span>
+<button class="text-titanium-dark/60 hover:text-titanium-light text-[11px] ml-1">✕</button>
+</div>
+<div class="flex items-center gap-2 px-2.5 py-1 rounded-sm bg-surface-container border border-graphite-border font-mono text-xs text-titanium-light">
+<span class="text-titanium-dark">MA(Amount, 20)</span>
+<span class="text-titanium-dark/60">&gt;</span>
+<span class="text-titanium-light font-mono-num font-medium">5.00 亿</span>
+<button class="text-titanium-dark/60 hover:text-titanium-light text-[11px] ml-1">✕</button>
+</div>
+<div class="flex items-center gap-2 px-2.5 py-1 rounded-sm bg-surface-container border border-graphite-border font-mono text-xs text-titanium-light">
+<span class="text-titanium-dark">净利增速预期</span>
+<span class="text-titanium-dark/60">&gt;</span>
+<span class="text-titanium-light font-mono-num font-medium">+30.0%</span>
+<button class="text-titanium-dark/60 hover:text-titanium-light text-[11px] ml-1">✕</button>
+</div>
+<div class="flex items-center gap-2 px-2.5 py-1 rounded-sm bg-surface-container-high/60 border border-graphite-border font-mono text-xs text-titanium-light">
+<span class="text-titanium-dark">因果可信度</span>
+<span class="text-titanium-dark/60">&gt;</span>
+<span class="text-titanium-light font-mono-num font-medium">70.0%</span>
+<button class="text-titanium-dark/60 hover:text-titanium-light text-[11px] ml-1">✕</button>
+</div>
+<div class="flex items-center gap-2 px-2.5 py-1 rounded-sm bg-surface-container border border-graphite-border/70 font-mono text-xs text-titanium-dark">
+<span class="material-symbols-outlined text-[13px]">do_not_disturb_on</span>
+<span>剔除 ST / *ST / 退市</span>
+</div>
+<button class="text-[11px] font-mono text-titanium-mid hover:text-titanium-light underline underline-offset-4 decoration-titanium-dark/40 ml-1">+ 条件逻辑组</button>
+</div>
+<!-- Precision Telemetry Status Strip -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-3 pt-2">
+<div class="p-3 rounded-sm bg-surface border border-graphite-border/60 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[10px] font-mono uppercase tracking-wider text-titanium-dark">MARKET REACH (命中率)</span>
+<div class="flex items-baseline gap-2 pt-1 font-mono-num">
+<span class="text-lg text-titanium-light font-semibold">42</span>
+<span class="text-xs text-titanium-dark">/ 5,380 标的</span>
+</div>
+</div>
+<span class="text-xs font-mono text-titanium-mid bg-surface-container-high px-2 py-0.5 rounded-sm border border-graphite-border">0.78% PASS</span>
+</div>
+<div class="p-3 rounded-sm bg-surface border border-graphite-border/60 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[10px] font-mono uppercase tracking-wider text-titanium-dark">SIMULATED EXP SHARPE</span>
+<div class="flex items-baseline gap-2 pt-1 font-mono-num">
+<span class="text-lg text-titanium-light font-semibold">2.35</span>
+<span class="text-xs text-titanium-dark">P(S&gt;1.8)=81%</span>
+</div>
+</div>
+<!-- Minimal Discrete Bar Chart -->
+<div class="flex items-end gap-1 h-5">
+<div class="w-1 bg-titanium-dark/30 h-1.5 rounded-xs"></div>
+<div class="w-1 bg-titanium-dark/50 h-3 rounded-xs"></div>
+<div class="w-1 bg-titanium-mid h-4 rounded-xs"></div>
+<div class="w-1 bg-titanium-light h-5 rounded-xs"></div>
+</div>
+</div>
+<div class="p-3 rounded-sm bg-surface border border-graphite-border/60 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[10px] font-mono uppercase tracking-wider text-titanium-dark">TURNOVER UPPER CONSTRAINT</span>
+<div class="flex items-baseline gap-2 pt-1 font-mono-num">
+<span class="text-lg text-titanium-light font-normal">&lt; 15.0%</span>
+<span class="text-xs text-titanium-dark">中位: 6.82%</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[16px] text-titanium-dark">tune</span>
+</div>
+<div class="p-3 rounded-sm bg-surface border border-graphite-border/60 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[10px] font-mono uppercase tracking-wider text-titanium-dark">PIPELINE AUDIT SEED</span>
+<div class="flex items-baseline gap-2 pt-1 font-mono">
+<span class="text-xs text-titanium-mid">#0x8B7E-SSE9</span>
+<span class="text-[10px] text-titanium-dark uppercase">STATIONARY</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[16px] text-titanium-dark">shield</span>
+</div>
+</div>
+</section>
+<!-- 2. Dual Canvas: High-Density Table (Left) + Detail Deep Dive Panel (Right) -->
+<section class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+<!-- Left: Restrained Tabular Screener Table (Col 7) -->
+<div class="xl:col-span-7 flex flex-col rounded-sm bg-surface-container-low/60 border border-graphite-border/80 overflow-hidden">
+<!-- Table Header Controls -->
+<div class="px-4 py-3 bg-surface-container-low flex items-center justify-between border-b border-graphite-border/60">
+<div class="flex items-center gap-2">
+<span class="text-xs font-mono uppercase tracking-wider text-titanium-light font-medium">筛选命中清单</span>
+<span class="text-[10px] font-mono px-1.5 py-0.5 rounded-sm bg-surface-container border border-graphite-border text-titanium-dark">REAL-TIME RADAR</span>
+</div>
+<div class="flex items-center gap-2 font-mono text-xs text-titanium-dark">
+<span class="text-[11px]">排序:</span>
+<button class="text-titanium-mid hover:text-titanium-light flex items-center gap-1 transition-colors">
+<span>综合评分降序</span>
+<span class="material-symbols-outlined text-[13px]">arrow_downward</span>
+</button>
+</div>
+</div>
+<!-- Table Body with Tabular Mono Num & Subtle Hover Row -->
+<div class="overflow-x-auto">
+<table class="w-full text-left font-mono-num text-xs border-collapse">
+<thead>
+<tr class="border-b border-graphite-border text-[10px] font-mono uppercase tracking-wider text-titanium-dark/70 bg-surface-container-lowest/40">
+<th class="py-2.5 px-4 font-normal">标的代码 / 名称</th>
+<th class="py-2.5 px-3 text-right font-normal">综合分</th>
+<th class="py-2.5 px-3 font-normal">因子主归因</th>
+<th class="py-2.5 px-3 text-right font-normal">最新价 / 涨跌</th>
+<th class="py-2.5 px-3 text-right font-normal">换手率</th>
+<th class="py-2.5 px-3 text-right font-normal">动量 Z-Score</th>
+<th class="py-2.5 px-3 text-right font-normal">因果度</th>
+<th class="py-2.5 px-4 text-center font-normal">操作</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-graphite-border/30">
+<!-- Row 1: Selected (300308 中际旭创) -->
+<tr class="bg-surface-container-high/40 hover:bg-surface-container-high/70 transition-colors cursor-pointer border-l-2 border-titanium-light" onclick="selectStock('300308', '中际旭创', '+8.92%', '142.80')">
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-sans font-medium text-titanium-light text-xs">中际旭创</span>
+<span class="text-[10px] font-mono text-titanium-dark">300308.SZ · CPO龙头</span>
+</div>
+</td>
+<td class="py-3 px-3 text-right">
+<span class="text-xs font-mono font-semibold text-titanium-light bg-surface-container-highest px-1.5 py-0.5 rounded-sm border border-graphite-border">96.4</span>
+</td>
+<td class="py-3 px-3">
+<span class="font-sans text-[11px] text-titanium-mid">CPO急量 + 尾盘主力资金</span>
+</td>
+<td class="py-3 px-3 text-right">
+<div class="flex flex-col items-end">
+<span class="text-titanium-light font-medium">142.80</span>
+<span class="text-[11px] text-accent-emerald font-mono">+8.92%</span>
+</div>
+</td>
+<td class="py-3 px-3 text-right text-titanium-mid">9.42%</td>
+<td class="py-3 px-3 text-right text-titanium-light font-mono">+2.84σ</td>
+<td class="py-3 px-3 text-right text-titanium-mid">84%</td>
+<td class="py-3 px-4 text-center">
+<div class="flex items-center justify-center gap-1.5 text-titanium-dark">
+<button class="p-1 rounded-sm hover:text-titanium-light hover:bg-surface-container-high transition-colors" title="查看证据"><span class="material-symbols-outlined text-[14px]">code</span></button>
+<button class="p-1 rounded-sm hover:text-titanium-light hover:bg-surface-container-high transition-colors" title="发至回测"><span class="material-symbols-outlined text-[14px]">play_arrow</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 2: 603019 中科曙光 -->
+<tr class="hover:bg-surface-container-high/40 transition-colors cursor-pointer" onclick="selectStock('603019', '中科曙光', '+4.61%', '58.20')">
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-sans font-medium text-titanium-light text-xs">中科曙光</span>
+<span class="text-[10px] font-mono text-titanium-dark">603019.SH · 国产算力</span>
+</div>
+</td>
+<td class="py-3 px-3 text-right">
+<span class="text-xs font-mono text-titanium-mid">92.1</span>
+</td>
+<td class="py-3 px-3">
+<span class="font-sans text-[11px] text-titanium-dark">信创集采 + 动量均线反转</span>
+</td>
+<td class="py-3 px-3 text-right">
+<div class="flex flex-col items-end">
+<span class="text-titanium-light">58.20</span>
+<span class="text-[11px] text-accent-emerald font-mono">+4.61%</span>
+</div>
+</td>
+<td class="py-3 px-3 text-right text-titanium-mid">6.18%</td>
+<td class="py-3 px-3 text-right text-titanium-mid font-mono">+2.15σ</td>
+<td class="py-3 px-3 text-right text-titanium-mid">79%</td>
+<td class="py-3 px-4 text-center">
+<div class="flex items-center justify-center gap-1.5 text-titanium-dark">
+<button class="p-1 rounded-sm hover:text-titanium-light hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[14px]">code</span></button>
+<button class="p-1 rounded-sm hover:text-titanium-light hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[14px]">play_arrow</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 3: 002463 沪电股份 -->
+<tr class="hover:bg-surface-container-high/40 transition-colors cursor-pointer" onclick="selectStock('002463', '沪电股份', '+6.25%', '34.80')">
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-sans font-medium text-titanium-light text-xs">沪电股份</span>
+<span class="text-[10px] font-mono text-titanium-dark">002463.SZ · PCB互联</span>
+</div>
+</td>
+<td class="py-3 px-3 text-right">
+<span class="text-xs font-mono text-titanium-mid">90.8</span>
+</td>
+<td class="py-3 px-3">
+<span class="font-sans text-[11px] text-titanium-dark">高多层板供应 + 机构加仓</span>
+</td>
+<td class="py-3 px-3 text-right">
+<div class="flex flex-col items-end">
+<span class="text-titanium-light">34.80</span>
+<span class="text-[11px] text-accent-emerald font-mono">+6.25%</span>
+</div>
+</td>
+<td class="py-3 px-3 text-right text-titanium-mid">5.30%</td>
+<td class="py-3 px-3 text-right text-titanium-mid font-mono">+1.98σ</td>
+<td class="py-3 px-3 text-right text-titanium-mid">78%</td>
+<td class="py-3 px-4 text-center">
+<div class="flex items-center justify-center gap-1.5 text-titanium-dark">
+<button class="p-1 rounded-sm hover:text-titanium-light hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[14px]">code</span></button>
+<button class="p-1 rounded-sm hover:text-titanium-light hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[14px]">play_arrow</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 4: 300502 新易盛 -->
+<tr class="hover:bg-surface-container-high/40 transition-colors cursor-pointer" onclick="selectStock('300502', '新易盛', '+7.40%', '98.50')">
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-sans font-medium text-titanium-light text-xs">新易盛</span>
+<span class="text-[10px] font-mono text-titanium-dark">300502.SZ · 800G上量</span>
+</div>
+</td>
+<td class="py-3 px-3 text-right">
+<span class="text-xs font-mono text-titanium-mid">88.7</span>
+</td>
+<td class="py-3 px-3">
+<span class="font-sans text-[11px] text-titanium-dark">北美客户送样预期 + 北向净买</span>
+</td>
+<td class="py-3 px-3 text-right">
+<div class="flex flex-col items-end">
+<span class="text-titanium-light">98.50</span>
+<span class="text-[11px] text-accent-emerald font-mono">+7.40%</span>
+</div>
+</td>
+<td class="py-3 px-3 text-right text-titanium-mid">11.20%</td>
+<td class="py-3 px-3 text-right text-titanium-mid font-mono">+2.42σ</td>
+<td class="py-3 px-3 text-right text-titanium-mid">75%</td>
+<td class="py-3 px-4 text-center">
+<div class="flex items-center justify-center gap-1.5 text-titanium-dark">
+<button class="p-1 rounded-sm hover:text-titanium-light hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[14px]">code</span></button>
+<button class="p-1 rounded-sm hover:text-titanium-light hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[14px]">play_arrow</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 5: 000977 浪潮信息 -->
+<tr class="hover:bg-surface-container-high/40 transition-colors cursor-pointer" onclick="selectStock('000977', '浪潮信息', '-0.85%', '42.15')">
+<td class="py-3 px-4">
+<div class="flex flex-col">
+<span class="font-sans font-medium text-titanium-light text-xs">浪潮信息</span>
+<span class="text-[10px] font-mono text-titanium-dark">000977.SZ · AI服务器</span>
+</div>
+</td>
+<td class="py-3 px-3 text-right">
+<span class="text-xs font-mono text-titanium-mid">82.3</span>
+</td>
+<td class="py-3 px-3">
+<span class="font-sans text-[11px] text-titanium-dark">算力整机交付提速 + 估值调整</span>
+</td>
+<td class="py-3 px-3 text-right">
+<div class="flex flex-col items-end">
+<span class="text-titanium-light">42.15</span>
+<span class="text-[11px] text-accent-rose font-mono">-0.85%</span>
+</div>
+</td>
+<td class="py-3 px-3 text-right text-titanium-mid">4.88%</td>
+<td class="py-3 px-3 text-right text-titanium-dark font-mono">+0.95σ</td>
+<td class="py-3 px-3 text-right text-titanium-mid">71%</td>
+<td class="py-3 px-4 text-center">
+<div class="flex items-center justify-center gap-1.5 text-titanium-dark">
+<button class="p-1 rounded-sm hover:text-titanium-light hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[14px]">code</span></button>
+<button class="p-1 rounded-sm hover:text-titanium-light hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[14px]">play_arrow</span></button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer Controls -->
+<div class="px-4 py-2.5 bg-surface-container-lowest/60 flex items-center justify-between font-mono text-xs text-titanium-dark border-t border-graphite-border/60">
+<div class="flex items-center gap-3">
+<span>显示 1-5 / 32 只</span>
+<span class="text-graphite-border">|</span>
+<span class="text-titanium-mid/70">因子张量就绪</span>
+</div>
+<div class="flex items-center gap-1.5">
+<button class="px-2 py-0.5 rounded-sm bg-surface-container border border-graphite-border hover:text-titanium-light transition-colors disabled:opacity-40">‹</button>
+<span class="px-2 py-0.5 text-titanium-light font-medium">1 / 7</span>
+<button class="px-2 py-0.5 rounded-sm bg-surface-container border border-graphite-border hover:text-titanium-light transition-colors">›</button>
+</div>
+</div>
+</div>
+<!-- Right: Restrained Titanium Metal Deep Dive Panel (Col 5) -->
+<div class="xl:col-span-5 flex flex-col gap-4">
+<!-- Target Inspection Card -->
+<div class="p-5 rounded-sm bg-surface-container-low/70 border border-graphite-border/80 flex flex-col gap-4">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="text-base font-semibold text-titanium-light tracking-tight" id="targetName">中际旭创</span>
+<span class="font-mono text-xs text-titanium-dark" id="targetCode">300308.SZ</span>
+<span class="text-[9px] font-mono px-1.5 py-0.2 rounded-sm bg-surface-container-high text-titanium-mid border border-graphite-border uppercase">RANK #1</span>
+</div>
+<span class="text-xs text-titanium-dark/80 pt-1">全球光模块核心供应商 · 800G/1.6T产能高速扩产期</span>
+</div>
+<div class="text-right">
+<div class="font-mono-num text-lg font-semibold text-titanium-light" id="targetPrice">142.80</div>
+<div class="font-mono text-xs text-accent-emerald" id="targetChange">+8.92% (今日)</div>
+</div>
+</div>
+<!-- Cold Monochromatic Micro Chart Canvas -->
+<div class="p-3 rounded-sm bg-surface-container-lowest/80 border border-graphite-border/50 flex flex-col gap-2">
+<div class="flex items-center justify-between text-[10px] font-mono text-titanium-dark">
+<span class="tracking-wider">60-MIN CANDLESTICK + FACTOR PULSE</span>
+<span class="text-titanium-mid flex items-center gap-1.5">
+<span class="w-1 h-1 rounded-full bg-titanium-light"></span>
+              ENTRY: 14:15 CPO_SURGE
+            </span>
+</div>
+<!-- Pure Titanium Linear Sparkline -->
+<svg class="w-full h-24 text-titanium-mid" fill="none" preserveaspectratio="none" viewbox="0 0 380 96">
+<!-- Subtle Grid Lines -->
+<line stroke="#222630" stroke-dasharray="2 2" stroke-opacity="0.6" x1="0" x2="380" y1="24" y2="24"></line>
+<line stroke="#222630" stroke-dasharray="2 2" stroke-opacity="0.6" x1="0" x2="380" y1="48" y2="48"></line>
+<line stroke="#222630" stroke-dasharray="2 2" stroke-opacity="0.6" x1="0" x2="380" y1="72" y2="72"></line>
+<!-- Area Gradient Definition -->
+<defs>
+<lineargradient id="titaniumGrad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#c4c8d3" stop-opacity="0.18"></stop>
+<stop offset="100%" stop-color="#c4c8d3" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<!-- Price Fill & Stroke -->
+<path d="M 0,65 L 30,68 L 60,60 L 90,62 L 120,54 L 150,57 L 180,48 L 210,50 L 240,42 L 270,30 L 300,32 L 330,18 L 360,12 L 380,8 L 380,96 L 0,96 Z" fill="url(#titaniumGrad)"></path>
+<path d="M 0,65 L 30,68 L 60,60 L 90,62 L 120,54 L 150,57 L 180,48 L 210,50 L 240,42 L 270,30 L 300,32 L 330,18 L 360,12 L 380,8" stroke="#e2e6ee" stroke-width="1.5"></path>
+<!-- Trigger Pin Hook at step 270 -->
+<circle cx="270" cy="30" fill="#ffffff" r="3.5"></circle>
+<line stroke="#ffffff" stroke-width="1" x1="270" x2="270" y1="30" y2="14"></line>
+<circle cx="270" cy="12" fill="#c4c8d3" r="1.5"></circle>
+<!-- Discrete Titanium Volume Columns -->
+<rect fill="#7e8494" height="14" opacity="0.4" width="4" x="25" y="82"></rect>
+<rect fill="#7e8494" height="16" opacity="0.4" width="4" x="55" y="80"></rect>
+<rect fill="#7e8494" height="12" opacity="0.3" width="4" x="85" y="84"></rect>
+<rect fill="#7e8494" height="18" opacity="0.5" width="4" x="115" y="78"></rect>
+<rect fill="#7e8494" height="13" opacity="0.4" width="4" x="145" y="83"></rect>
+<rect fill="#7e8494" height="24" opacity="0.6" width="4" x="175" y="72"></rect>
+<rect fill="#7e8494" height="21" opacity="0.5" width="4" x="205" y="75"></rect>
+<rect fill="#7e8494" height="28" opacity="0.7" width="4" x="235" y="68"></rect>
+<rect fill="#f1f3f7" height="42" opacity="0.9" width="4" x="268" y="54"></rect>
+<rect fill="#7e8494" height="34" opacity="0.7" width="4" x="295" y="62"></rect>
+<rect fill="#7e8494" height="44" opacity="0.8" width="4" x="325" y="52"></rect>
+<rect fill="#7e8494" height="50" opacity="0.8" width="4" x="355" y="46"></rect>
+</svg>
+<div class="flex items-center justify-between font-mono text-[10px] text-titanium-dark/70 pt-1">
+<span>09:30</span>
+<span>11:30</span>
+<span class="text-titanium-light font-medium">14:15 [因子脉冲]</span>
+<span>15:00</span>
+</div>
+</div>
+</div>
+<!-- Factor Radar & AI Epistemic Breakdown Split Card -->
+<div class="p-5 rounded-sm bg-surface-container-low/70 border border-graphite-border/80 flex flex-col gap-5">
+<!-- Factor Pentagram Radar (Cold Titanium Monochromatic) -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="text-xs font-mono uppercase tracking-wider text-titanium-light font-medium">五维因子透视</span>
+<span class="text-[10px] font-mono text-titanium-dark">FACTOR EXPOSURE</span>
+</div>
+<div class="flex items-center justify-center p-3 bg-surface-container-lowest/80 rounded-sm border border-graphite-border/50">
+<!-- 5-Axis Spider Chart SVG (Titanium Platinum Styled) -->
+<svg class="w-64 h-52" viewbox="0 0 240 210">
+<!-- Concentric Pentagons -->
+<polygon fill="none" points="120,20 215,89 178,200 62,200 25,89" stroke="#222630" stroke-width="1"></polygon>
+<polygon fill="none" points="120,45 191,97 163,180 77,180 49,97" stroke="#222630" stroke-width="1"></polygon>
+<polygon fill="none" points="120,70 167,105 149,160 91,160 73,105" stroke="#222630" stroke-width="1"></polygon>
+<!-- Axes -->
+<line stroke="#222630" stroke-width="1" x1="120" x2="120" y1="110" y2="20"></line>
+<line stroke="#222630" stroke-width="1" x1="120" x2="215" y1="110" y2="89"></line>
+<line stroke="#222630" stroke-width="1" x1="120" x2="178" y1="110" y2="200"></line>
+<line stroke="#222630" stroke-width="1" x1="120" x2="62" y1="110" y2="200"></line>
+<line stroke="#222630" stroke-width="1" x1="120" x2="25" y1="110" y2="89"></line>
+<!-- High End Titanium Polygon -->
+<polygon fill="#e2e6ee" fill-opacity="0.12" points="120,28 202,94 165,188 75,155 45,95" stroke="#c4c8d3" stroke-width="1.5"></polygon>
+<circle cx="120" cy="28" fill="#ffffff" r="2.5"></circle>
+<circle cx="202" cy="94" fill="#ffffff" r="2.5"></circle>
+<circle cx="165" cy="188" fill="#ffffff" r="2.5"></circle>
+<circle cx="75" cy="155" fill="#ffffff" r="2.5"></circle>
+<circle cx="45" cy="95" fill="#ffffff" r="2.5"></circle>
+<!-- Axis Labels -->
+<text fill="#c4c8d3" font-family="'JetBrains Mono'" font-size="9" text-anchor="middle" x="120" y="14">成长性 94</text>
+<text fill="#c4c8d3" font-family="'JetBrains Mono'" font-size="9" text-anchor="start" x="220" y="93">动量Z 88</text>
+<text fill="#c4c8d3" font-family="'JetBrains Mono'" font-size="9" text-anchor="start" x="184" y="206">预期 86</text>
+<text fill="#c4c8d3" font-family="'JetBrains Mono'" font-size="9" text-anchor="end" x="56" y="206">因果度 84</text>
+<text fill="#c4c8d3" font-family="'JetBrains Mono'" font-size="9" text-anchor="end" x="20" y="93">估值安全 52</text>
+</svg>
+</div>
+</div>
+<!-- Restrained Cold Agent Epistemic Breakdown -->
+<div class="p-3.5 rounded-sm bg-surface-container-lowest/80 border border-graphite-border/70 flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-titanium-light text-[15px]">psychology</span>
+<span class="text-xs font-mono font-medium text-titanium-light">Hermes Alpha 机理探查</span>
+</div>
+<span class="font-mono text-[10px] text-titanium-mid bg-surface-container px-2 py-0.5 rounded-sm border border-graphite-border">CONF 0.88</span>
+</div>
+<p class="text-xs text-titanium-mid leading-relaxed font-sans">
+            尾盘大单主买比例 <span class="font-mono text-titanium-light font-semibold">42.8%</span>，主力净流入 <span class="font-mono text-titanium-light font-semibold">+3.42亿元</span>。筹码分布扫描：当前拥挤度 <span class="font-mono text-titanium-light font-semibold">48%</span>，未触及警戒阈值 (<span class="font-mono text-titanium-dark">80%</span>)。
+          </p>
+<!-- Restrained Monochromatic Crowding Gauge -->
+<div class="flex flex-col gap-1.5 pt-1">
+<div class="flex items-center justify-between text-[10px] font-mono text-titanium-dark">
+<span class="tracking-wider">拥挤度量 (CROWDING GAUGE)</span>
+<span class="text-titanium-light">48% (SAFE RANGE)</span>
+</div>
+<div class="w-full h-1.5 rounded-none bg-surface-container-highest overflow-hidden flex">
+<div class="bg-titanium-light h-full" style="width: 48%;"></div>
+<div class="bg-titanium-dark/30 h-full" style="width: 32%;"></div>
+<div class="bg-graphite-border h-full" style="width: 20%;" title="拥挤警戒区"></div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-graphite-border/50 text-[10px] font-mono">
+<div class="flex items-center gap-1.5 text-titanium-dark">
+<span class="material-symbols-outlined text-[13px]">fingerprint</span>
+<span>#cpo_mom_lag0_7a81</span>
+</div>
+<button class="px-2 py-1 rounded-sm bg-surface-container border border-graphite-border text-titanium-light hover:border-titanium-dark/60 transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">search_check</span>
+<span>质问因子假说</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Workspace Utility Bar -->
+<footer class="mt-4 p-4 rounded-sm bg-surface-container-lowest/80 border border-graphite-border/60 flex flex-wrap items-center justify-between gap-4 text-titanium-dark font-mono text-xs"><div class="flex items-center gap-4"><div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-titanium-light/80"></span><span class="text-titanium-mid">SSE L2 行情切片: 2024-Q2-LATEST</span></div><span class="text-graphite-border">·</span><div>全市场扫描延迟: <span class="text-titanium-light font-mono-num">284ms</span></div><span class="text-graphite-border">·</span><div>剔除停牌/退市标的: <span class="text-titanium-light font-mono-num">114 只</span></div></div><div class="flex items-center gap-2 text-[10px]"><span class="uppercase tracking-wider text-titanium-dark/70">COMPLIANCE SEED</span><span class="bg-surface-container px-2 py-0.5 rounded-sm text-titanium-mid border border-graphite-border">SH-ALPHA-DETERMINISTIC-V4</span></div></footer></div><script>
+  // Scan Button Micro-Interaction
+  const scanBtn = document.getElementById('scanBtn');
+  const scanSpinner = document.getElementById('scanSpinner');
+  const scanIcon = document.getElementById('scanIcon');
+
+  if (scanBtn) {
+    scanBtn.addEventListener('click', () => {
+      scanIcon.classList.add('hidden');
+      scanSpinner.classList.remove('hidden');
+      scanBtn.classList.add('opacity-70');
+
+      setTimeout(() => {
+        scanSpinner.classList.add('hidden');
+        scanIcon.classList.remove('hidden');
+        scanBtn.classList.remove('opacity-70');
+      }, 350);
+    });
+  }
+
+  // Row selection handler updating detail inspection panel
+  function selectStock(code, name, change, price) {
+    const targetName = document.getElementById('targetName');
+    const targetCode = document.getElementById('targetCode');
+    const targetChange = document.getElementById('targetChange');
+    const targetPrice = document.getElementById('targetPrice');
+
+    if (targetName) targetName.innerText = name;
+    if (targetCode) targetCode.innerText = code + (code.startsWith('6') ? '.SH' : '.SZ');
+    if (targetPrice) targetPrice.innerText = price;
+    if (targetChange) {
+      targetChange.innerText = change + ' (今日)';
+      if (change.startsWith('+')) {
+        targetChange.className = 'font-mono text-xs text-accent-emerald';
+      } else {
+        targetChange.className = 'font-mono text-xs text-accent-rose';
+      }
+    }
+  }
+</script></main></div></body></html>

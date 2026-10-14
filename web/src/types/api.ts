@@ -38,9 +38,18 @@ export interface Trade {
   pnl_pct?: number           // computed from trade pair
 }
 
+// K9（ResultSpec 冻结）：运行 status 三值 —— 与后端 contracts.Status* 常量同源。
+// **判据是 status 本身**，不得用 id 是否存在推断成功 —— invalid / failed
+// 的运行同样带 id。
+export type RunStatus = 'completed' | 'invalid' | 'failed'
+
 export interface BacktestResult {
   id: string
-  status: string
+  status: RunStatus
+  // 仅 status='invalid' 时有：无效裁定的稳定 Code 列表（OBS-01）。
+  invalid_reasons?: string[]
+  // 仅 status='failed' 时有：真实错误。无效**不**装在这里。
+  error?: string
   strategy?: string
   stock_pool?: string[]
   start_date?: string
@@ -167,6 +176,9 @@ export interface CopilotJobStatus {
 
 export interface HistoryEntry {
   id: string
+  // 运行 status（K9 三值）：历史条目须能区分无效运行，不得当成功观测陈列。
+  // 旧版历史数据无此字段，读取方按「无标识」兜底。
+  status?: RunStatus
   strategy?: string
   stock_pool?: string[]
   start_date?: string

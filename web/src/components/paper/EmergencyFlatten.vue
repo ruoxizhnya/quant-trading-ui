@@ -6,7 +6,7 @@
   >
     <div class="emergency-header">
       <div class="title-block">
-        <n-icon size="20" color="#f56c6c">
+        <n-icon size="20" class="warn-icon">
           <WarningOutline />
         </n-icon>
         <span class="title">紧急平仓 (Kill Switch)</span>
@@ -271,13 +271,13 @@ const soldColumns: DataTableColumns<EmergencyFlattenOrder> = [
 
 <style scoped>
 .emergency-card {
-  border: 1px solid var(--q-border, #2a2a2a);
-  border-left: 3px solid #f56c6c;
+  border: 1px solid var(--q-border);
+  border-left: 3px solid var(--q-danger);
 }
 
 .emergency-card.is-armed {
-  border-left-color: #f56c6c;
-  background: rgba(245, 108, 108, 0.04);
+  border-left-color: var(--q-danger);
+  background: var(--q-danger-soft);
 }
 
 .emergency-header {
@@ -292,6 +292,12 @@ const soldColumns: DataTableColumns<EmergencyFlattenOrder> = [
   gap: 8px;
 }
 
+/* 危险标识：图标走 CSS 而非 color 属性（SVG 呈现属性不解析 var()）。
+   F16 要求红色 + 二次确认 + 独立确认码，色值变更不得弱化危险语义 */
+.title-block .warn-icon {
+  color: var(--q-danger);
+}
+
 .title {
   font-size: 15px;
   font-weight: 600;
@@ -300,13 +306,13 @@ const soldColumns: DataTableColumns<EmergencyFlattenOrder> = [
 
 .description {
   font-size: 12px;
-  color: var(--q-text-muted, #888);
+  color: var(--q-text3);
   line-height: 1.5;
   margin: 8px 0 12px 0;
 }
 
 .description strong {
-  color: #f56c6c;
+  color: var(--q-danger-text);
 }
 
 .result-card {

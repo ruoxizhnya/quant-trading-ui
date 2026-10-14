@@ -18,14 +18,14 @@ import {
   NText,
 } from 'naive-ui'
 import {
+  assessedProbability,
   getExploreStatus,
   startExplore,
   stopExplore,
-  dimensionLabel,
   type AttemptView,
-  type Challenge,
   type ExploreStatus,
 } from '@/api/explore'
+import VerdictPanel from '@/components/validation/VerdictPanel.vue'
 
 // P2-9 裁决的展示口径。
 //
@@ -39,14 +39,14 @@ function probType(p: number): SeverityType {
   return 'success'
 }
 
-function challengeType(severity: string): SeverityType {
-  if (severity === 'blocking') return 'error'
-  if (severity === 'warning') return 'warning'
-  return 'default'
+/**
+ * 结果流上的 "P x.xx" 与裁决面板的"综合概率"必须是**同一个函数**算出来的同一个数。
+ * 此前这里直接读 verdict.probability（后端聚合字段），而面板按已评估维度取最小值 ——
+ * 两处口径不同，一旦后端那个字段与六个维度不一致，用户会在同一行看到两个概率。
+ */
+function attemptProbability(a: AttemptView): number | null {
+  return assessedProbability(a.verdict)
 }
-
-// blocking 排最前 —— 它是「这条足以否掉结论」的那一级，不能被 note 埋掉。
-const severityRank: Record<string, number> = { blocking: 0, warning: 1, note: 2 }
 
 // P1-3 观察页：正在试什么 / 结果流 / 当前最优。
 //
@@ -86,11 +86,6 @@ const selected = computed<AttemptView | null>(() => {
   return latest.value
 })
 const verdict = computed(() => selected.value?.verdict ?? null)
-const sortedChallenges = computed<Challenge[]>(() =>
-  [...(verdict.value?.challenges ?? [])].sort(
-    (a, b) => (severityRank[a.severity] ?? 9) - (severityRank[b.severity] ?? 9),
-  ),
-)
 
 function stopTimer() {
   if (timer !== undefined) {
@@ -109,6 +104,45 @@ function poll(): Promise<ExploreStatus> {
   })
 }
 
+/**
+ * 刷新节奏。一次尝试要跑「意图解析 → 表达式 → 回测 → 六维校验」，实测 90 秒
+ * 以上；1 秒一跳看不到任何新东西，却把 analysis-service 每人 100 次/分钟的
+ * 预算吃掉 60 次（同一 IP 还要和页面上其余请求共享）。实测就是这样撞出 429。
+ */
+const POLL_MS = 2500
+
+/** 连续失败到第几次才认定真断线（约 15 秒），此前三次以内按瞬时抖动处理 */
+const MAX_POLL_FAILS = 6
+
+let pollFails = 0
+
+/**
+ * 观察循环的失败处理。**一次瞬时失败绝不许停掉轮询**：这个页面存在的唯一理由
+ * 是"看得见他在干什么"，循环一停，窗口就永久瞎在最后一次成功的那一帧上，
+ * 而用户看不出自己看的是旧的。真断线（连续失败）才停，并且把"已停止"说清楚。
+ */
+function startPolling() {
+  stopTimer()
+  pollFails = 0
+  timer = window.setInterval(() => {
+    poll().then(
+      () => {
+        pollFails = 0
+        error.value = ''
+      },
+      (e: unknown) => {
+        const msg = e instanceof Error ? e.message : String(e)
+        if (++pollFails < MAX_POLL_FAILS) {
+          error.value = `状态刷新失败，正在重试（第 ${pollFails} 次）：${msg}`
+          return
+        }
+        error.value = `状态刷新已停止（连续 ${pollFails} 次失败）：${msg} —— 屏幕上的是最后一次成功拿到的进展，可能已经过期。`
+        stopTimer()
+      },
+    )
+  }, POLL_MS)
+}
+
 async function run() {
   error.value = ''
   busy.value = true
@@ -118,15 +152,7 @@ async function run() {
     const res = await startExplore({ description: description.value, max_tries: maxTries.value })
     runID.value = res.run_id
     const s = await poll()
-    if (s.running) {
-      stopTimer()
-      timer = window.setInterval(() => {
-        poll().catch((e: unknown) => {
-          error.value = e instanceof Error ? e.message : String(e)
-          stopTimer()
-        })
-      }, 1000)
-    }
+    if (s.running) startPolling()
   } catch (e: unknown) {
     error.value = e instanceof Error ? e.message : String(e)
   } finally {
@@ -155,7 +181,7 @@ onUnmounted(stopTimer)
 
 <template>
   <div class="explore-page">
-    <NH1>探索观察台</NH1>
+    <NH1>探索观察</NH1>
 
     <NCard size="small" class="controls">
       <NSpace align="center" :wrap="true">
@@ -200,12 +226,12 @@ onUnmounted(stopTimer)
                   </NTag>
                   <!-- 裁决概率：Sharpe 是「跑出来多少」，概率是「这个数有多少可信」 -->
                   <NTag
-                    v-if="a.verdict"
-                    :type="probType(a.verdict.probability)"
+                    v-if="attemptProbability(a) !== null"
+                    :type="probType(attemptProbability(a) ?? 0)"
                     size="small"
                     :bordered="false"
                   >
-                    P {{ a.verdict.probability.toFixed(2) }}
+                    P {{ attemptProbability(a)?.toFixed(2) }}
                   </NTag>
                   <NText depth="2" style="font-size: 12px">{{ a.hypothesis }}</NText>
                 </NSpace>
@@ -240,91 +266,14 @@ onUnmounted(stopTimer)
       </NCard>
     </div>
 
-    <!-- 下：验证器裁决 -->
+    <!-- 下：验证器裁决（A-05 横切组件，六维 + 未评估 + 最弱一环 + 因果下注 + 质疑分级） -->
     <NCard title="验证器裁决" size="small" class="verdict-card">
       <template #header-extra>
         <NText depth="3" style="font-size: 12px">
           第 {{ selected?.seq ?? 0 }} 次 · 点结果流里任一行可切换
         </NText>
       </template>
-
-      <NEmpty v-if="!verdict" description="这一条没有裁决 —— 失败的尝试没有可被证伪的东西" />
-
-      <template v-else>
-        <NSpace align="center" :size="24">
-          <NStatistic label="综合概率" :value="verdict.probability" :precision="3" />
-          <NStatistic label="质疑条数" :value="verdict.challenges.length" />
-          <NSpace :vertical="true" :size="4">
-            <NText depth="3" style="font-size: 12px">
-              综合概率取各维最小值 —— 结论受限于最弱的那一环
-            </NText>
-            <NSpace :size="8">
-              <NText depth="3" style="font-size: 12px">最弱维：</NText>
-              <NTag
-                v-if="verdict.weakest"
-                :type="probType(verdict.dimensions[verdict.weakest] ?? 0)"
-                size="small"
-              >
-                {{ dimensionLabel(verdict.weakest) }}
-              </NTag>
-              <NTag v-if="verdict.blocking > 0" type="error" size="small">
-                {{ verdict.blocking }} 条 blocking
-              </NTag>
-            </NSpace>
-          </NSpace>
-        </NSpace>
-
-        <NDivider style="margin: 12px 0" />
-
-        <NSpace :size="8" :wrap="true">
-          <NTag
-            v-for="[dim, p] in Object.entries(verdict.dimensions)"
-            :key="dim"
-            :type="probType(p)"
-            size="small"
-          >
-            {{ dimensionLabel(dim) }} {{ p.toFixed(2) }}
-          </NTag>
-          <!-- 「没查」必须显示成没查，不能省掉 —— 省掉就成了「没问题」 -->
-          <NTag
-            v-for="dim in verdict.unassessed ?? []"
-            :key="dim"
-            size="small"
-            :bordered="false"
-            type="default"
-          >
-            {{ dimensionLabel(dim) }} 未评估
-          </NTag>
-        </NSpace>
-
-        <!-- 因果维：机制是人要读的，但旁边必须写着它赌中了几条 ——
-             只讲机制不下注的故事，等于没讲。 -->
-        <template v-if="verdict.causal">
-          <NDivider style="margin: 12px 0" />
-          <NSpace :vertical="true" :size="4">
-            <NSpace :size="8">
-              <NText depth="3" style="font-size: 12px">机制（模型给的）</NText>
-              <NTag :type="probType(verdict.causal.probability)" size="small">
-                可证伪预测 {{ verdict.causal.testable }} 条 · 应验
-                {{ verdict.causal.passed }} · 被证伪 {{ verdict.causal.failed }}
-              </NTag>
-            </NSpace>
-            <NText depth="2" style="font-size: 13px">{{ verdict.causal.mechanism }}</NText>
-          </NSpace>
-        </template>
-
-        <NDivider style="margin: 12px 0" />
-
-        <NAlert
-          v-for="(c, i) in sortedChallenges"
-          :key="i"
-          :type="challengeType(c.severity)"
-          :title="dimensionLabel(c.dimension)"
-          style="margin-bottom: 8px"
-        >
-          {{ c.message }}
-        </NAlert>
-      </template>
+      <VerdictPanel :verdict="verdict" />
     </NCard>
   </div>
 </template>

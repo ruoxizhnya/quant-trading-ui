@@ -16,6 +16,17 @@
               <span class="history-desc">{{ itemDesc(item) }}</span>
             </div>
             <n-space :size="4" align="center">
+              <!-- K9：无效 / 失败运行不得当成功观测陈列 —— 明细标识先于收益标签 -->
+              <n-tag
+                v-if="statusTag(item)"
+                data-testid="history-status-tag"
+                :type="statusTag(item)!.type"
+                size="small"
+                round
+                :bordered="false"
+              >
+                {{ statusTag(item)!.label }}
+              </n-tag>
               <n-tag 
                 :type="(item.total_return ?? 0) >= 0 ? 'success' : 'error'" 
                 size="small" 
@@ -80,6 +91,7 @@
 import { computed } from 'vue'
 import { NCard, NCollapse, NCollapseItem, NTable, NTag, NSpace, NButton, NEmpty } from 'naive-ui'
 import { fmtPercent, fmtNumber, formatDate } from '@/utils/format'
+import { runStatusTag } from '@/utils/runStatus'
 import type { HistoryEntry, TradeDisplay } from '@/types/api'
 
 const props = defineProps<{
@@ -127,6 +139,10 @@ function itemDesc(item: HistoryEntry): string {
   return desc
 }
 
+// K9 三值标识改用全站唯一口径（`utils/runStatus`）。原先这里是本地一份，
+// 与控制台的历史列表各写各的 —— 同一条无效运行从两个页面看会不一样。
+const statusTag = (item: HistoryEntry) => runStatusTag(item.status)
+
 function directionLabel(dir: string): string {
   switch (dir) {
     case 'long': return '买入'
@@ -165,19 +181,15 @@ function directionLabel(dir: string): string {
 
 .history-desc {
   font-size: 12px;
-  color: #8b949e;
+  color: var(--q-text3);
 }
 
 .trade-sublist {
   padding: 4px 0 0 16px;
 }
 
-.trade-long td { background: rgba(63, 185, 80, 0.04); }
-.trade-short td { background: rgba(248, 81, 73, 0.04); }
-
-.pnl-pos { color: #3fb950; font-weight: 500; }
-.pnl-neg { color: #f85149; font-weight: 500; }
-.pnl-pct { color: #8b949e; font-size: 11px; margin-left: 4px; }
+.trade-long td { background: var(--q-success-soft); }
+.trade-short td { background: var(--q-danger-soft); }
 
 :deep(.n-collapse-item__header-main) {
   width: 100%;

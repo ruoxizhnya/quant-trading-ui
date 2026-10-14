@@ -178,7 +178,7 @@ test.describe('D7-28: Data Sync — Full Workflow (Create → Execute → Comple
 
     // Verify page title
     const title = await page.locator('h1').textContent();
-    expect(title).toContain('数据同步');
+    expect(title).toContain('数据管理');
 
     // Verify key components exist
     await expect(page.locator('.data-sync-page')).toBeVisible();

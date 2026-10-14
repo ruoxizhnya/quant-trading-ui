@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/><style>
+  @layer base {
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #090a0c;
+      color: #e5e8ed;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    body { overscroll-behavior: none; }
+    main > :first-child { margin-top: 0 !important; }
+    main > :last-child { margin-bottom: 0 !important; }
+  }
+  ::-webkit-scrollbar { display: none; }
+  .font-mono { font-family: 'JetBrains Mono', monospace; }
+</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          nordic: {
+            void: "#090a0c",
+            base: "#101216",
+            surface: "#15181e",
+            elevated: "#1b1f27",
+            hairline: "rgba(255, 255, 255, 0.06)",
+            platinum: "#f5f7fa",
+            titanium: "#cbd2db",
+            slate: "#8b929e",
+            muted: "#525763",
+            sand: "#d1b894",
+            sandMuted: "rgba(209, 184, 148, 0.15)",
+            accent: "#e1e6ee"
+          }
+        },
+        fontFamily: {
+          sans: ['Inter', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace']
+        }
+      }
+    }
+  }</script></head><body class="bg-[#090a0c] font-sans text-sm text-[#cbd2db] antialiased selection:bg-white/10 selection:text-white"><aside class="fixed left-0 top-0 h-full w-64 bg-[#090a0c] z-50 flex flex-col justify-between border-r border-white/[0.06]"><div class="flex flex-col h-[calc(100vh-80px)]"><div class="h-14 px-5 flex items-center gap-3 shrink-0 border-b border-white/[0.06]"><div class="w-6 h-6 rounded-sm bg-white/[0.05] border border-white/[0.1] flex items-center justify-center"><span class="material-symbols-outlined text-[#f5f7fa] text-[16px]">all_inclusive</span></div><div class="flex flex-col"><div class="flex items-center gap-1.5"><span class="text-xs tracking-wider text-[#f5f7fa] font-semibold uppercase">Quant Lab</span><span class="font-mono text-[9px] px-1 py-0.2 rounded-sm bg-white/[0.05] text-[#8b929e] border border-white/[0.08] tracking-widest">PRO</span></div><span class="font-mono text-[10px] text-[#525763] uppercase tracking-wider">A-Share Architecture</span></div></div><div class="px-3 py-3 overflow-y-auto"><nav class="flex flex-col gap-0.5"><div class="px-2 pt-2 pb-1.5 font-mono text-[10px] text-[#525763] uppercase tracking-widest flex items-center justify-between"><span>Research Core (P0)</span><span class="font-mono text-[10px] text-[#8b929e]">4</span></div><a class="flex items-center justify-between px-2.5 py-1.5 rounded-sm text-[#8b929e] hover:bg-white/[0.03] hover:text-[#f5f7fa] transition-colors text-xs" href="#"><span>审阅台 Review Desk</span><span class="font-mono text-[10px] px-1.5 py-0.2 rounded-sm bg-white/[0.05] text-[#cbd2db] border border-white/[0.08]">3</span></a><a class="flex items-center justify-between px-2.5 py-1.5 rounded-sm text-[#8b929e] hover:bg-white/[0.03] hover:text-[#f5f7fa] transition-colors text-xs" href="#"><span>探索观察台 Explore</span><span class="flex items-center gap-1.5 font-mono text-[10px] text-[#cbd2db]"><span class="w-1 h-1 rounded-full bg-[#cbd2db]"></span>LIVE</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-[#8b929e] hover:bg-white/[0.03] hover:text-[#f5f7fa] transition-colors text-xs" href="#"><span>研究日志与采纳记录 Journal</span></a><div class="px-2 pt-4 pb-1.5 font-mono text-[10px] text-[#525763] uppercase tracking-widest"><span>Instruments 仪器</span></div><a class="flex items-center px-2.5 py-1.5 rounded-sm text-[#8b929e] hover:bg-white/[0.03] hover:text-[#f5f7fa] transition-colors text-xs" href="#"><span>回测引擎 Backtest</span></a><a class="flex items-center justify-between px-2.5 py-1.5 rounded-sm text-[#8b929e] hover:bg-white/[0.03] hover:text-[#f5f7fa] transition-colors text-xs" href="#"><span>多策略对比 Compare</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-[#8b929e] hover:bg-white/[0.03] hover:text-[#f5f7fa] transition-colors text-xs" href="#"><span>策略库 Strategies</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm bg-white/[0.06] text-[#f5f7fa] font-medium border-l border-[#cbd2db] pl-2 text-xs" href="#"><span>因子研究 Factors</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-[#8b929e] hover:bg-white/[0.03] hover:text-[#f5f7fa] transition-colors text-xs" href="#"><span>选股与市场 Screener</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-[#8b929e] hover:bg-white/[0.03] hover:text-[#f5f7fa] transition-colors text-xs" href="#"><span>数据管道 Data Sync</span></a><div class="px-2 pt-4 pb-1.5 font-mono text-[10px] text-[#525763] uppercase tracking-widest"><span>System Matrix</span></div><a class="flex items-center px-2.5 py-1.5 rounded-sm text-[#8b929e] hover:bg-white/[0.03] hover:text-[#f5f7fa] transition-colors text-xs" href="#"><span>风险告警与健康 Alerts</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-[#8b929e] hover:bg-white/[0.03] hover:text-[#f5f7fa] transition-colors text-xs" href="#"><span>交易执行 Execution</span></a><a class="flex items-center px-2.5 py-1.5 rounded-sm text-[#8b929e] hover:bg-white/[0.03] hover:text-[#f5f7fa] transition-colors text-xs" href="#"><span>宏观与产业链 Macro</span></a></nav></div></div><div class="p-3 bg-[#090a0c] shrink-0 border-t border-white/[0.06]"><div class="p-2.5 rounded-sm bg-white/[0.02] border border-white/[0.04] flex flex-col gap-1.5"><div class="flex items-center justify-between"><span class="font-mono text-[10px] text-[#525763] tracking-wider uppercase">NODE</span><span class="font-mono text-[10px] text-[#cbd2db] flex items-center gap-1.5"><span class="w-1 h-1 rounded-full bg-[#cbd2db]"></span>ONLINE</span></div><div class="font-mono text-[11px] text-[#cbd2db] tracking-tight">SHA-DC-A102 · SSE</div><div class="flex items-center justify-between text-[#525763] font-mono text-[10px] pt-0.5"><span>PORT: 9840</span><span>LATENCY: 0.42ms</span></div></div></div></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-14 bg-[#090a0c]/85 backdrop-blur-md z-40 border-b border-white/[0.06]"><div class="h-14 w-full px-6 flex items-center justify-between"><div class="flex items-center gap-5"><div class="flex items-center gap-2 px-2.5 py-1 rounded-sm bg-white/[0.03] text-[#8b929e] hover:text-[#f5f7fa] cursor-pointer border border-white/[0.06] text-xs transition-colors"><span class="material-symbols-outlined text-[15px]">search</span><span class="text-xs">指令搜索 · 全域索引</span><kbd class="font-mono text-[10px] bg-white/[0.06] px-1 py-0.2 rounded-sm text-[#cbd2db]">⌘K</kbd></div><div class="hidden xl:flex items-center gap-5 pl-2"><div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-[#cbd2db]/60"></span><span class="font-mono text-[10px] text-[#525763] uppercase tracking-wider">HERMES AGENT:</span><span class="font-mono text-[11px] text-[#cbd2db]">380 ops/h</span></div><div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-[#cbd2db]/60"></span><span class="font-mono text-[10px] text-[#525763] uppercase tracking-wider">FOUNDATION:</span><span class="font-mono text-[11px] text-[#cbd2db]">NOMINAL</span></div><div class="flex items-center gap-2"><span class="font-mono text-[10px] text-[#525763] uppercase tracking-wider">PENDING:</span><span class="font-mono text-[11px] text-[#d1b894]">3</span></div></div></div><div class="flex items-center gap-4"><div class="flex items-center gap-2 font-mono text-[11px] text-[#8b929e] px-2.5 py-1 rounded-sm bg-white/[0.02] border border-white/[0.06]"><span class="material-symbols-outlined text-[14px] text-[#cbd2db]">terminal</span><span>POLARS_OPT_V4</span></div><div class="flex items-center gap-2.5 pl-2"><div class="flex flex-col text-right"><span class="text-xs text-[#f5f7fa] font-medium leading-tight">实验室主任</span><span class="font-mono text-[9px] text-[#525763] tracking-widest uppercase">ROOT</span></div><div class="w-7 h-7 rounded-sm bg-white/[0.04] border border-white/[0.08] flex items-center justify-center"><span class="material-symbols-outlined text-[#cbd2db] text-[15px]">account_circle</span></div></div></div></div></header><main class="relative pt-14 bg-[#090a0c] min-h-screen"><div class="flex flex-col w-full">
+<!-- Control / Factor Context Sub-header -->
+<section class="w-full bg-[#090a0c] px-6 py-3.5 flex flex-col xl:flex-row xl:items-center justify-between gap-4 border-b border-white/[0.06]">
+<!-- Left: Factor Identity & Specs -->
+<div class="flex flex-wrap items-center gap-3">
+<div class="flex items-center gap-2 bg-white/[0.03] px-2.5 py-1 rounded-sm border border-white/[0.06]">
+<span class="material-symbols-outlined text-[#cbd2db] text-[16px]">lens_blur</span>
+<span class="font-mono text-sm text-[#f5f7fa] font-medium tracking-tight">CPO_VolumeSurge_20D</span>
+<span class="font-sans text-xs text-[#8b929e] pl-1 font-normal">(光模块日内缩量突变因子)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="font-mono text-[11px] px-2 py-0.5 rounded-sm bg-white/[0.02] border border-white/[0.06] text-[#8b929e]">CAT: 量价动量</span>
+<span class="font-mono text-[11px] px-2 py-0.5 rounded-sm bg-white/[0.02] border border-white/[0.06] text-[#8b929e]">UNIVERSE: 算力与通信50</span>
+<span class="font-mono text-[11px] px-2 py-0.5 rounded-sm bg-white/[0.02] border border-white/[0.06] text-[#8b929e]">FREQ: 日频</span>
+<span class="font-mono text-[11px] px-2 py-0.5 rounded-sm bg-white/[0.04] border border-white/[0.08] text-[#f5f7fa] flex items-center gap-1.5">
+<span class="w-1 h-1 rounded-full bg-[#cbd2db]"></span>VERIFIED 2024-Q2
+        </span>
+</div>
+</div>
+<!-- Right: Operational Actions (Nordic Titanium Metal CTA) -->
+<div class="flex items-center flex-wrap gap-2">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-sm bg-white/[0.03] hover:bg-white/[0.07] text-[#cbd2db] hover:text-[#f5f7fa] text-xs border border-white/[0.06] transition-all cursor-pointer font-medium">
+<span class="material-symbols-outlined text-[14px]">add</span>
+<span>新建因子</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-sm bg-[#f5f7fa] hover:bg-white text-[#090a0c] text-xs font-semibold shadow-[0_1px_4px_rgba(255,255,255,0.1)] transition-all cursor-pointer" id="btn-recompute">
+<span class="material-symbols-outlined text-[14px] font-bold">bolt</span>
+<span>触发全量计算 (Polars)</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-sm bg-white/[0.03] hover:bg-white/[0.07] text-[#8b929e] hover:text-[#cbd2db] text-xs border border-white/[0.06] transition-all cursor-pointer font-mono">
+<span class="material-symbols-outlined text-[14px]">fingerprint</span>
+<span>#fc892a</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-sm bg-white/[0.03] hover:bg-white/[0.07] text-[#8b929e] hover:text-[#cbd2db] text-xs border border-white/[0.06] transition-all cursor-pointer font-mono">
+<span class="material-symbols-outlined text-[14px]">download</span>
+<span>Parquet</span>
+</button>
+</div>
+</section>
+<!-- Metric Quick Ribbon -->
+<section class="w-full px-6 py-2.5 bg-[#101216]/60 border-b border-white/[0.06] flex flex-wrap items-center gap-3">
+<div class="flex items-center gap-2 bg-[#090a0c] px-2.5 py-1 rounded-sm border border-white/[0.06]">
+<span class="font-mono text-[10px] text-[#525763] uppercase tracking-wider">MEAN IC</span>
+<span class="font-mono text-xs text-[#f5f7fa] font-medium">+0.084</span>
+<span class="font-mono text-[11px] text-[#8b929e]">(IR: 1.88)</span>
+</div>
+<div class="flex items-center gap-2 bg-[#090a0c] px-2.5 py-1 rounded-sm border border-white/[0.06]">
+<span class="font-mono text-[10px] text-[#525763] uppercase tracking-wider">IC &gt; 0 胜率</span>
+<span class="font-mono text-xs text-[#f5f7fa] font-medium">74.2%</span>
+<span class="font-mono text-[11px] text-[#525763]">(p &lt; 0.001)</span>
+</div>
+<div class="flex items-center gap-2 bg-[#090a0c] px-2.5 py-1 rounded-sm border border-white/[0.06]">
+<span class="font-mono text-[10px] text-[#525763] uppercase tracking-wider">单调性</span>
+<span class="font-mono text-xs text-[#f5f7fa] font-medium">0.94</span>
+<span class="font-mono text-[10px] px-1 py-0.2 rounded-sm bg-white/[0.04] text-[#cbd2db] border border-white/[0.06]">单调显著</span>
+</div>
+<div class="flex items-center gap-2 bg-[#090a0c] px-2.5 py-1 rounded-sm border border-white/[0.06]">
+<span class="font-mono text-[10px] text-[#525763] uppercase tracking-wider">年化多空</span>
+<span class="font-mono text-xs text-[#f5f7fa] font-medium">+24.6%</span>
+<span class="font-mono text-[11px] text-[#525763]">(扣净 0.15% 费率)</span>
+</div>
+<div class="flex items-center gap-2 bg-[#090a0c] px-2.5 py-1 rounded-sm border border-white/[0.06]">
+<span class="font-mono text-[10px] text-[#525763] uppercase tracking-wider">MAX DD</span>
+<span class="font-mono text-xs text-[#cbd2db] font-medium">-6.82%</span>
+<span class="font-mono text-[11px] text-[#8b929e]">CALMAR: 3.61</span>
+</div>
+<div class="ml-auto hidden 2xl:flex items-center gap-2 font-mono text-[11px] text-[#525763]">
+<span class="w-1 h-1 rounded-full bg-[#cbd2db]"></span>
+<span>POLARS_CACHE_HIT: 98.4%</span>
+</div>
+</section>
+<!-- Workspace 2-Column Split View -->
+<div class="w-full px-6 py-5 grid grid-cols-1 lg:grid-cols-12 gap-5">
+<!-- LEFT PANEL: Quantitative Visualization Canvas (8 Cols) -->
+<div class="lg:col-span-8 flex flex-col gap-5 min-w-0">
+<!-- PANE 1: Rolling IC & IC Decay -->
+<div class="bg-[#101216] rounded-sm p-4 border border-white/[0.06] flex flex-col gap-3">
+<div class="flex flex-wrap items-center justify-between gap-3 pb-1 border-b border-white/[0.04]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#cbd2db] text-[16px]">show_chart</span>
+<span class="text-xs text-[#f5f7fa] font-medium tracking-tight">Rolling 250D Rank IC 与多期衰减曲线</span>
+<span class="font-mono text-[10px] px-1.5 py-0.2 rounded-sm bg-white/[0.03] text-[#8b929e] border border-white/[0.06]">T_HALFLIFE: 3.4D</span>
+</div>
+<!-- Time Horizon Selector -->
+<div class="flex items-center bg-[#090a0c] p-0.5 rounded-sm border border-white/[0.06]">
+<button class="px-2 py-0.5 rounded-sm text-[#f5f7fa] bg-white/[0.06] font-mono text-[11px] cursor-pointer">1Y (250D)</button>
+<button class="px-2 py-0.5 rounded-sm text-[#525763] hover:text-[#cbd2db] font-mono text-[11px] cursor-pointer transition-colors">3Y</button>
+<button class="px-2 py-0.5 rounded-sm text-[#525763] hover:text-[#cbd2db] font-mono text-[11px] cursor-pointer transition-colors">FULL (10Y)</button>
+</div>
+</div>
+<!-- Split Chart View: Line (Left 60%) + Decay Bars (Right 40%) -->
+<div class="grid grid-cols-1 xl:grid-cols-5 gap-3 pt-1">
+<!-- Sub-Chart 1: Rolling IC Timeseries -->
+<div class="xl:col-span-3 bg-[#090a0c] rounded-sm p-3 border border-white/[0.04] flex flex-col justify-between">
+<div class="flex items-center justify-between font-mono text-[10px] text-[#525763] pb-2">
+<span>ROLLING RANK IC (250D SMA)</span>
+<span class="text-[#f5f7fa] font-mono">LATEST: +0.092</span>
+</div>
+<!-- Hairline SVG Timeseries Chart -->
+<div class="w-full h-40 relative flex items-center">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 500 120">
+<defs>
+<lineargradient id="nordicIcGrad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#ffffff" stop-opacity="0.12"></stop>
+<stop offset="100%" stop-color="#ffffff" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<!-- Zero line -->
+<line stroke="#ffffff" stroke-dasharray="2,3" stroke-opacity="0.12" stroke-width="0.8" x1="0" x2="500" y1="70" y2="70"></line>
+<!-- Threshold +0.05 -->
+<line stroke="#ffffff" stroke-dasharray="1,4" stroke-opacity="0.08" stroke-width="0.5" x1="0" x2="500" y1="45" y2="45"></line>
+<!-- Shaded Area -->
+<polygon fill="url(#nordicIcGrad)" points="0,70 15,62 40,55 70,68 100,48 130,52 160,38 190,42 220,32 250,45 280,30 310,25 340,36 370,22 400,28 430,20 460,24 500,18 500,70 0,70"></polygon>
+<!-- Fine Hairline Polyline (Cold Titanium White) -->
+<polyline fill="none" points="0,70 15,62 40,55 70,68 100,48 130,52 160,38 190,42 220,32 250,45 280,30 310,25 340,36 370,22 400,28 430,20 460,24 500,18" stroke="#cbd2db" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"></polyline>
+<!-- Current Pin -->
+<circle cx="500" cy="18" fill="#f5f7fa" r="2.5"></circle>
+</svg>
+</div>
+<div class="flex items-center justify-between font-mono text-[10px] text-[#525763] pt-2 border-t border-white/[0.03]">
+<span>2023-05</span>
+<span>2023-09</span>
+<span>2024-01</span>
+<span class="text-[#8b929e]">2024-05 (NOW)</span>
+</div>
+</div>
+<!-- Sub-Chart 2: Multi-Period IC Decay Histogram (T+1 to T+10) -->
+<div class="xl:col-span-2 bg-[#090a0c] rounded-sm p-3 border border-white/[0.04] flex flex-col justify-between">
+<div class="flex items-center justify-between font-mono text-[10px] text-[#525763] pb-2">
+<span>IC DECAY HORIZON (T+1 ~ T+10)</span>
+<span class="text-[#cbd2db] font-mono">HALFLIFE: 3.4D</span>
+</div>
+<!-- Decay Bar Visualizer with Pure Grayscale Cadence -->
+<div class="w-full h-40 flex items-end justify-between gap-1.5 px-0.5 pt-2">
+<!-- T+1 -->
+<div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+<span class="font-mono text-[10px] text-[#f5f7fa]">.09</span>
+<div class="w-full bg-[#f5f7fa] rounded-[1px] transition-all group-hover:bg-white" style="height: 90%;"></div>
+<span class="font-mono text-[10px] text-[#8b929e]">T+1</span>
+</div>
+<!-- T+2 -->
+<div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+<span class="font-mono text-[10px] text-[#cbd2db]">.08</span>
+<div class="w-full bg-[#cbd2db] rounded-[1px] transition-all group-hover:bg-white" style="height: 80%;"></div>
+<span class="font-mono text-[10px] text-[#8b929e]">T+2</span>
+</div>
+<!-- T+3 -->
+<div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+<span class="font-mono text-[10px] text-[#a4adb8]">.06</span>
+<div class="w-full bg-[#a4adb8] rounded-[1px] transition-all group-hover:bg-white" style="height: 60%;"></div>
+<span class="font-mono text-[10px] text-[#8b929e]">T+3</span>
+</div>
+<!-- T+4 (Half Life) -->
+<div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+<span class="font-mono text-[10px] text-[#8b929e]">.04</span>
+<div class="w-full bg-[#8b929e] rounded-[1px] transition-all group-hover:bg-white" style="height: 45%;"></div>
+<span class="font-mono text-[10px] text-[#f5f7fa] font-medium">T+4</span>
+</div>
+<!-- T+5 -->
+<div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+<span class="font-mono text-[10px] text-[#525763]">.03</span>
+<div class="w-full bg-white/[0.22] rounded-[1px]" style="height: 32%;"></div>
+<span class="font-mono text-[10px] text-[#525763]">T+5</span>
+</div>
+<!-- T+6 -->
+<div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+<span class="font-mono text-[10px] text-[#525763]">.02</span>
+<div class="w-full bg-white/[0.18] rounded-[1px]" style="height: 24%;"></div>
+<span class="font-mono text-[10px] text-[#525763]">T+6</span>
+</div>
+<!-- T+7 -->
+<div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+<span class="font-mono text-[10px] text-[#525763]">.02</span>
+<div class="w-full bg-white/[0.14] rounded-[1px]" style="height: 19%;"></div>
+<span class="font-mono text-[10px] text-[#525763]">T+7</span>
+</div>
+<!-- T+8 -->
+<div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+<span class="font-mono text-[10px] text-[#525763]">.01</span>
+<div class="w-full bg-white/[0.10] rounded-[1px]" style="height: 14%;"></div>
+<span class="font-mono text-[10px] text-[#525763]">T+8</span>
+</div>
+<!-- T+9 -->
+<div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+<span class="font-mono text-[10px] text-[#525763]">.01</span>
+<div class="w-full bg-white/[0.08] rounded-[1px]" style="height: 10%;"></div>
+<span class="font-mono text-[10px] text-[#525763]">T+9</span>
+</div>
+<!-- T+10 -->
+<div class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end group">
+<span class="font-mono text-[10px] text-[#525763]">.00</span>
+<div class="w-full bg-white/[0.05] rounded-[1px]" style="height: 6%;"></div>
+<span class="font-mono text-[10px] text-[#525763]">T+10</span>
+</div>
+</div>
+<div class="text-center font-mono text-[10px] text-[#525763] pt-2 border-t border-white/[0.03]">
+              最佳换仓窗口: <span class="text-[#cbd2db]">3个交易日内</span>
+</div>
+</div>
+</div>
+</div>
+<!-- PANE 2: 10-Quantile Cumulative Return Curve -->
+<div class="bg-[#101216] rounded-sm p-4 border border-white/[0.06] flex flex-col gap-3">
+<div class="flex flex-wrap items-center justify-between gap-3 pb-1 border-b border-white/[0.04]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#cbd2db] text-[16px]">bar_chart</span>
+<span class="text-xs text-[#f5f7fa] font-medium tracking-tight">10分层累计收益走势图 (10-Quantile Backtest)</span>
+</div>
+<!-- Legend Tags (Minimalist Hairline Indicators) -->
+<div class="flex items-center flex-wrap gap-4 font-mono text-[11px]">
+<span class="flex items-center gap-1.5 text-[#f5f7fa]">
+<span class="w-3 h-[1.5px] bg-[#f5f7fa]"></span>Q10: +142.4%
+            </span>
+<span class="flex items-center gap-1.5 text-[#cbd2db]">
+<span class="w-3 h-[1.5px] bg-[#8b929e]"></span>多空差 (L-S): +180.4%
+            </span>
+<span class="flex items-center gap-1.5 text-[#525763]">
+<span class="w-3 h-[1.5px] border-t border-dashed border-[#525763]"></span>基准 (中证500): +18.2%
+            </span>
+<span class="flex items-center gap-1.5 text-[#8b929e]">
+<span class="w-3 h-[1.5px] bg-[#525763]"></span>Q1: -38.0%
+            </span>
+</div>
+</div>
+<!-- Canvas Chart Simulation with Hairline strokes -->
+<div class="w-full bg-[#090a0c] rounded-sm p-3 border border-white/[0.04] flex flex-col justify-between">
+<div class="w-full h-52 relative">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 600 160">
+<!-- Subdued Grid lines -->
+<line stroke="#ffffff" stroke-dasharray="1,4" stroke-opacity="0.06" stroke-width="0.5" x1="0" x2="600" y1="120" y2="120"></line>
+<line stroke="#ffffff" stroke-dasharray="1,4" stroke-opacity="0.06" stroke-width="0.5" x1="0" x2="600" y1="80" y2="80"></line>
+<line stroke="#ffffff" stroke-dasharray="1,4" stroke-opacity="0.06" stroke-width="0.5" x1="0" x2="600" y1="40" y2="40"></line>
+<!-- Intermediate Quantiles Q2 - Q9 in progressive hairline grays -->
+<path d="M0,110 C80,112 160,115 240,112 C320,109 400,106 480,102 L600,98" fill="none" opacity="0.25" stroke="#8b929e" stroke-width="0.8"></path>
+<path d="M0,110 C80,110 160,108 240,104 C320,99 400,94 480,90 L600,86" fill="none" opacity="0.35" stroke="#8b929e" stroke-width="0.8"></path>
+<path d="M0,110 C80,108 160,104 240,98 C320,92 400,85 480,81 L600,77" fill="none" opacity="0.45" stroke="#8b929e" stroke-width="0.8"></path>
+<path d="M0,110 C80,106 160,100 240,93 C320,86 400,78 480,72 L600,68" fill="none" opacity="0.55" stroke="#8b929e" stroke-width="0.8"></path>
+<path d="M0,110 C80,104 160,96 240,88 C320,80 400,71 480,64 L600,59" fill="none" opacity="0.65" stroke="#8b929e" stroke-width="0.8"></path>
+<!-- Benchmark Index Line -->
+<path d="M0,110 C80,109 160,107 240,105 C320,102 400,99 480,96 L600,92" fill="none" stroke="#525763" stroke-dasharray="3,3" stroke-width="1"></path>
+<!-- Q1 Lowest Tier (Deep Slate) -->
+<path d="M0,110 C80,115 160,122 240,128 C320,135 400,140 480,145 L600,152" fill="none" opacity="0.8" stroke="#686e7a" stroke-width="1.2"></path>
+<!-- Long-Short Spread (Muted Titanium) -->
+<path d="M0,110 C80,95 160,82 240,68 C320,55 400,42 480,30 L600,15" fill="none" opacity="0.9" stroke="#cbd2db" stroke-width="1.5"></path>
+<!-- Q10 Top Tier (Pure White/Platinum) -->
+<path d="M0,110 C80,100 160,90 240,79 C320,68 400,56 480,44 L600,28" fill="none" stroke="#f5f7fa" stroke-width="1.8"></path>
+</svg>
+</div>
+<!-- Monotonicity Matrix Bar (Clean Architectural Row) -->
+<div class="grid grid-cols-10 gap-1 pt-2 font-mono text-[10px] text-center border-t border-white/[0.04]">
+<div class="p-1 bg-white/[0.02] rounded-[1px]"><div class="text-[#8b929e]">Q1</div><div class="text-[#525763]">-38%</div></div>
+<div class="p-1 bg-white/[0.02] rounded-[1px]"><div class="text-[#8b929e]">Q2</div><div class="text-[#525763]">-12%</div></div>
+<div class="p-1 bg-white/[0.02] rounded-[1px]"><div class="text-[#8b929e]">Q3</div><div class="text-[#525763]">+4%</div></div>
+<div class="p-1 bg-white/[0.02] rounded-[1px]"><div class="text-[#8b929e]">Q4</div><div class="text-[#525763]">+14%</div></div>
+<div class="p-1 bg-white/[0.02] rounded-[1px]"><div class="text-[#8b929e]">Q5</div><div class="text-[#8b929e]">+25%</div></div>
+<div class="p-1 bg-white/[0.02] rounded-[1px]"><div class="text-[#8b929e]">Q6</div><div class="text-[#8b929e]">+41%</div></div>
+<div class="p-1 bg-white/[0.02] rounded-[1px]"><div class="text-[#cbd2db]">Q7</div><div class="text-[#8b929e]">+58%</div></div>
+<div class="p-1 bg-white/[0.02] rounded-[1px]"><div class="text-[#cbd2db]">Q8</div><div class="text-[#cbd2db]">+82%</div></div>
+<div class="p-1 bg-white/[0.03] rounded-[1px]"><div class="text-[#f5f7fa]">Q9</div><div class="text-[#cbd2db]">+112%</div></div>
+<div class="p-1 bg-white/[0.06] rounded-[1px] border border-white/[0.08]"><div class="text-[#f5f7fa] font-medium">Q10</div><div class="text-[#f5f7fa] font-semibold">+142%</div></div>
+</div>
+</div>
+</div>
+<!-- PANE 3: Factor Heatmap / Orthogonality with Factor Zoo -->
+<div class="bg-[#101216] rounded-sm p-4 border border-white/[0.06] flex flex-col gap-3">
+<div class="flex flex-wrap items-center justify-between gap-3 pb-1 border-b border-white/[0.04]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#cbd2db] text-[16px]">grid_4x4</span>
+<span class="text-xs text-[#f5f7fa] font-medium tracking-tight">风格正交性热力矩阵 (Factor Correlation Matrix)</span>
+<span class="font-mono text-[10px] px-1.5 py-0.2 rounded-sm bg-white/[0.03] text-[#cbd2db] border border-white/[0.06]">|CORR| &lt; 0.30 PASS</span>
+</div>
+<span class="font-mono text-[10px] text-[#525763]">BARRA CNE6 STYLE BENCHMARK</span>
+</div>
+<!-- 6x6 Correlation Grid in Subtle Gray Heatmap Tones -->
+<div class="w-full overflow-x-auto">
+<div class="min-w-[560px] grid grid-cols-7 gap-1 font-mono text-[11px] text-center pt-1">
+<!-- Header Row -->
+<div class="py-1.5 px-2 text-left font-mono text-[10px] text-[#525763]">FACTOR</div>
+<div class="py-1.5 px-2 bg-white/[0.04] text-[#f5f7fa] font-medium border border-white/[0.06]">CPO_Surge</div>
+<div class="py-1.5 px-2 bg-white/[0.02] text-[#8b929e]">SIZE(市值)</div>
+<div class="py-1.5 px-2 bg-white/[0.02] text-[#8b929e]">MOM(动量)</div>
+<div class="py-1.5 px-2 bg-white/[0.02] text-[#8b929e]">REV(反转)</div>
+<div class="py-1.5 px-2 bg-white/[0.02] text-[#8b929e]">VOL(低波)</div>
+<div class="py-1.5 px-2 bg-white/[0.02] text-[#8b929e]">LIQ(流动性)</div>
+<!-- Row 1: CPO_Surge -->
+<div class="py-1.5 px-2 text-left font-medium text-[#f5f7fa] bg-white/[0.02] flex items-center">CPO_Surge</div>
+<div class="py-1.5 px-2 bg-white/[0.12] text-[#f5f7fa] font-semibold border border-white/[0.1]">1.00</div>
+<div class="py-1.5 px-2 bg-white/[0.02] text-[#8b929e]">-0.12</div>
+<div class="py-1.5 px-2 bg-white/[0.04] text-[#cbd2db]">+0.22</div>
+<div class="py-1.5 px-2 bg-white/[0.02] text-[#8b929e]">-0.18</div>
+<div class="py-1.5 px-2 bg-white/[0.01] text-[#525763]">+0.04</div>
+<div class="py-1.5 px-2 bg-white/[0.05] text-[#cbd2db] font-medium">+0.27</div>
+<!-- Row 2: SIZE -->
+<div class="py-1.5 px-2 text-left text-[#8b929e] bg-white/[0.01] flex items-center">SIZE</div>
+<div class="py-1.5 px-2 bg-white/[0.02] text-[#8b929e]">-0.12</div>
+<div class="py-1.5 px-2 bg-white/[0.08] text-[#f5f7fa] font-medium">1.00</div>
+<div class="py-1.5 px-2 bg-white/[0.01] text-[#525763]">+0.08</div>
+<div class="py-1.5 px-2 bg-white/[0.01] text-[#525763]">-0.05</div>
+<div class="py-1.5 px-2 bg-white/[0.06] text-[#cbd2db]">+0.34</div>
+<div class="py-1.5 px-2 bg-white/[0.07] text-[#f5f7fa]">+0.41</div>
+<!-- Row 3: MOM -->
+<div class="py-1.5 px-2 text-left text-[#8b929e] bg-white/[0.01] flex items-center">MOM</div>
+<div class="py-1.5 px-2 bg-white/[0.04] text-[#cbd2db]">+0.22</div>
+<div class="py-1.5 px-2 bg-white/[0.01] text-[#525763]">+0.08</div>
+<div class="py-1.5 px-2 bg-white/[0.08] text-[#f5f7fa] font-medium">1.00</div>
+<div class="py-1.5 px-2 bg-white/[0.09] text-[#8b929e]">-0.54</div>
+<div class="py-1.5 px-2 bg-white/[0.02] text-[#8b929e]">-0.11</div>
+<div class="py-1.5 px-2 bg-white/[0.03] text-[#cbd2db]">+0.15</div>
+<!-- Row 4: REV -->
+<div class="py-1.5 px-2 text-left text-[#8b929e] bg-white/[0.01] flex items-center">REV</div>
+<div class="py-1.5 px-2 bg-white/[0.02] text-[#8b929e]">-0.18</div>
+<div class="py-1.5 px-2 bg-white/[0.01] text-[#525763]">-0.05</div>
+<div class="py-1.5 px-2 bg-white/[0.09] text-[#8b929e]">-0.54</div>
+<div class="py-1.5 px-2 bg-white/[0.08] text-[#f5f7fa] font-medium">1.00</div>
+<div class="py-1.5 px-2 bg-white/[0.01] text-[#525763]">+0.06</div>
+<div class="py-1.5 px-2 bg-white/[0.02] text-[#8b929e]">-0.19</div>
+<!-- Row 5: VOL -->
+<div class="py-1.5 px-2 text-left text-[#8b929e] bg-white/[0.01] flex items-center">VOL</div>
+<div class="py-1.5 px-2 bg-white/[0.01] text-[#525763]">+0.04</div>
+<div class="py-1.5 px-2 bg-white/[0.06] text-[#cbd2db]">+0.34</div>
+<div class="py-1.5 px-2 bg-white/[0.02] text-[#8b929e]">-0.11</div>
+<div class="py-1.5 px-2 bg-white/[0.01] text-[#525763]">+0.06</div>
+<div class="py-1.5 px-2 bg-white/[0.08] text-[#f5f7fa] font-medium">1.00</div>
+<div class="py-1.5 px-2 bg-white/[0.04] text-[#8b929e]">-0.28</div>
+</div>
+</div>
+<div class="flex items-center justify-between text-[#525763] font-mono text-[10px] pt-1 border-t border-white/[0.04]">
+<span>* 1,200 个交易日截面残差 Spearman 秩相关系数</span>
+<span class="text-[#cbd2db]">MAX_ABS_CORR: 0.27 (LIQ - PASS)</span>
+</div>
+</div>
+</div>
+<!-- RIGHT PANEL: Factor Inspector & Causal Sandbox (4 Cols) -->
+<div class="lg:col-span-4 flex flex-col gap-5">
+<!-- Section A: Factor Formula & AST Viewer -->
+<div class="bg-[#101216] rounded-sm p-4 border border-white/[0.06] flex flex-col gap-3">
+<div class="flex items-center justify-between pb-1 border-b border-white/[0.04]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#cbd2db] text-[16px]">code</span>
+<span class="text-xs text-[#f5f7fa] font-medium tracking-tight">公式定义与 AST 语法树</span>
+</div>
+<span class="font-mono text-[10px] px-1.5 py-0.2 rounded-sm bg-white/[0.03] text-[#8b929e] border border-white/[0.06]">DEPTH: 4</span>
+</div>
+<!-- Formula Expression Box -->
+<div class="bg-[#090a0c] rounded-sm p-2.5 font-mono text-xs text-[#f5f7fa] border border-white/[0.04] select-all overflow-x-auto">
+<code>Ts_Rank(Volume_Ratio, 20) * Delta(Flow_In, 3) / WAvg_Spread</code>
+</div>
+<!-- AST Node Visualizer -->
+<div class="bg-[#090a0c] rounded-sm p-3 border border-white/[0.04] flex flex-col gap-1.5 font-mono text-[11px]">
+<div class="flex items-center gap-2 text-[#cbd2db]">
+<span class="material-symbols-outlined text-[13px] text-[#8b929e]">account_tree</span>
+<span class="font-medium">Operator: DIVIDE (/)</span>
+</div>
+<div class="pl-4 flex flex-col gap-1 text-[#8b929e]">
+<div class="flex items-center gap-2">
+<span class="text-[#525763]">├─</span>
+<span class="text-[#cbd2db]">Operator: MULTIPLY (*)</span>
+</div>
+<div class="pl-6 flex flex-col gap-0.5 text-[#8b929e] text-[10px]">
+<div><span class="text-[#525763]">├─</span> Ts_Rank(field=<span class="text-[#f5f7fa]">"Volume_Ratio"</span>, window=20)</div>
+<div><span class="text-[#525763]">└─</span> Delta(field=<span class="text-[#f5f7fa]">"Flow_In"</span>, period=3)</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[#525763]">└─</span>
+<span>Variable: <span class="text-[#f5f7fa]">WAvg_Spread</span> (加权买卖价差)</span>
+</div>
+</div>
+</div>
+<!-- Data Partition Dependency -->
+<div class="flex items-center justify-between bg-white/[0.02] px-2.5 py-1.5 rounded-sm border border-white/[0.04] font-mono text-[11px] text-[#525763]">
+<span>PARTITION:</span>
+<span class="text-[#cbd2db]">l2_tick_snapshot_sh_sz</span>
+</div>
+</div>
+<!-- Section B: 6-Dimensional Validator Scorecard -->
+<div class="bg-[#101216] rounded-sm p-4 border border-white/[0.06] flex flex-col gap-3">
+<div class="flex items-center justify-between pb-1 border-b border-white/[0.04]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#cbd2db] text-[16px]">verified</span>
+<span class="text-xs text-[#f5f7fa] font-medium tracking-tight">6维验证器裁决 (Validator)</span>
+</div>
+<span class="font-mono text-[10px] px-1.5 py-0.2 rounded-sm bg-white/[0.04] text-[#f5f7fa] border border-white/[0.08]">OVERALL: 80.6 (A)</span>
+</div>
+<div class="flex flex-col gap-2 pt-1 font-mono text-[11px]">
+<!-- Item 1: Statistical -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between text-[#8b929e]">
+<span>1. 统计显著性 (Statistical)</span>
+<span class="text-[#f5f7fa] font-medium">88%</span>
+</div>
+<div class="w-full bg-white/[0.04] rounded-full h-1 overflow-hidden">
+<div class="bg-[#f5f7fa] h-full" style="width: 88%;"></div>
+</div>
+</div>
+<!-- Item 2: Economic Logic -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between text-[#8b929e]">
+<span>2. 经济学逻辑 (Economic Logic)</span>
+<span class="text-[#cbd2db] font-medium">82%</span>
+</div>
+<div class="w-full bg-white/[0.04] rounded-full h-1 overflow-hidden">
+<div class="bg-[#cbd2db] h-full" style="width: 82%;"></div>
+</div>
+</div>
+<!-- Item 3: Robustness -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between text-[#8b929e]">
+<span>3. 参数鲁棒性 (Robustness)</span>
+<span class="text-[#cbd2db] font-medium">79%</span>
+</div>
+<div class="w-full bg-white/[0.04] rounded-full h-1 overflow-hidden">
+<div class="bg-[#cbd2db] h-full" style="width: 79%;"></div>
+</div>
+</div>
+<!-- Item 4: Bias-Free -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between text-[#8b929e]">
+<span>4. 无幸存者/未来函数偏差 (Bias-Free)</span>
+<span class="text-[#f5f7fa] font-medium">85%</span>
+</div>
+<div class="w-full bg-white/[0.04] rounded-full h-1 overflow-hidden">
+<div class="bg-[#f5f7fa] h-full" style="width: 85%;"></div>
+</div>
+</div>
+<!-- Item 5: Orthogonality -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between text-[#8b929e]">
+<span>5. 因子库正交性 (Orthogonality)</span>
+<span class="text-[#8b929e] font-medium">74%</span>
+</div>
+<div class="w-full bg-white/[0.04] rounded-full h-1 overflow-hidden">
+<div class="bg-[#8b929e] h-full" style="width: 74%;"></div>
+</div>
+</div>
+<!-- Item 6: Causal -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between text-[#8b929e]">
+<span>6. 因果链置信度 (Causal Confidence)</span>
+<span class="text-[#8b929e] font-medium">71%</span>
+</div>
+<div class="w-full bg-white/[0.04] rounded-full h-1 overflow-hidden">
+<div class="bg-[#8b929e] h-full" style="width: 71%;"></div>
+</div>
+</div>
+</div>
+<div class="flex items-start gap-2 bg-[#090a0c] p-2.5 rounded-sm border border-white/[0.04] mt-1 text-xs text-[#8b929e] leading-relaxed">
+<span class="material-symbols-outlined text-[#cbd2db] text-[15px] shrink-0 mt-0.5">verified_user</span>
+<span>已排查 2015/2020 极端流动性衰竭样本，未见明显过拟合回撤。</span>
+</div>
+</div>
+<!-- Section C: AI Experimenter Suggestion & Mutation (Hermes Agent) -->
+<div class="bg-[#101216] rounded-sm p-4 border border-white/[0.06] flex flex-col gap-3 relative">
+<div class="flex items-center justify-between pb-1 border-b border-white/[0.04]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#cbd2db] text-[16px]">smart_toy</span>
+<span class="text-xs text-[#f5f7fa] font-medium tracking-tight">Hermes Agent 变异建议</span>
+</div>
+<span class="font-mono text-[10px] px-1.5 py-0.2 rounded-sm bg-white/[0.03] text-[#8b929e] border border-white/[0.06]">#882</span>
+</div>
+<div class="bg-[#090a0c] p-3 rounded-sm border border-white/[0.04] flex flex-col gap-2">
+<p class="text-xs text-[#cbd2db] leading-relaxed">
+            建议对极端停牌样本添加<span class="text-[#f5f7fa] font-medium">行业中性化惩罚</span>，或与<span class="text-[#d1b894] font-medium">换手衰减因子 (Turnover_Decay_5D)</span> 执行非线性 Gram-Schmidt 正交，预计可将 IC_IR 提升至 <span class="font-mono text-[#f5f7fa] font-semibold">2.15</span>。
+          </p>
+<div class="flex items-center gap-2 font-mono text-[10px] text-[#525763] pt-1 border-t border-white/[0.03]">
+<span>MUTATION LOSS: 0.041</span>
+<span>·</span>
+<span class="text-[#8b929e]">P(Sharpe &gt; 2.2) = 82%</span>
+</div>
+</div>
+<!-- AI Actions in Quiet Titanium Metallurgy -->
+<div class="grid grid-cols-2 gap-2 pt-1">
+<button class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-sm bg-white/[0.04] hover:bg-white/[0.08] text-[#cbd2db] hover:text-[#f5f7fa] text-xs border border-white/[0.06] transition-all cursor-pointer font-medium" id="btn-derive">
+<span class="material-symbols-outlined text-[14px]">tune</span>
+<span>一键派生变异</span>
+</button>
+<button class="flex items-center justify-center gap-1.5 px-3 py-2 rounded-sm bg-white/[0.08] hover:bg-white/[0.12] text-[#f5f7fa] text-xs border border-white/[0.1] transition-all cursor-pointer font-medium" id="btn-push-backtest">
+<span class="material-symbols-outlined text-[14px]">play_arrow</span>
+<span>推入回测引擎</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Notification Toast Container (Dynamic Interactions) -->
+<div class="fixed bottom-6 right-6 bg-[#15181e] text-[#f5f7fa] px-4 py-2.5 rounded-sm border border-white/[0.1] shadow-2xl flex items-center gap-2.5 transform translate-y-24 opacity-0 transition-all duration-300 z-50 font-mono text-xs" id="toast-factor">
+<span class="material-symbols-outlined text-[#cbd2db] text-[16px]" id="toast-icon">check</span>
+<span id="toast-msg">全量因子已通过 Polars 引擎加速计算</span>
+</div>
+</div>
+<script>
+  (function() {
+    const toast = document.getElementById('toast-factor');
+    const toastMsg = document.getElementById('toast-msg');
+    const toastIcon = document.getElementById('toast-icon');
+
+    function showToast(msg, icon = 'check') {
+      if (!toast) return;
+      toastMsg.textContent = msg;
+      toastIcon.textContent = icon;
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 3000);
+    }
+
+    const recomputeBtn = document.getElementById('btn-recompute');
+    if (recomputeBtn) {
+      recomputeBtn.addEventListener('click', () => {
+        recomputeBtn.disabled = true;
+        recomputeBtn.innerHTML = '<span class="material-symbols-outlined text-[14px] animate-spin">refresh</span><span>正在执行 Polars 算子...</span>';
+        setTimeout(() => {
+          recomputeBtn.disabled = false;
+          recomputeBtn.innerHTML = '<span class="material-symbols-outlined text-[14px] font-bold">bolt</span><span>触发全量计算 (Polars)</span>';
+          showToast('全量因子矩阵完成计算，用时 142ms (内存缓存已同步)');
+        }, 900);
+      });
+    }
+
+    const deriveBtn = document.getElementById('btn-derive');
+    if (deriveBtn) {
+      deriveBtn.addEventListener('click', () => {
+        showToast('已派生变异因子: CPO_Surge_Neutralized_Turnover (已存入草稿堆)', 'tune');
+      });
+    }
+
+    const pushBtn = document.getElementById('btn-push-backtest');
+    if (pushBtn) {
+      pushBtn.addEventListener('click', () => {
+        showToast('已推入回测引擎：已载入 A-Share 2018-2024 中证通信50 测试集', 'play_arrow');
+      });
+    }
+  })();
+</script></main></div></body></html>

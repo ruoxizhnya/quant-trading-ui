@@ -1,28 +1,86 @@
+/**
+ * 设计 token —— 运行时实现层
+ *
+ * 唯一真相源：docs/design/stitch_quantlab_ux_redesign/obsidian_precision_quant/DESIGN.md (v2.0)
+ * 本文件的键名与 DESIGN.md frontmatter 的 `colors` 1:1；**值只允许从那里派生**。
+ * 改 token 的顺序：DESIGN.md → 本文件 → App.vue(themeOverrides) → docs/design/visual.md
+ *
+ * 对比度实测见 DESIGN.md §7。禁止在此另立颜色。
+ */
 :root {
-  --q-bg: #0d1117;
-  --q-surface: #161b22;
-  --q-surface2: #1c2333;
-  --q-surface3: #21262d;
-  --q-border: #30363d;
-  --q-border-light: #21262d;
-  --q-text: #e6edf3;
-  --q-text2: #8b949e;
-  --q-text3: #484f58;
-  --q-primary: #58a6ff;
-  --q-primary-dark: #1f6feb;
-  --q-primary-light: #79c0ff;
-  --q-success: #3fb950;
-  --q-danger: #f85149;
-  --q-warning: #d29922;
-  --q-info: #79c0ff;
-  --q-radius: 10px;
-  --q-radius-sm: 6px;
-  --q-radius-xs: 4px;
-  --q-shadow: 0 1px 3px rgba(0,0,0,0.3);
-  --q-shadow-lg: 0 10px 25px rgba(0,0,0,0.3);
+  /* —— 画布与表面阶梯（唯一的深度语言，不用投影堆叠）—— */
+  --q-bg: #090a0c;           /* canvas */
+  --q-surface: #111620;      /* elevation 1：面板、输入框底 */
+  --q-surface2: #171e2c;     /* elevation 2：工作卡片、代码单元 */
+  --q-surface3: #1e2638;     /* elevation 3：浮层、抽屉、菜单 */
+  --q-border: #5a6070;       /* 组件边界（canvas 上 3.15:1） */
+  --q-border-light: #2a3449; /* 装饰 hairline，不可作组件唯一边界 */
+
+  /* —— 文字三级（全部 ≥4.5:1）—— */
+  --q-text: #e1e2eb;         /* 14.04:1 */
+  --q-text2: #c3c6d7;        /* 10.68:1 */
+  --q-text3: #94a3b8;        /*  7.06:1（旧值不达标已废，见 DESIGN.md §0.1） */
+
+  /* —— 确定性通道：可验证事实、硬数据操作 —— */
+  --q-primary: #b4c5ff;        /* 文字/链接/激活态（10.67:1）。**不可作填充** */
+  --q-primary-dark: #2563eb;   /* 填充，白字 5.17:1 */
+  --q-primary-light: #dbe1ff;  /* hover / 强调 */
+
+  /* —— 概率性通道：AI 产出、假设、非确定性 —— */
+  --q-ai: #7c3aed;             /* AI 填充，白字 5.70:1（旧 #8b5cf6 = 4.23:1 不达标） */
+  --q-ai-text: #d0bcff;        /* AI 文字/徽标/图标（10.63:1） */
+  --q-ai-light: #a78bfa;       /* AI hover / 强调 */
+  --q-ai-aura: rgba(139, 92, 246, 0.25); /* 非确定性卡片 1px 内发光边（装饰） */
+  --q-ai-wash: linear-gradient(180deg, rgba(139, 92, 246, 0.04) 0%, transparent 100%);
+
+  /* —— 状态三值（K9 契约：completed / invalid / failed）—— */
+  --q-success: #10b981;        /* completed / 健康 / 正收益 */
+  --q-warning: #f59e0b;        /* invalid / degraded —— 必须配 invalid_reasons */
+  --q-danger: #ef4444;         /* failed / 风险 */
+  --q-danger-text: #f87171;    /* 浮层(elevation 3)上的失败小字，#ef4444 在该层仅 4.02:1 */
+  --q-info: #b4c5ff;           /* 中性提示，与确定性文字色同值（刻意） */
+  --q-focus: #b4c5ff;          /* 焦点环 ≥3:1，键盘可达性承重件，不得移除 */
+
+  /* —— 多序列图表色带（DESIGN.md §0.2；刻意低饱和，不与状态色撞义）—— */
+  --q-series-1: #b4c5ff;
+  --q-series-2: #7fb0b8;
+  --q-series-3: #d9b98a;
+  --q-series-4: #8fb8a8;
+  --q-series-5: #9aa7d6;
+  --q-series-6: #e1e2eb;
+  /* 状态浅底唯一一档 0.08；alpha 经 DESIGN.md §0.2.2 合成实测重算，非照搬旧透明度 */
+  --q-success-soft: rgba(16, 185, 129, 0.08); /* 最优行高亮 / completed 芯片底 */
+  --q-warning-soft: rgba(245, 158, 11, 0.08); /* invalid 底 */
+  --q-danger-soft: rgba(239, 68, 68, 0.08);    /* failed / 风险 / 做空底 */
+  --q-primary-soft: rgba(180, 197, 255, 0.1); /* 激活态底（侧栏 / 磁贴选中 / 拖拽悬停） */
+  --q-primary-edge: rgba(180, 197, 255, 0.16); /* 激活态 1px 内边框 */
+
+  /* —— 形状（低半径；胶囊形除小状态徽标外禁用）—— */
+  --q-radius: 8px;             /* 卡片、对话框 */
+  --q-radius-sm: 4px;          /* 输入框、按钮、chip（基准） */
+  --q-radius-xs: 2px;          /* 徽标、hairline 元素 */
+  --q-shadow: none;            /* 卡片层无投影，靠色阶差 + 1px 边界分层 */
+  --q-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.08); /* 仅浮层 */
+
+  /* —— 动效 —— */
   --q-transition: 0.2s ease;
-  --q-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', Roboto, sans-serif;
-  --q-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* —— 字体 —— */
+  /* ⚠️ Inter / Geist / JetBrains Mono 当前**未被加载**（index.html 无 link、public/ 无 woff2），
+     故实际渲染仍走系统字体。启用需单独决策：自托管 woff2（涉二进制，属 AGENTS 禁区，需批准）
+     或外部 CDN（与"自托管"定位冲突）。见 DESIGN.md §5.1 */
+  --q-font: 'Inter', 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+            'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', Roboto, sans-serif;
+  --q-mono: 'JetBrains Mono', 'Noto Sans Mono CJK SC', 'Fira Code', monospace;
+
+  /* —— 布局 —— */
   --q-sidebar-width: 220px;
   --q-header-height: 56px;
+}
+
+/* 尊重系统减弱动效偏好：所有基于 --q-transition 的过渡自动降到近零 */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --q-transition: 0.01ms;
+  }
 }

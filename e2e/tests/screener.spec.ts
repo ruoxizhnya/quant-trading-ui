@@ -14,7 +14,7 @@ test.describe('Stock Screener Page (Vue SPA)', () => {
     await page.waitForSelector('.screener-page', { timeout: 15000 });
 
     await expect(page.locator('.screener-page')).toBeVisible();
-    await expect(page.locator('.n-card').first()).toContainText('选股器');
+    await expect(page.locator('.n-card').first()).toContainText('选股与市场');
   });
 
   test('all filter inputs are rendered', async ({ page }) => {
@@ -100,7 +100,7 @@ test.describe('Stock Screener Page (Vue SPA)', () => {
     await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('.nav-tile', { timeout: 15000 });
 
-    await page.locator('.nav-tile').filter({ hasText: '选股器' }).click();
+    await page.locator('.nav-tile').filter({ hasText: '选股与市场' }).click();
     await page.waitForLoadState('domcontentloaded');
     await page.waitForSelector('.screener-page', { timeout: 15000 });
 

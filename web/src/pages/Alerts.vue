@@ -324,7 +324,7 @@ onUnmounted(() => {
 
 .card-sub {
   font-size: 12px;
-  color: var(--q-text-muted, #888);
+  color: var(--q-text3);
   margin-top: 4px;
 }
 
@@ -349,8 +349,8 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 8px 12px;
-  background: var(--q-surface-muted, rgba(255, 255, 255, 0.04));
-  border: 1px solid var(--q-border, #2a2a2a);
+  background: var(--q-surface2);
+  border: 1px solid var(--q-border);
   border-radius: 6px;
 }
 
@@ -362,7 +362,7 @@ onUnmounted(() => {
 .rule-count {
   font-size: 18px;
   font-weight: 600;
-  color: var(--q-primary, #58a6ff);
+  color: var(--q-primary);
   font-variant-numeric: tabular-nums;
 }
 </style>

@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "on-error-container": "#ffdad6",
+          "secondary-fixed": "#d8dcde",
+          "on-secondary-container": "#f1f3f5",
+          "background": "#08090b",
+          "inverse-on-surface": "#121417",
+          "tertiary-fixed": "#e2e6ea",
+          "on-background": "#eceef1",
+          "on-secondary-fixed-variant": "#495057",
+          "primary-fixed-dim": "#cfd4da",
+          "primary": "#f8f9fa",
+          "surface-container-high": "#181a1f",
+          "tertiary-fixed-dim": "#b0b7be",
+          "on-error": "#690005",
+          "on-tertiary-container": "#ffffff",
+          "on-tertiary-fixed": "#101215",
+          "surface-container-low": "#0f1013",
+          "on-primary-container": "#08090b",
+          "tertiary-container": "#24272e",
+          "surface": "#0a0b0d",
+          "tertiary": "#dce0e5",
+          "on-secondary": "#101215",
+          "on-secondary-fixed": "#101215",
+          "on-primary-fixed-variant": "#343a40",
+          "on-surface-variant": "#9aa1a9",
+          "surface-bright": "#22252c",
+          "on-primary-fixed": "#08090b",
+          "error": "#d98880",
+          "primary-container": "#f1f3f5",
+          "on-surface": "#eceef1",
+          "primary-fixed": "#f8f9fa",
+          "surface-tint": "#ffffff",
+          "surface-container-highest": "#20232a",
+          "secondary-fixed-dim": "#9aa1a9",
+          "on-tertiary": "#08090b",
+          "surface-dim": "#08090b",
+          "outline": "#606771",
+          "surface-container-lowest": "#060708",
+          "on-primary": "#08090b",
+          "inverse-surface": "#eceef1",
+          "surface-variant": "#1c1e24",
+          "surface-container": "#131519",
+          "outline-variant": "#23262d",
+          "error-container": "#2c1517",
+          "secondary": "#b8bec5",
+          "secondary-container": "#282c34",
+          "inverse-primary": "#212529",
+          "on-tertiary-fixed-variant": "#343a40"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.125rem",
+          "lg": "0.25rem",
+          "xl": "0.375rem",
+          "full": "0.5rem"
+        },
+        "spacing": {
+          "space-xl": "1.75rem",
+          "gutter": "0.75rem",
+          "space-lg": "1.25rem",
+          "margin": "1rem",
+          "space-xs": "0.25rem",
+          "space-md": "0.75rem",
+          "margin-desktop": "1.5rem",
+          "gutter-desktop": "1rem",
+          "space-sm": "0.375rem"
+        },
+        "fontFamily": {
+          "mono-data-lg": [
+            "JetBrains Mono"
+          ],
+          "body-sm": [
+            "Geist"
+          ],
+          "body-md": [
+            "Geist"
+          ],
+          "mono-data-sm": [
+            "JetBrains Mono"
+          ],
+          "headline-lg-mobile": [
+            "Geist"
+          ],
+          "label-caps": [
+            "JetBrains Mono"
+          ],
+          "headline-md": [
+            "Geist"
+          ],
+          "mono-data-md": [
+            "JetBrains Mono"
+          ],
+          "display-lg": [
+            "Geist"
+          ],
+          "headline-lg": [
+            "Geist"
+          ],
+          "title-sm": [
+            "Geist"
+          ]
+        },
+        "fontSize": {
+          "mono-data-lg": [
+            "15px",
+            {
+              "lineHeight": "20px",
+              "fontWeight": "500"
+            }
+          ],
+          "body-sm": [
+            "12px",
+            {
+              "lineHeight": "16px",
+              "fontWeight": "400"
+            }
+          ],
+          "body-md": [
+            "13px",
+            {
+              "lineHeight": "18px",
+              "fontWeight": "400"
+            }
+          ],
+          "mono-data-sm": [
+            "11px",
+            {
+              "lineHeight": "14px",
+              "letterSpacing": "0.02em",
+              "fontWeight": "400"
+            }
+          ],
+          "headline-lg-mobile": [
+            "20px",
+            {
+              "lineHeight": "28px",
+              "fontWeight": "600"
+            }
+          ],
+          "label-caps": [
+            "10px",
+            {
+              "lineHeight": "12px",
+              "letterSpacing": "0.08em",
+              "fontWeight": "600"
+            }
+          ],
+          "headline-md": [
+            "18px",
+            {
+              "lineHeight": "24px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "600"
+            }
+          ],
+          "mono-data-md": [
+            "12px",
+            {
+              "lineHeight": "16px",
+              "fontWeight": "400"
+            }
+          ],
+          "display-lg": [
+            "32px",
+            {
+              "lineHeight": "40px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "600"
+            }
+          ],
+          "headline-lg": [
+            "24px",
+            {
+              "lineHeight": "32px",
+              "letterSpacing": "-0.015em",
+              "fontWeight": "600"
+            }
+          ],
+          "title-sm": [
+            "14px",
+            {
+              "lineHeight": "20px",
+              "fontWeight": "500"
+            }
+          ]
+        }
+      },
+    },
+  }</script></head><body class="bg-[#08090b] font-body-md text-body-md text-on-surface antialiased selection:bg-surface-container-highest selection:text-white"><aside class="fixed left-0 top-0 h-full w-64 bg-[#08090b] z-50 flex flex-col justify-between border-r border-[#1a1c22]"><div class="flex flex-col h-[calc(100vh-84px)]"><div class="h-14 px-margin flex items-center gap-space-sm bg-transparent shrink-0 border-b border-[#14161b]"><div class="w-7 h-7 rounded border border-[#262a33] bg-[#111317] flex items-center justify-center"><span class="material-symbols-outlined text-[#cfd4da] text-[17px]">grid_view</span></div><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-md text-headline-md tracking-tight text-white font-semibold">Quant Lab</span><span class="font-label-caps text-label-caps px-space-xs py-0.5 rounded border border-[#242831] text-[#9aa1a9] tracking-widest bg-[#0e1013]">TITANIUM</span></div><span class="font-label-caps text-label-caps text-outline uppercase tracking-wider">Nordic Precision Alpha</span></div></div><div class="px-space-md py-space-sm overflow-y-auto"><nav class="flex flex-col gap-0.5"><div class="px-space-sm pt-space-sm pb-space-xs font-label-caps text-label-caps text-outline uppercase tracking-wider flex items-center justify-between"><span>Research Mainline (P0)</span><span class="font-mono-data-sm text-mono-data-sm text-[#b0b7be]">ACT-4</span></div><a class="flex items-center justify-between px-space-sm py-1.5 rounded text-on-surface-variant hover:bg-[#121418] hover:text-white transition-colors font-body-sm text-body-sm" data-path="review-desk" href="#"><span>审阅台 Review Desk</span><span class="font-mono-data-sm text-mono-data-sm px-1.5 py-0.5 rounded bg-[#1f1617] border border-[#3b1e22] text-[#d98880] font-medium">3</span></a><a class="flex items-center justify-between px-space-sm py-1.5 rounded text-on-surface-variant hover:bg-[#121418] hover:text-white transition-colors font-body-sm text-body-sm" data-path="explore" href="#"><span>探索观察台 Explore</span><span class="flex items-center gap-1 font-mono-data-sm text-mono-data-sm text-[#cbd1d8]"><span class="w-1.5 h-1.5 rounded-full bg-[#cbd1d8]"></span>LIVE</span></a><a class="flex items-center px-space-sm py-1.5 rounded text-on-surface-variant hover:bg-[#121418] hover:text-white transition-colors font-body-sm text-body-sm" data-path="journal" href="#"><span>研究日志与采纳记录 Journal</span></a><div class="px-space-sm pt-space-md pb-space-xs font-label-caps text-label-caps text-outline uppercase tracking-wider"><span>Instruments (仪器房)</span></div><a class="flex items-center px-space-sm py-1.5 rounded text-on-surface-variant hover:bg-[#121418] hover:text-white transition-colors font-body-sm text-body-sm" data-path="backtest" href="#"><span>回测引擎 Backtest</span></a><a aria-current="page" class="flex items-center px-space-sm py-1.5 rounded transition-colors bg-[#181b21] text-white border border-[#2b303b] font-medium" data-path="compare" href="#"><span>多策略对比 Compare</span></a><a class="flex items-center px-space-sm py-1.5 rounded text-on-surface-variant hover:bg-[#121418] hover:text-white transition-colors font-body-sm text-body-sm" data-path="strategies" href="#"><span>策略库 Strategies</span></a><a class="flex items-center px-space-sm py-1.5 rounded text-on-surface-variant hover:bg-[#121418] hover:text-white transition-colors font-body-sm text-body-sm" data-path="factors" href="#"><span>因子研究 Factors</span></a><a class="flex items-center px-space-sm py-1.5 rounded text-on-surface-variant hover:bg-[#121418] hover:text-white transition-colors font-body-sm text-body-sm" data-path="screener" href="#"><span>选股与市场 Screener</span></a><a class="flex items-center px-space-sm py-1.5 rounded text-on-surface-variant hover:bg-[#121418] hover:text-white transition-colors font-body-sm text-body-sm" data-path="data-sync" href="#"><span>数据管道 Data Sync</span></a><div class="px-space-sm pt-space-md pb-space-xs font-label-caps text-label-caps text-outline uppercase tracking-wider"><span>Monitoring &amp; Risk</span></div><a class="flex items-center px-space-sm py-1.5 rounded text-on-surface-variant hover:bg-[#121418] hover:text-white transition-colors font-body-sm text-body-sm" data-path="alerts-health" href="#"><span>风险告警与健康 Alerts &amp; Health</span></a><a class="flex items-center px-space-sm py-1.5 rounded text-on-surface-variant hover:bg-[#121418] hover:text-white transition-colors font-body-sm text-body-sm" data-path="execution" href="#"><span>交易执行 Execution</span></a><a class="flex items-center px-space-sm py-1.5 rounded text-on-surface-variant hover:bg-[#121418] hover:text-white transition-colors font-body-sm text-body-sm" data-path="macro-industry" href="#"><span>宏观与产业链 Macro</span></a></nav></div></div><div class="p-space-sm bg-transparent shrink-0 border-t border-[#14161b]"><div class="p-space-sm rounded bg-[#0d0e11] border border-[#1b1e25] flex flex-col gap-space-xs"><div class="flex items-center justify-between"><span class="font-label-caps text-label-caps text-outline uppercase">TITANIUM NODE</span><span class="font-mono-data-sm text-mono-data-sm text-[#cfd4da] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-white"></span>ONLINE</span></div><div class="font-mono-data-sm text-mono-data-sm text-on-surface">上海机房 A-102</div><div class="flex items-center justify-between text-outline font-label-caps text-label-caps pt-0.5"><span>PORT: 9840</span><span>LATENCY: 0.42ms</span></div></div></div></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-14 bg-[#08090b]/90 backdrop-blur-xl z-40 border-b border-[#16181f]"><div class="h-14 w-full px-gutter-desktop flex items-center justify-between"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-sm px-space-sm py-1.5 rounded bg-[#0f1115] text-outline hover:text-on-surface cursor-pointer border border-[#1e2129]"><span class="material-symbols-outlined text-[16px]">search</span><span class="font-body-sm text-body-sm">⌘K 给方向 (30秒发起探索)</span><kbd class="font-mono-data-sm text-mono-data-sm bg-[#171a20] px-1 py-0.5 rounded text-[#9aa1a9]">⌘K</kbd></div><div class="hidden xl:flex items-center gap-space-md pl-space-sm"><div class="flex items-center gap-space-xs"><span class="w-1.5 h-1.5 rounded-full bg-[#b8bec5]"></span><span class="font-label-caps text-label-caps text-outline">HERMES:</span><span class="font-mono-data-sm text-mono-data-sm text-[#cbd1d8]">380试/h</span></div><div class="flex items-center gap-space-xs"><span class="w-1.5 h-1.5 rounded-full bg-white"></span><span class="font-label-caps text-label-caps text-outline">确定性底座:</span><span class="font-mono-data-sm text-mono-data-sm text-[#eceef1]">正常</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[#a0a8b2] text-[14px]">pending_actions</span><span class="font-label-caps text-label-caps text-outline">待审阅:</span><span class="font-mono-data-sm text-mono-data-sm text-[#d98880] font-medium">3</span></div></div></div><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs font-mono-data-sm text-mono-data-sm text-outline px-2 py-1 rounded bg-[#0d0e11] border border-[#1a1d24]"><span class="material-symbols-outlined text-[15px] text-[#cfd4da]">memory</span><span>SHANGHAI·SSE</span></div><div class="flex items-center gap-space-sm pl-space-sm"><div class="flex flex-col text-right"><span class="font-title-sm text-title-sm text-white leading-tight">实验室主任</span><span class="font-label-caps text-label-caps text-[#848c96] leading-none">PRO ARCHITECT</span></div><div class="w-8 h-8 rounded bg-[#13151a] border border-[#232731] flex items-center justify-center"><span class="material-symbols-outlined text-[#cfd4da] text-[18px]">terminal</span></div></div></div></div></header><main class="relative pt-14 bg-[#08090b] min-h-screen"><div class="flex flex-col w-full">
+<!-- Top Command Deck (北欧极简曜石哑光基底，充裕留白) -->
+<div class="px-gutter-desktop py-space-md bg-[#08090b] border-b border-[#14161b] flex flex-col gap-space-md">
+<!-- Header Title & Master Parameters -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-9 h-9 rounded bg-[#111317] border border-[#22262f] flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[19px]">waterfall_chart</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-sm">
+<span class="font-headline-md text-headline-md text-white tracking-tight">多策略对比与相关性矩阵</span>
+<span class="font-label-caps text-label-caps px-1.5 py-0.5 rounded border border-[#22262f] bg-[#0d0e12] text-[#848c96]">TITANIUM·COMPARE</span>
+</div>
+<span class="font-mono-data-sm text-mono-data-sm text-[#757d88]">Cross-Asset Alpha Precision Synthesis &amp; Orthogonal Matrix</span>
+</div>
+</div>
+<!-- Quant Action Ribbon -->
+<div class="flex flex-wrap items-center gap-space-xs font-mono-data-sm text-mono-data-sm">
+<div class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-[#0f1115] border border-[#1c1e25] text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-outline">calendar_month</span>
+<span class="text-outline">区间:</span>
+<span class="text-[#e2e6ea] font-medium">2022.01 - 2026.04</span>
+</div>
+<div class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-[#0f1115] border border-[#1c1e25] text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-outline">percent</span>
+<span class="text-outline">Rf:</span>
+<span class="text-[#e2e6ea] font-medium">2.00%</span>
+</div>
+<button class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-[#16181f] border border-[#2a2f3a] text-white hover:bg-[#20232c] transition-colors">
+<span class="material-symbols-outlined text-[15px] text-[#cbd1d8]">add</span>
+<span>添加策略</span>
+</button>
+<button class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-[#0f1115] border border-[#1c1e25] text-[#9aa1a9] hover:text-white hover:bg-[#16181f] transition-colors">
+<span class="material-symbols-outlined text-[15px]">file_download</span>
+<span>导出 (.xlsx / .pdf)</span>
+</button>
+</div>
+</div>
+<!-- Active Multi-Strategy Selector Pills: 多级钛灰金属层阶 -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm pt-space-xs">
+<div class="flex flex-wrap items-center gap-space-xs">
+<!-- Strategy A: CPO-VolSurge (纯白顶级主基线) -->
+<div class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-[#121419] border border-[#282d38] text-white">
+<span class="w-2 h-2 rounded-full bg-white shadow-[0_0_6px_rgba(255,255,255,0.4)]"></span>
+<span class="font-body-sm text-body-sm font-medium">CPO-VolSurge 800G</span>
+<span class="font-label-caps text-label-caps text-[#757d88]">ALPHA-I</span>
+<button class="text-[#757d88] hover:text-white flex items-center ml-0.5">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+<!-- Strategy B: Dual-Momentum (冷银钛灰线) -->
+<div class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-[#101216] border border-[#20232b] text-[#cbd1d8]">
+<span class="w-2 h-2 rounded-full bg-[#cbd1d8]"></span>
+<span class="font-body-sm text-body-sm font-medium">Dual-Momentum 创业板/1000</span>
+<span class="font-label-caps text-label-caps text-[#757d88]">TREND</span>
+<button class="text-[#757d88] hover:text-white flex items-center ml-0.5">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+<!-- Strategy C: InP-Substrate (微哑光深冷灰) -->
+<div class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-[#0d0f12] border border-[#1c1f26] text-[#9aa1a9]">
+<span class="w-2 h-2 rounded-full bg-[#757d88]"></span>
+<span class="font-body-sm text-body-sm font-medium">InP-Substrate 周期反转</span>
+<span class="font-label-caps text-label-caps text-[#606771]">MEAN-REV</span>
+<button class="text-[#606771] hover:text-white flex items-center ml-0.5">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+<!-- Benchmark: CSI 300 (极细虚线基准) -->
+<div class="flex items-center gap-1.5 px-space-sm py-1 rounded bg-[#0a0b0e] border border-[#171920] text-[#757d88]">
+<span class="w-2.5 h-px bg-[#4e5561]"></span>
+<span class="font-body-sm text-body-sm">沪深300 基准 (CSI300)</span>
+<span class="font-label-caps text-label-caps text-[#4e5561]">BENCH</span>
+<span class="material-symbols-outlined text-[13px] text-[#4e5561]">lock</span>
+</div>
+</div>
+<!-- K9 Gate Safety Warning Badge: 极致克制灰阶警示 -->
+<div class="flex items-center gap-2 px-space-sm py-1 rounded bg-[#120f10] border border-[#281b1d] text-[#b87c78]">
+<span class="material-symbols-outlined text-[14px]">shield_with_heart</span>
+<span class="font-mono-data-sm text-mono-data-sm">K9闸门: 1个策略剔除 (Optical-Drift 换手率48.7%)</span>
+</div>
+</div>
+</div>
+<!-- High-End Precision Observatory Section (去厚重卡片，钛灰发丝线，Apple Pro 级别克制) -->
+<div class="p-gutter-desktop flex flex-col gap-space-lg">
+<!-- Precision Multi-Pane Chart Module -->
+<div class="rounded border border-[#161820] bg-[#0a0b0e] p-space-md flex flex-col gap-space-md">
+<!-- Chart Tool Strip & Telemetry Cursor -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm pb-space-xs border-b border-[#12141a]">
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-2 text-white font-title-sm text-title-sm font-medium tracking-tight">
+<span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+<span>净值归一化走势 (Base = 1.000)</span>
+<span class="font-mono-data-sm text-mono-data-sm text-[#606771] font-normal">TICK / PRO-PRECISION</span>
+</div>
+<!-- Realtime Readout HUD under crosshair: 冷银发丝灰阶标注 -->
+<div class="hidden xl:flex items-center gap-space-md font-mono-data-sm text-mono-data-sm pl-space-sm border-l border-[#1a1d25]">
+<span class="text-[#606771]">T: 2024-02-08 (微盘流动性逆转)</span>
+<span class="text-white font-medium">CPO: +104.2%</span>
+<span class="text-[#cbd1d8]">Dual-Mom: +82.5%</span>
+<span class="text-[#848c96]">InP: +48.9%</span>
+<span class="text-[#4e5561]">CSI300: -19.4%</span>
+</div>
+</div>
+<div class="flex items-center gap-1 font-mono-data-sm text-mono-data-sm">
+<button class="px-2 py-0.5 rounded bg-[#181a20] border border-[#262a34] text-white font-medium">对数 Log</button>
+<button class="px-2 py-0.5 rounded text-[#757d88] hover:text-[#eceef1] hover:bg-[#121418] transition-colors">线性 Linear</button>
+<span class="text-[#20232b] px-0.5">/</span>
+<button class="px-2 py-0.5 rounded text-[#757d88] hover:text-[#eceef1] hover:bg-[#121418] transition-colors">超额 Alpha</button>
+<button class="px-2 py-0.5 rounded text-[#cbd1d8] hover:text-white transition-colors">重置缩放</button>
+</div>
+</div>
+<!-- Main Visual Multi-line Chart SVG: 发丝精密银灰对比线条 -->
+<div class="relative w-full h-[320px] rounded bg-[#07080a] border border-[#14161d] overflow-hidden flex flex-col justify-between p-space-sm">
+<!-- 极简辅助坐标系淡化（极淡发丝线） -->
+<div class="absolute inset-0 flex flex-col justify-between p-space-sm pointer-events-none opacity-40">
+<div class="w-full h-px bg-[#161820]"></div>
+<div class="w-full h-px bg-[#161820]"></div>
+<div class="w-full h-px bg-[#161820]"></div>
+<div class="w-full h-px bg-[#161820]"></div>
+<div class="w-full h-px bg-[#161820]"></div>
+</div>
+<!-- Vertical Regime Milestone (2024.01-02 Micro-cap Crash) - 钛灰发丝警戒 -->
+<div class="absolute top-0 bottom-0 left-[54%] w-px bg-[#2f3440] pointer-events-none flex flex-col items-start z-10">
+<span class="mt-2 ml-1 px-1.5 py-0.5 rounded border border-[#2b2426] bg-[#140e10] text-[#a88280] font-mono-data-sm text-mono-data-sm">2024.02 微盘流动性冲击</span>
+</div>
+<!-- Multi-Curve SVG Vector Rendering: 纯白主基准 / 冷银钛灰 / 微哑光对比线 -->
+<svg class="w-full h-full relative z-10" preserveaspectratio="none" viewbox="0 0 1000 300">
+<defs>
+<lineargradient id="titaniumGlow" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#ffffff" stop-opacity="0.08"></stop>
+<stop offset="100%" stop-color="#ffffff" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<!-- Baseline Reference 1.0 (极简纯粹) -->
+<line stroke="#232733" stroke-dasharray="2 3" stroke-width="0.8" x1="0" x2="1000" y1="210" y2="210"></line>
+<!-- Benchmark CSI 300 (极细暗灰发丝虚线 #495057) -->
+<path d="M 0 210 Q 150 200, 250 220 T 450 240 T 540 270 T 700 235 T 850 225 T 1000 230" fill="none" opacity="0.6" stroke="#4a515c" stroke-dasharray="3 3" stroke-width="1"></path>
+<!-- InP-Substrate (微哑光对比线: 沉稳深钛灰 #7e8794) -->
+<path d="M 0 210 Q 120 195, 230 185 T 400 160 T 540 200 T 680 165 T 840 145 T 1000 135" fill="none" opacity="0.8" stroke="#7e8794" stroke-width="1.3"></path>
+<!-- Dual-Momentum (冷银钛灰线 #b8bec8) -->
+<path d="M 0 210 Q 130 180, 260 160 T 460 135 T 540 180 T 720 120 T 860 90 T 1000 80" fill="none" stroke="#b8bec8" stroke-width="1.6"></path>
+<!-- CPO-VolSurge 800G (纯白顶级主基线 #ffffff - Precision Hairline) -->
+<path d="M 0 210 Q 140 160, 280 130 T 440 95 T 540 125 T 690 70 T 850 45 T 1000 35 L 1000 210 L 0 210 Z" fill="url(#titaniumGlow)"></path>
+<path d="M 0 210 Q 140 160, 280 130 T 440 95 T 540 125 T 690 70 T 850 45 T 1000 35" fill="none" stroke="#ffffff" stroke-width="1.8"></path>
+<!-- Crosshair Precision Marker Pins: 纯粹极简金属圆环 -->
+<circle cx="540" cy="125" fill="#ffffff" r="3.5" stroke="#07080a" stroke-width="1.5"></circle>
+<circle cx="540" cy="180" fill="#b8bec8" r="2.5" stroke="#07080a" stroke-width="1"></circle>
+<circle cx="540" cy="200" fill="#7e8794" r="2.5" stroke="#07080a" stroke-width="1"></circle>
+<circle cx="540" cy="270" fill="#4a515c" r="2.5" stroke="#07080a" stroke-width="1"></circle>
+</svg>
+<!-- Right Value Axis Overlay -->
+<div class="absolute right-3 top-2 bottom-2 flex flex-col justify-between font-mono-data-sm text-mono-data-sm text-[#4e5561] pointer-events-none text-right">
+<span>2.60x (+160%)</span>
+<span>2.00x (+100%)</span>
+<span>1.50x (+50%)</span>
+<span>1.00x (平盘)</span>
+<span>0.70x (-30%)</span>
+</div>
+</div>
+<!-- Synchronized Sub-panes: 北欧发丝级双路指标监控 -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md pt-space-xs">
+<!-- Sub-pane 1: Rolling Drawdown Overlay -->
+<div class="p-space-sm rounded border border-[#161820] bg-[#07080a] flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-[#848c96] uppercase tracking-wider">SUB-PANE 01: 滚动动态回撤 (ROLLING DRAWDOWN)</span>
+<span class="font-mono-data-sm text-mono-data-sm text-[#b87c78]">MAX-DD -12.1%</span>
+</div>
+<div class="h-28 w-full relative">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 500 100">
+<line stroke="#1d2029" stroke-dasharray="2 2" stroke-width="0.8" x1="0" x2="500" y1="10" y2="10"></line>
+<!-- CPO Drawdown: 纯白 -->
+<path d="M 0 10 Q 80 10, 140 25 T 260 48 T 350 20 T 440 28 T 500 15" fill="none" stroke="#ffffff" stroke-width="1.2"></path>
+<!-- Dual Momentum: 冷银 -->
+<path d="M 0 10 Q 90 20, 160 35 T 270 56 T 360 25 T 460 38 T 500 20" fill="none" stroke="#b8bec8" stroke-width="1.2"></path>
+<!-- InP Substrate: 深钛灰 -->
+<path d="M 0 10 Q 100 25, 180 40 T 275 75 T 370 35 T 450 30 T 500 22" fill="none" stroke="#7e8794" stroke-width="1"></path>
+<!-- CSI300: 暗灰虚线 -->
+<path d="M 0 10 Q 120 35, 200 60 T 275 92 T 380 75 T 470 65 T 500 60" fill="none" stroke="#4a515c" stroke-dasharray="3 3" stroke-width="1"></path>
+</svg>
+<div class="absolute bottom-1 right-2 font-mono-data-sm text-mono-data-sm text-[#4e5561]">
+              2024.01-02 韧性检验带
+            </div>
+</div>
+</div>
+<!-- Sub-pane 2: Rolling 60D Beta to Market -->
+<div class="p-space-sm rounded border border-[#161820] bg-[#07080a] flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-[#848c96] uppercase tracking-wider">SUB-PANE 02: 60日滚动市场 BETA 与风格漂移</span>
+<span class="font-mono-data-sm text-mono-data-sm text-[#cfd4da]">BETA: 0.18 - 0.74</span>
+</div>
+<div class="h-28 w-full relative">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 500 100">
+<line stroke="#303542" stroke-dasharray="2 3" stroke-width="0.8" x1="0" x2="500" y1="30" y2="30"></line>
+<line stroke="#1d2029" stroke-width="0.8" x1="0" x2="500" y1="85" y2="85"></line>
+<!-- CPO Beta: 纯白 -->
+<path d="M 0 65 Q 110 50, 210 60 T 320 40 T 430 55 T 500 50" fill="none" stroke="#ffffff" stroke-width="1.2"></path>
+<!-- Dual-Mom Beta: 冷银 -->
+<path d="M 0 50 Q 100 45, 230 40 T 340 35 T 440 45 T 500 42" fill="none" stroke="#b8bec8" stroke-width="1.2"></path>
+<!-- InP Beta: 深钛灰 -->
+<path d="M 0 75 Q 120 70, 240 80 T 350 65 T 450 72 T 500 68" fill="none" stroke="#7e8794" stroke-width="1"></path>
+</svg>
+<div class="absolute top-1 right-2 font-mono-data-sm text-mono-data-sm text-[#4e5561]">
+              β = 1.0 (中性基线)
+            </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Split Grid: 多级灰阶相关性矩阵与机构级指标表 (消除彩虹热力，呈现多级钛灰阶梯) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<!-- Left Column: Strategy Correlation Matrix (灰阶渐变热力) -->
+<div class="lg:col-span-5 rounded border border-[#161820] bg-[#0a0b0e] p-space-md flex flex-col justify-between">
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between pb-space-xs border-b border-[#12141a]">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[#cfd4da] text-[18px]">grid_4x4</span>
+<span class="font-title-sm text-title-sm text-white font-medium">策略收益互相关矩阵</span>
+</div>
+<span class="font-label-caps text-label-caps px-1.5 py-0.5 rounded border border-[#2b303d] bg-[#14171d] text-[#e2e6ea]">低相关正交</span>
+</div>
+<span class="font-body-sm text-body-sm text-[#757d88]">
+            基于日频超额收益率（Daily Alpha Return）。矩阵呈现资产正交性，微阶灰阶深浅映射风格重叠度，消除彩虹色噪。
+          </span>
+</div>
+<!-- 4x4 Correlation Matrix Grid: 精密灰阶阶梯 (0.18至1.00) -->
+<div class="py-space-md overflow-x-auto">
+<table class="w-full text-center border-collapse">
+<thead>
+<tr class="font-label-caps text-label-caps text-[#606771]">
+<th class="p-2 text-left">CORR</th>
+<th class="p-2">CPO</th>
+<th class="p-2">DualMom</th>
+<th class="p-2">InP-Rev</th>
+<th class="p-2">CSI300</th>
+</tr>
+</thead>
+<tbody class="font-mono-data-md text-mono-data-md">
+<!-- Row 1: CPO -->
+<tr class="hover:bg-[#12141a]">
+<td class="p-2 text-left font-body-sm text-body-sm text-white font-medium flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+<span>CPO</span>
+</td>
+<td class="p-2 bg-[#20232a] text-white font-semibold border border-[#282c35]">1.00</td>
+<td class="p-2 bg-[#0d0e11] text-[#9aa1a9] border border-[#15171d]">0.18</td>
+<td class="p-2 bg-[#13151b] text-[#cbd1d8] border border-[#1a1d24]">0.42</td>
+<td class="p-2 bg-[#101217] text-[#848c96] border border-[#161820]">0.31</td>
+</tr>
+<!-- Row 2: DualMom -->
+<tr class="hover:bg-[#12141a]">
+<td class="p-2 text-left font-body-sm text-body-sm text-[#cbd1d8] font-medium flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-[#cbd1d8]"></span>
+<span>DualMom</span>
+</td>
+<td class="p-2 bg-[#0d0e11] text-[#9aa1a9] border border-[#15171d]">0.18</td>
+<td class="p-2 bg-[#20232a] text-white font-semibold border border-[#282c35]">1.00</td>
+<td class="p-2 bg-[#0e1014] text-[#848c96] border border-[#161820]">0.24</td>
+<td class="p-2 bg-[#171a22] text-[#e2e6ea] border border-[#1e222c] font-medium">0.65</td>
+</tr>
+<!-- Row 3: InP-Rev -->
+<tr class="hover:bg-[#12141a]">
+<td class="p-2 text-left font-body-sm text-body-sm text-[#9aa1a9] font-medium flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-[#7e8794]"></span>
+<span>InP-Rev</span>
+</td>
+<td class="p-2 bg-[#13151b] text-[#cbd1d8] border border-[#1a1d24]">0.42</td>
+<td class="p-2 bg-[#0e1014] text-[#848c96] border border-[#161820]">0.24</td>
+<td class="p-2 bg-[#20232a] text-white font-semibold border border-[#282c35]">1.00</td>
+<td class="p-2 bg-[#0d0e11] text-[#848c96] border border-[#15171d]">0.19</td>
+</tr>
+<!-- Row 4: CSI300 Benchmark -->
+<tr class="hover:bg-[#12141a]">
+<td class="p-2 text-left font-body-sm text-body-sm text-[#757d88] flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-[#4a515c]"></span>
+<span>CSI300</span>
+</td>
+<td class="p-2 bg-[#101217] text-[#848c96] border border-[#161820]">0.31</td>
+<td class="p-2 bg-[#171a22] text-[#e2e6ea] border border-[#1e222c] font-medium">0.65</td>
+<td class="p-2 bg-[#0d0e11] text-[#848c96] border border-[#15171d]">0.19</td>
+<td class="p-2 bg-[#20232a] text-white font-semibold border border-[#282c35]">1.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Matrix Legend: 哑光金属微阶梯指南 -->
+<div class="p-space-sm rounded bg-[#07080a] border border-[#14161d] flex items-center justify-between text-[#606771] font-label-caps text-label-caps">
+<div class="flex items-center gap-space-sm">
+<span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-[#0d0e11] border border-[#1a1c22]"></span>&lt; 0.25 (强正交互补)</span>
+<span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-[#1a1d25] border border-[#282c38]"></span>&gt; 0.60 (风格重叠)</span>
+</div>
+<span class="font-mono-data-sm text-mono-data-sm text-[#cbd1d8]">特异夏普增强 +0.27</span>
+</div>
+</div>
+<!-- Right Column: Institutional Metric Comparison Table (Apple Pro 高级质感) -->
+<div class="lg:col-span-7 rounded border border-[#161820] bg-[#0a0b0e] p-space-md flex flex-col justify-between">
+<div class="flex flex-col gap-space-xs pb-space-xs border-b border-[#12141a]">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[#cfd4da] text-[18px]">table_chart</span>
+<span class="font-title-sm text-title-sm text-white font-medium">机构级策略多维指标表</span>
+</div>
+<span class="font-label-caps text-label-caps text-[#606771]">PRECISION AUDIT D-104</span>
+</div>
+<span class="font-body-sm text-body-sm text-[#757d88]">
+            严格区分历史确定性统计与概率置信区间，采用北欧极简冷灰度梯级排版。
+          </span>
+</div>
+<!-- Comparative Institutional Data Table -->
+<div class="overflow-x-auto py-space-xs">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="font-label-caps text-label-caps text-[#606771] border-b border-[#14161e]">
+<th class="py-2.5 px-2 text-left">指标 / METRIC</th>
+<th class="py-2.5 px-2 text-right">CPO-VOLSURGE</th>
+<th class="py-2.5 px-2 text-right">DUAL-MOMENTUM</th>
+<th class="py-2.5 px-2 text-right">INP-SUBSTRATE</th>
+<th class="py-2.5 px-2 text-right text-white">等权组合 (EQ-W)</th>
+</tr>
+</thead>
+<tbody class="font-mono-data-sm text-mono-data-sm divide-y divide-[#12141a]">
+<!-- Row 1: CAGR -->
+<tr class="hover:bg-[#101217]">
+<td class="py-2.5 px-2 font-body-sm text-body-sm text-[#cbd1d8]">年化收益 (CAGR)</td>
+<td class="py-2.5 px-2 text-right text-white font-medium">+38.4%</td>
+<td class="py-2.5 px-2 text-right text-[#b8bec8] font-medium">+29.7%</td>
+<td class="py-2.5 px-2 text-right text-[#848c96] font-medium">+21.3%</td>
+<td class="py-2.5 px-2 text-right text-white font-semibold bg-[#111318]/50">+31.8%</td>
+</tr>
+<!-- Row 2: Sharpe -->
+<tr class="hover:bg-[#101217]">
+<td class="py-2.5 px-2 font-body-sm text-body-sm text-[#cbd1d8]">夏普比率 (Sharpe)</td>
+<td class="py-2.5 px-2 text-right text-white">2.41</td>
+<td class="py-2.5 px-2 text-right text-[#cbd1d8]">2.15</td>
+<td class="py-2.5 px-2 text-right text-[#848c96]">1.82</td>
+<td class="py-2.5 px-2 text-right text-white font-semibold bg-[#111318]/50">
+                  2.68 <span class="font-label-caps text-label-caps text-[#9aa1a9] ml-0.5">(+0.27)</span>
+</td>
+</tr>
+<!-- Row 3: Max Drawdown -->
+<tr class="hover:bg-[#101217]">
+<td class="py-2.5 px-2 font-body-sm text-body-sm text-[#cbd1d8]">最大回撤 (MaxDD)</td>
+<td class="py-2.5 px-2 text-right text-[#c28e8a] font-medium">-8.6%</td>
+<td class="py-2.5 px-2 text-right text-[#b5807c] font-medium">-10.2%</td>
+<td class="py-2.5 px-2 text-right text-[#aa7571] font-medium">-12.1%</td>
+<td class="py-2.5 px-2 text-right text-[#cfd4da] font-semibold bg-[#111318]/50">-6.9%</td>
+</tr>
+<!-- Row 4: Calmar Ratio -->
+<tr class="hover:bg-[#101217]">
+<td class="py-2.5 px-2 font-body-sm text-body-sm text-[#cbd1d8]">卡玛比率 (Calmar)</td>
+<td class="py-2.5 px-2 text-right text-white">4.46</td>
+<td class="py-2.5 px-2 text-right text-[#cbd1d8]">2.91</td>
+<td class="py-2.5 px-2 text-right text-[#848c96]">1.76</td>
+<td class="py-2.5 px-2 text-right text-white font-semibold bg-[#111318]/50">4.61</td>
+</tr>
+<!-- Row 5: AI Confidence Interval -->
+<tr class="hover:bg-[#101217]">
+<td class="py-2.5 px-2 font-body-sm text-body-sm text-[#cbd1d8] flex items-center gap-1">
+<span>综合置信度</span>
+<span class="material-symbols-outlined text-[#757d88] text-[13px]">tune</span>
+</td>
+<td class="py-2.5 px-2 text-right">
+<span class="px-1.5 py-0.5 rounded border border-[#222630] bg-[#121419] text-[#cbd1d8]">71% ±3.8%</span>
+</td>
+<td class="py-2.5 px-2 text-right">
+<span class="px-1.5 py-0.5 rounded border border-[#222630] bg-[#121419] text-[#cbd1d8]">82% ±2.4%</span>
+</td>
+<td class="py-2.5 px-2 text-right">
+<span class="px-1.5 py-0.5 rounded border border-[#222630] bg-[#121419] text-[#848c96]">54% ±5.1%</span>
+</td>
+<td class="py-2.5 px-2 text-right bg-[#111318]/50">
+<span class="px-1.5 py-0.5 rounded border border-[#2d323f] bg-[#161820] text-white font-medium">73% ±2.1%</span>
+</td>
+</tr>
+<!-- Row 6: Daily Turnover -->
+<tr class="hover:bg-[#101217]">
+<td class="py-2.5 px-2 font-body-sm text-body-sm text-[#cbd1d8]">日均双边换手率</td>
+<td class="py-2.5 px-2 text-right text-[#848c96]">18.2%</td>
+<td class="py-2.5 px-2 text-right text-[#848c96]">12.4%</td>
+<td class="py-2.5 px-2 text-right text-[#848c96]">22.1%</td>
+<td class="py-2.5 px-2 text-right text-[#cbd1d8] font-medium bg-[#111318]/50">17.5%</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Strategy Gate Status Detail Card (钛灰高定简约栏) -->
+<div class="mt-space-sm p-space-sm rounded bg-[#07080a] border border-[#161820] flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="px-1.5 py-0.5 rounded border border-[#302123] bg-[#140e10] text-[#b87c78] font-label-caps text-label-caps font-semibold">
+              GATE EXCLUDED
+            </span>
+<span class="font-body-sm text-body-sm text-[#848c96]">
+              策略 <code class="font-mono-data-sm text-[#cbd1d8]">Optical-Drift</code> 违背换手率闸门 (&gt; 40%)，已从配比池隔离。
+            </span>
+</div>
+<button class="font-mono-data-sm text-mono-data-sm text-[#b8bec8] hover:text-white flex items-center gap-0.5 shrink-0 transition-colors">
+<span>[Audit Evidence]</span>
+<span class="material-symbols-outlined text-[13px]">arrow_outward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Synthesis Command Dock: 极简纯粹底部栏 -->
+<div class="rounded border border-[#161820] bg-[#0a0b0e] p-space-md flex flex-col sm:flex-row items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-8 h-8 rounded bg-[#161820] border border-[#2a2f3a] text-white flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">hub</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs font-title-sm text-title-sm text-white font-medium">
+<span>组合构建方案已就绪</span>
+<span class="font-mono-data-sm text-mono-data-sm text-[#cbd1d8]">3个正交Alpha源 · 期望夏普 2.68</span>
+</div>
+<span class="font-body-sm text-body-sm text-[#757d88]">
+            已应用波动率倒数平衡 (Risk Parity) 模型与非负二次规划拟合。
+          </span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm w-full sm:w-auto">
+<button class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-space-md py-2 rounded bg-[#101217] border border-[#20232b] text-[#cbd1d8] hover:text-white hover:bg-[#16181f] transition-colors font-body-sm text-body-sm font-medium">
+<span class="material-symbols-outlined text-[16px] text-[#9aa1a9]">tune</span>
+<span>优化权重 (Risk Parity / MV)</span>
+</button>
+<button class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-space-md py-2 rounded bg-white text-[#08090b] hover:bg-[#e2e6ea] transition-colors font-body-sm text-body-sm font-semibold shadow-[0_0_12px_rgba(255,255,255,0.15)]">
+<span class="material-symbols-outlined text-[16px]">play_arrow</span>
+<span>生成组合回测 ⌘P</span>
+</button>
+</div>
+</div>
+</div>
+</div></main></div></body></html>

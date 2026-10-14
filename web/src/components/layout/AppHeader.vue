@@ -4,7 +4,7 @@
       <n-button quaternary @click="toggleSidebar" size="small">
         <template #icon><MenuOutline :size="20" /></template>
       </n-button>
-      <span class="logo"><TrendingUpOutline :size="18" color="#58a6ff" /> Quant Lab</span>
+      <span class="logo"><TrendingUpOutline :size="18" /> Quant Lab</span>
     </div>
     <div class="header-right">
       <n-space align="center" :size="16">
@@ -116,6 +116,11 @@ onUnmounted(() => clearInterval(timer))
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+/* 图标色走 CSS 而非 color 呈现属性 —— SVG 属性不解析 var()，塞进去只会静默回落 */
+.logo svg {
+  color: var(--q-primary);
 }
 
 .header-right { display: flex; align-items: center; }

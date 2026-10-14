@@ -428,11 +428,11 @@ function handleBacktest() {
 .factor-card {
   display: flex; flex-direction: column; gap: 2px;
   padding: 8px 10px; margin-bottom: 6px;
-  background: var(--q-card-bg2, rgba(255,255,255,0.03));
-  border: 1px solid var(--q-divider, rgba(255,255,255,0.09));
+  background: var(--q-surface2);
+  border: 1px solid var(--q-border);
   border-radius: 6px; cursor: grab; transition: border-color 0.15s;
 }
-.factor-card:hover { border-color: var(--q-primary, #58a6ff); }
+.factor-card:hover { border-color: var(--q-primary); }
 .factor-card:active { cursor: grabbing; }
 .factor-name { font-size: 13px; font-weight: 600; }
 .factor-id { font-size: 11px; color: var(--q-text3); font-family: monospace; }
@@ -441,19 +441,19 @@ function handleBacktest() {
 .canvas-card { display: flex; flex-direction: column; }
 .canvas-dropzone {
   min-height: 320px; padding: 12px;
-  border: 2px dashed var(--q-divider, rgba(255,255,255,0.12));
+  border: 2px dashed var(--q-border);
   border-radius: 8px; transition: border-color 0.15s, background 0.15s;
 }
 .canvas-dropzone.is-drag-over {
-  border-color: var(--q-primary, #58a6ff);
-  background: rgba(88, 166, 255, 0.06);
+  border-color: var(--q-primary);
+  background: var(--q-primary-soft);
 }
 .canvas-empty { padding: 60px 0; }
 .canvas-list { display: flex; flex-direction: column; gap: 12px; }
 .canvas-item {
   padding: 12px;
-  background: var(--q-card-bg2, rgba(255,255,255,0.03));
-  border: 1px solid var(--q-divider, rgba(255,255,255,0.09));
+  background: var(--q-surface2);
+  border: 1px solid var(--q-border);
   border-radius: 6px;
 }
 .canvas-item-head {
@@ -473,8 +473,8 @@ function handleBacktest() {
   margin-top: 12px; padding: 8px 12px;
   border-radius: 6px; font-size: 13px;
 }
-.weight-summary.valid { background: rgba(133, 232, 157, 0.08); color: var(--q-success, #85e89d); }
-.weight-summary.invalid { background: rgba(255, 171, 64, 0.08); color: var(--q-warning, #ffab70); }
+.weight-summary.valid { background: var(--q-success-soft); color: var(--q-success); }
+.weight-summary.invalid { background: var(--q-warning-soft); color: var(--q-warning); }
 .weight-value { font-size: 16px; font-weight: 700; }
 .weight-hint { font-size: 11px; }
 

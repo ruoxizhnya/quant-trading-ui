@@ -40,8 +40,10 @@
     <div v-if="result" class="results-section">
       <n-space class="result-actions" align="center" justify="space-between">
         <n-space align="center">
-          <n-tag :type="result.id ? 'success' : 'default'" size="small">
-            {{ result.id ? `ID: ${result.id}` : '未持久化' }}
+          <!-- K9：状态标签由 result.status 三值决定（不是 result.id 是否存在 ——
+               id 是身份不是结论，invalid / failed 的运行同样带 id） -->
+          <n-tag :type="statusTag.type" size="small" data-testid="result-status-tag">
+            {{ statusTag.label }}{{ result.id ? ` · ID: ${result.id}` : ' · 未持久化' }}
           </n-tag>
           <n-text depth="3" style="font-size: 12px">
             <n-checkbox v-model:checked="compareSelected" :disabled="!result.id">
@@ -72,16 +74,35 @@
           </n-button>
         </n-space>
       </n-space>
-      <MetricsCards :metrics="resultMetrics" />
-      <EquityChart
-        :portfolio-values="result.portfolio_values || []"
-        :trades="safeTrades"
-        :show-trades="showTrades"
-        :stock-prices="stockPrices"
-        @toggle-trades="showTrades = !showTrades"
-      />
-      <TradeTable v-if="showTrades && safeTrades.length > 0" :trades="safeTrades" />
-      <DetailMetrics :metrics="safeMetrics" />
+      <!-- K9：status 三值显式呈现 —— invalid 警示 + reasons 列表、failed 错误块。
+           两者都不得被当成成功观测；指标面板只在「跑完了」（completed/invalid）
+           时出现 —— failed 的指标字段无意义（ResultSpec 冻结）。 -->
+      <n-alert
+        v-if="isInvalidResult"
+        type="warning"
+        title="无效运行 —— 结果不可用作成功观测"
+        data-testid="result-invalid"
+      >
+        <ul data-testid="invalid-reasons" class="invalid-reasons">
+          <li v-for="code in invalidReasons" :key="code" data-testid="invalid-reason-item">{{ invalidReasonLabel(code) }}</li>
+        </ul>
+      </n-alert>
+      <n-alert v-if="isFailedResult" type="error" title="回测失败" data-testid="result-failed">
+        {{ result.error || '未知错误' }}
+      </n-alert>
+
+      <template v-if="!isFailedResult">
+        <MetricsCards :metrics="resultMetrics" />
+        <EquityChart
+          :portfolio-values="result.portfolio_values || []"
+          :trades="safeTrades"
+          :show-trades="showTrades"
+          :stock-prices="stockPrices"
+          @toggle-trades="showTrades = !showTrades"
+        />
+        <TradeTable v-if="showTrades && safeTrades.length > 0" :trades="safeTrades" />
+        <DetailMetrics :metrics="safeMetrics" />
+      </template>
     </div>
 
     <n-empty v-else-if="!isRunning && !fromQuickRun && !loadError && asyncState.status === 'idle'" description="配置参数后运行回测" class="empty-state"></n-empty>
@@ -110,6 +131,8 @@ import { useBacktestStore } from '@/stores/backtest'
 import { runBacktest as apiRunBacktest, getBacktestReport, getOHLCV, exportHtml, type OHLCVAPIResponse, type OHLCVDataPoint } from '@/api/backtest'
 import { getStrategies } from '@/api/strategy'
 import { fmtPercent, fmtNumber } from '@/utils/format'
+// A-07：三值的颜色/措辞与无效原因的人话化都在 utils/runStatus，全站一份
+import { invalidReasonLabel, statusTagFor } from '@/utils/runStatus'
 import { loadCompareIds, saveCompareIds } from '@/constants/backtest'
 import type { BacktestResult, PortfolioPoint, Trade, Strategy } from '@/types/api'
 import BacktestForm from '@/components/backtest/BacktestForm.vue'
@@ -190,19 +213,43 @@ const asyncState = computed(() => asyncBacktest.state.value)
 const isRunning = computed(() => btRunning.value || ['pending', 'running'].includes(asyncState.value.status))
 
 const safeTrades = computed<Trade[]>(() => result.value?.trades || [])
+/**
+ * A-06 断言 1 + 4：回测报告的每个可质问数字都要有质问入口，而**这条链路上今天
+ * 没有证据坐标** —— `GET /api/backtest/:id/report` 的响应里零个 hash/citation
+ * （逐字段遍历过，2026-10-14 实测）。所以入口一律渲染"无法回溯"。
+ *
+ * 这是如实标注，不是占位：一个查不到来源的数照常显示，读的人会默认它查得到。
+ * 原因写具体，因为质问一个**派生数**的正确问法不是"哪条原始记录"，而是
+ * "这组输入下能不能重算出同一个数"。
+ */
+const BACKTEST_EVIDENCE_REASON =
+  '回测指标是这次运行的派生结果，不在 ingest.raw 里，所以没有「来源记录」可回溯。' +
+  '要质问它，该问的是：这组输入（策略 / 股票池 / 区间 / 费率）下能否重算出同一个数。'
+
 const safeMetrics = computed(() => result.value?.metrics || null)
 
 const resultMetrics = computed(() => {
   if (!result.value) return []
   const r = result.value
+  const evidence = { hash: null, reason: BACKTEST_EVIDENCE_REASON }
   return [
-    { label: '总收益率', value: fmtPercent(r.total_return), cls: (r.total_return ?? 0) >= 0 ? 'positive' : 'negative' },
-    { label: '年化收益', value: fmtPercent(r.annual_return), cls: (r.annual_return ?? 0) >= 0 ? 'positive' : 'negative' },
-    { label: '夏普比率', value: fmtNumber(r.sharpe_ratio, 2), cls: '' },
-    { label: '最大回撤', value: fmtPercent(r.max_drawdown), cls: 'negative' },
-    { label: 'Calmar 比率', value: fmtNumber(r.calmar_ratio, 2), cls: '' },
+    { label: '总收益率', value: fmtPercent(r.total_return), cls: (r.total_return ?? 0) >= 0 ? 'positive' : 'negative', evidence },
+    { label: '年化收益', value: fmtPercent(r.annual_return), cls: (r.annual_return ?? 0) >= 0 ? 'positive' : 'negative', evidence },
+    { label: '夏普比率', value: fmtNumber(r.sharpe_ratio, 2), cls: '', evidence },
+    { label: '最大回撤', value: fmtPercent(r.max_drawdown), cls: 'negative', evidence },
+    { label: 'Calmar 比率', value: fmtNumber(r.calmar_ratio, 2), cls: '', evidence },
   ]
 })
+
+// K9（ResultSpec status 三值收口）：成功判据是 result.status **本身** ——
+// 不是 result.id 是否存在（id 是身份不是结论，invalid / failed 的运行
+// 同样带 id）。三值语义见 docs/SPEC.md「ResultSpec 冻结」。
+const resultStatus = computed(() => result.value?.status ?? '')
+const isInvalidResult = computed(() => resultStatus.value === 'invalid')
+const isFailedResult = computed(() => resultStatus.value === 'failed')
+const invalidReasons = computed(() => result.value?.invalid_reasons ?? [])
+
+const statusTag = computed(() => statusTagFor(resultStatus.value))
 
 watch(() => asyncState.value.result, (newResult) => {
   if (newResult) {
@@ -314,9 +361,11 @@ async function runSyncBacktest() {
       commission_rate: form.commissionRate,
       slippage_rate: form.slippageRate,
     })
-    if (!res || !res.id) {
-      throw new Error('回测返回结果无效：缺少ID')
+    if (!res) {
+      throw new Error('回测无响应')
     }
+    // K9：判据是 status 三值本身。旧缺陷是 `!res.id` 当失败 —— id 是身份
+    // 不是结论；invalid / failed 都照常进结果区显式呈现（警示块 / 错误块）。
     result.value = res
     triggerRef(result)
     backtestStore.addToHistory(res)
@@ -419,6 +468,8 @@ function goCompare() {
   gap: 20px;
 }
 .results-section { display: flex; flex-direction: column; gap: 16px; }
+/* A-07 断言 6：invalid 的原因列表用站点给 invalid 定的色（--q-warning） */
+.invalid-reasons { color: var(--q-warning); }
 .empty-state { padding: 60px 0; }
 .mode-toggle { display: flex; justify-content: flex-end; }
 </style>

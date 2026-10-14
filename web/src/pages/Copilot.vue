@@ -1,6 +1,6 @@
 <template>
   <div class="copilot-page">
-    <n-card title="🤖 策略 Copilot">
+    <n-card title="策略 Copilot">
       <div class="chat-container">
         <div class="messages" ref="messagesRef">
           <div v-for="(msg, i) in messages" :key="i" :class="['msg', msg.role]">
@@ -43,6 +43,7 @@
 import { ref, nextTick } from 'vue'
 import { NCard, NInput, NButton, useMessage } from 'naive-ui'
 import { generateStrategy, pollCopilotJob } from '@/api/copilot'
+import { backtestValidityNote } from '@/utils/runStatus'
 
 const message = useMessage()
 const inputText = ref('')
@@ -78,9 +79,7 @@ async function sendMessage() {
       lastMsg.content = job.strategy_name
         ? `策略 ${job.strategy_name} 生成成功（${job.status}）`
         : `生成成功（${job.status}）`
-      if (job.backtest_result && typeof job.backtest_result.total_return === 'number') {
-        lastMsg.content += `，回测总收益 ${(job.backtest_result.total_return * 100).toFixed(2)}%`
-      }
+      lastMsg.content += backtestValidityNote(job.backtest_result)
       lastMsg.code = job.generated_code
       lastMsg.language = 'go'
     } else {

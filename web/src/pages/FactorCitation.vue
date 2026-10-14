@@ -5,7 +5,7 @@ import FactorCitation from '@/components/factor/FactorCitation.vue'
 
 <template>
   <div class="factor-citation-page">
-    <NH1>因子证据</NH1>
+    <NH1>因子研究</NH1>
     <FactorCitation />
   </div>
 </template>

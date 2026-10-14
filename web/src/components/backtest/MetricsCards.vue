@@ -1,17 +1,32 @@
 <template>
   <div class="metrics-grid">
     <div v-for="m in metrics" :key="m.label" class="metric-box">
-      <div class="metric-label">{{ m.label }}</div>
+      <div class="metric-head">
+        <div class="metric-label">{{ m.label }}</div>
+        <!-- A-06：可质问数字统一带质问入口。回测指标今天一律没有坐标，
+             所以这里恒显示"无法回溯" —— 那是如实标注，不是占位。 -->
+        <EvidenceProbe
+          v-if="m.evidence"
+          :label="m.label"
+          :hash="m.evidence.hash"
+          :reason="m.evidence.reason"
+          :value="m.value"
+        />
+      </div>
       <div class="metric-val" :class="m.cls">{{ m.value }}</div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import EvidenceProbe from '@/components/evidence/EvidenceProbe.vue'
+
 interface MetricItem {
   label: string
   value: string
   cls: string
+  /** 证据坐标。null = 这条数字没有原始记录可回溯，界面必须如实说出来 */
+  evidence?: { hash: string | null; reason?: string }
 }
 
 defineProps<{ metrics: MetricItem[] }>()
@@ -30,6 +45,12 @@ defineProps<{ metrics: MetricItem[] }>()
   transition: transform var(--q-transition);
 }
 .metric-box:hover { transform: translateY(-1px); }
+.metric-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
 .metric-label {
   font-size: 11px;
   color: var(--q-text3);

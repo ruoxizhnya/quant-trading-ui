@@ -6,6 +6,7 @@ import type { BacktestResult } from '@/types/api'
 function makeResult(overrides: Partial<BacktestResult> = {}): BacktestResult {
   return {
     id: 'test-id-1',
+    status: 'completed',
     strategy: 'momentum',
     stock_pool: ['600000.SH'],
     start_date: '2024-01-01',
@@ -142,5 +143,18 @@ describe('useBacktestStore', () => {
     store.addToHistory(result)
     store.addToHistory(result)
     expect(store.history).toHaveLength(1)
+  })
+
+  // K9（审查修复 3）：运行 status 必须随之进入历史条目 —— 否则历史列表
+  // 无法区分无效运行，会把无效观测与成功观测同等陈列。
+  it('propagates run status into the history item (K9)', () => {
+    const store = useBacktestStore()
+    store.addToHistory(makeResult({ id: 'ok', status: 'completed' }))
+    store.addToHistory(makeResult({ id: 'bad', status: 'invalid' }))
+    store.addToHistory(makeResult({ id: 'dead', status: 'failed' }))
+
+    expect(store.history.find(h => h.id === 'ok')!.status).toBe('completed')
+    expect(store.history.find(h => h.id === 'bad')!.status).toBe('invalid')
+    expect(store.history.find(h => h.id === 'dead')!.status).toBe('failed')
   })
 })

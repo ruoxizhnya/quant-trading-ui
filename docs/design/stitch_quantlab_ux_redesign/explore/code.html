@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "titanium-highlight": "#f5f7fa",
+          "titanium-silver": "#cbd2db",
+          "titanium-graphite": "#8b929e",
+          "titanium-muted": "#525763",
+          "obsidian-base": "#090a0c",
+          "obsidian-surface": "#101216",
+          "obsidian-card": "#14171d",
+          "obsidian-hover": "#1a1e26"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.125rem",
+          "lg": "0.25rem",
+          "xl": "0.375rem"
+        },
+        "fontFamily": {
+          "sans": ["Geist", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+          "mono": ["JetBrains Mono", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "monospace"]
+        }
+      },
+    },
+  }</script></head><body class="bg-[#090a0c] font-sans text-sm text-[#cbd2db] antialiased selection:bg-white/20 selection:text-white"><aside class="fixed left-0 top-0 h-full w-60 bg-[#090a0c] z-50 flex flex-col justify-between border-r border-white/[0.06]"><div class="flex flex-col"><div class="h-14 px-4 flex items-center gap-2.5 border-b border-white/[0.06]"><div class="w-6 h-6 rounded bg-white/[0.05] border border-white/[0.08] flex items-center justify-center"><span class="material-symbols-outlined text-[#cbd2db] text-[15px]">grid_view</span></div><div class="flex flex-col"><div class="flex items-center gap-1.5"><span class="font-mono text-[13px] tracking-tight text-[#f5f7fa] font-medium">Quant Lab</span><span class="font-mono text-[10px] px-1 py-0.2 rounded bg-white/[0.06] text-[#8b929e] tracking-wider">A-SHARE</span></div><span class="font-mono text-[9px] text-[#525763] uppercase tracking-widest">Nordic Titanium Edition</span></div></div><div class="px-3 py-3"><nav class="flex flex-col gap-0.5"><div class="px-2 pt-2 pb-1 font-mono text-[10px] text-[#525763] uppercase tracking-wider flex items-center justify-between"><span>Research Mainline</span><span class="text-[#8b929e]">ACT-4</span></div><a class="flex items-center justify-between px-2.5 py-1.5 rounded hover:bg-white/[0.04] text-[#8b929e] hover:text-[#f5f7fa] transition-colors text-xs" data-path="review-desk" href="#"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-[15px] opacity-70">fact_check</span><span>审阅台 Review Desk</span></div><span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-white/[0.08] text-[#cbd2db]">3</span></a><a aria-current="page" class="flex items-center justify-between px-2.5 py-1.5 rounded transition-colors bg-white/[0.08] text-[#f5f7fa] border border-white/[0.08]" data-path="explore" href="#"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-[15px] text-[#f5f7fa]">travel_explore</span><span>探索观察台 Explore</span></div><span class="font-mono text-[10px] text-[#cbd2db] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-[#f5f7fa]"></span>LIVE</span></a><a class="flex items-center px-2.5 py-1.5 rounded text-[#8b929e] hover:bg-white/[0.04] hover:text-[#f5f7fa] transition-colors text-xs gap-2" data-path="journal" href="#"><span class="material-symbols-outlined text-[15px] opacity-70">menu_book</span><span>研究日志 Journal</span></a><div class="px-2 pt-4 pb-1 font-mono text-[10px] text-[#525763] uppercase tracking-wider"><span>Instruments</span></div><a class="flex items-center px-2.5 py-1.5 rounded text-[#8b929e] hover:bg-white/[0.04] hover:text-[#f5f7fa] transition-colors text-xs gap-2" data-path="backtest" href="#"><span class="material-symbols-outlined text-[15px] opacity-70">play_circle</span><span>回测引擎 Backtest</span></a><a class="flex items-center px-2.5 py-1.5 rounded text-[#8b929e] hover:bg-white/[0.04] hover:text-[#f5f7fa] transition-colors text-xs gap-2" data-path="compare" href="#"><span class="material-symbols-outlined text-[15px] opacity-70">compare_arrows</span><span>多策略对比 Compare</span></a><a class="flex items-center px-2.5 py-1.5 rounded text-[#8b929e] hover:bg-white/[0.04] hover:text-[#f5f7fa] transition-colors text-xs gap-2" data-path="strategies" href="#"><span class="material-symbols-outlined text-[15px] opacity-70">folder_special</span><span>策略库 Strategies</span></a><a class="flex items-center px-2.5 py-1.5 rounded text-[#8b929e] hover:bg-white/[0.04] hover:text-[#f5f7fa] transition-colors text-xs gap-2" data-path="factors" href="#"><span class="material-symbols-outlined text-[15px] opacity-70">functions</span><span>因子研究 Factors</span></a><a class="flex items-center px-2.5 py-1.5 rounded text-[#8b929e] hover:bg-white/[0.04] hover:text-[#f5f7fa] transition-colors text-xs gap-2" data-path="screener" href="#"><span class="material-symbols-outlined text-[15px] opacity-70">filter_alt</span><span>选股与市场 Screener</span></a><a class="flex items-center px-2.5 py-1.5 rounded text-[#8b929e] hover:bg-white/[0.04] hover:text-[#f5f7fa] transition-colors text-xs gap-2" data-path="data-sync" href="#"><span class="material-symbols-outlined text-[15px] opacity-70">sync_alt</span><span>数据管道 Data Sync</span></a><div class="px-2 pt-4 pb-1 font-mono text-[10px] text-[#525763] uppercase tracking-wider"><span>System Telemetry</span></div><a class="flex items-center px-2.5 py-1.5 rounded text-[#8b929e] hover:bg-white/[0.04] hover:text-[#f5f7fa] transition-colors text-xs gap-2" data-path="alerts-health" href="#"><span class="material-symbols-outlined text-[15px] opacity-70">vital_signs</span><span>风险与健康 Alerts</span></a><a class="flex items-center px-2.5 py-1.5 rounded text-[#8b929e] hover:bg-white/[0.04] hover:text-[#f5f7fa] transition-colors text-xs gap-2" data-path="execution" href="#"><span class="material-symbols-outlined text-[15px] opacity-70">receipt_long</span><span>交易执行 Execution</span></a><a class="flex items-center px-2.5 py-1.5 rounded text-[#8b929e] hover:bg-white/[0.04] hover:text-[#f5f7fa] transition-colors text-xs gap-2" data-path="macro-industry" href="#"><span class="material-symbols-outlined text-[15px] opacity-70">hub</span><span>宏观与产业链 Macro</span></a></nav></div></div><div class="p-3 border-t border-white/[0.06]"><div class="p-2.5 rounded bg-white/[0.02] border border-white/[0.04] flex flex-col gap-1.5"><div class="flex items-center justify-between"><span class="font-mono text-[9px] text-[#525763] uppercase tracking-wider">LOCAL NODE</span><span class="font-mono text-[10px] text-[#cbd2db] flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-white/70"></span>ONLINE</span></div><div class="font-mono text-[11px] text-[#cbd2db]">上海机房 A-102</div><div class="flex items-center justify-between text-[#525763] font-mono text-[9px] pt-0.5"><span>PORT: 9840</span><span>LATENCY: 0.42ms</span></div></div></div></aside><div class="pl-60"><header class="fixed top-0 left-60 right-0 h-14 bg-[#090a0c]/90 backdrop-blur-md z-40 border-b border-white/[0.06]"><div class="h-14 w-full px-6 flex items-center justify-between"><div class="flex items-center gap-4"><div class="flex items-center gap-2 px-2.5 py-1 rounded bg-white/[0.03] border border-white/[0.06] text-[#8b929e] hover:text-[#cbd2db] hover:border-white/[0.12] cursor-pointer transition-colors"><span class="material-symbols-outlined text-[14px]">search</span><span class="text-xs">⌘K 给方向 (30秒发起探索)</span><kbd class="font-mono text-[10px] bg-white/[0.06] px-1 py-0.2 rounded text-[#cbd2db]">⌘K</kbd></div><div class="hidden xl:flex items-center gap-4 pl-2 font-mono text-[11px]"><div class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-[#cbd2db]"></span><span class="text-[#525763] uppercase text-[9px]">HERMES AGENT:</span><span class="text-[#cbd2db]">运行中 (380尝试/h)</span></div><div class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-white/60"></span><span class="text-[#525763] uppercase text-[9px]">确定性底座:</span><span class="text-[#cbd2db]">正常</span></div><div class="flex items-center gap-1.5"><span class="text-[#8b929e] uppercase text-[9px]">待审阅:</span><span class="text-[#f5f7fa] bg-white/[0.08] px-1.5 py-0.2 rounded">3</span></div></div></div><div class="flex items-center gap-4"><div class="flex items-center gap-1.5 font-mono text-xs text-[#8b929e]"><span class="material-symbols-outlined text-[15px] text-[#cbd2db]">memory</span><span>SHANGHAI · SSE</span></div><div class="flex items-center gap-2.5 pl-3 border-l border-white/[0.06]"><div class="flex flex-col text-right"><span class="text-xs text-[#f5f7fa] font-medium leading-tight">实验室主任</span><span class="font-mono text-[9px] text-[#525763] uppercase tracking-wider leading-none">ADMIN MODE</span></div><div class="w-7 h-7 rounded bg-white/[0.08] border border-white/[0.1] flex items-center justify-center text-[#f5f7fa]"><span class="material-symbols-outlined text-[15px]">person</span></div></div></div></div></header><main class="relative pt-14 bg-[#090a0c] min-h-screen"><div class="flex flex-col w-full">
+<!-- Top Command Bar: 30-Second Direction Intake -->
+<section class="p-6 bg-[#101216] border-b border-white/[0.06] flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+<span class="font-mono text-[11px] text-[#8b929e] uppercase tracking-widest">F1 · 30-Sec Direction Setup</span>
+<span class="text-white/[0.12]">|</span>
+<span class="text-sm font-medium text-[#f5f7fa]">探索观察与假设推进</span>
+<span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-white/[0.05] border border-white/[0.06] text-[#cbd2db]">GEN-4 SEED RUNNER</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-mono text-xs text-[#525763]">探索状态:</span>
+<span class="font-mono text-xs px-2 py-0.5 rounded bg-white/[0.06] border border-white/[0.08] text-[#f5f7fa] flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-[#cbd2db]"></span> ACTIVE RUNNING
+</span>
+</div>
+</div>
+<!-- Natural Language Direction Input -->
+<div class="bg-[#090a0c] p-3.5 rounded border border-white/[0.06]">
+<div class="flex flex-col lg:flex-row gap-3 items-start lg:items-center">
+<div class="flex-1 w-full relative">
+<div class="flex items-center justify-between pb-1.5">
+<label class="font-mono text-[10px] text-[#8b929e] uppercase tracking-wider flex items-center gap-1.5" for="direction-input">
+<span class="material-symbols-outlined text-[13px] text-[#cbd2db]">psychology</span>
+自然语言探索方向 (Natural Language Hypothesis Intake)
+</label>
+<span class="font-mono text-[10px] text-[#525763]">快捷激活 <kbd class="bg-white/[0.06] px-1 py-0.2 rounded text-[#cbd2db]">⌘K</kbd></span>
+</div>
+<div class="relative">
+<input class="w-full bg-[#101216] border border-white/[0.08] px-3 py-2 rounded font-mono text-xs text-[#f5f7fa] placeholder:text-[#525763] focus:border-white/[0.24] focus:outline-none transition-colors pr-24" id="direction-input" placeholder="输入探索方向描述，例如：光模块高频资金流差分..." type="text" value="这周看光模块 800G/1.6T 渗透率与流动性溢价，避开两融标的超额拥挤区，着重挖掘尾盘量比跃迁反转"/>
+<div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
+<span class="font-mono text-[9px] px-1.5 py-0.5 rounded bg-white/[0.05] border border-white/[0.08] text-[#8b929e]">HERMES NLP</span>
+</div>
+</div>
+</div>
+<button class="w-full lg:w-auto h-9 px-4 rounded bg-white/[0.08] hover:bg-white/[0.12] border border-white/[0.12] text-[#f5f7fa] font-mono text-xs flex items-center justify-center gap-2 transition-colors whitespace-nowrap self-end" id="btn-start-run">
+<span class="material-symbols-outlined text-[15px] text-[#cbd2db]">bolt</span>
+<span>启动 AI 实验员探索</span>
+<span class="font-mono text-[10px] text-[#8b929e] border-l border-white/[0.1] pl-1.5">POST /api/runs</span>
+</button>
+</div>
+<!-- Constraints Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-2.5 pt-3 mt-2.5 border-t border-white/[0.04]">
+<div class="flex flex-col gap-1">
+<span class="font-mono text-[10px] text-[#525763] uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px] opacity-70">domain</span> 标的行业池
+</span>
+<div class="flex items-center justify-between bg-[#101216] border border-white/[0.04] px-2.5 py-1 rounded">
+<span class="font-mono text-xs text-[#cbd2db]">光通信与光模块 / CPO (32只)</span>
+<span class="material-symbols-outlined text-[#525763] text-[13px]">tune</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-mono text-[10px] text-[#525763] uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px] opacity-70">calendar_view_week</span> 回看与滑动窗口
+</span>
+<div class="flex items-center justify-between bg-[#101216] border border-white/[0.04] px-2.5 py-1 rounded">
+<span class="font-mono text-xs text-[#cbd2db]">120d - 500d 滚动</span>
+<span class="font-mono text-[10px] text-[#8b929e]">日频+L2</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-mono text-[10px] text-[#525763] uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px] opacity-70">repeat</span> 探索上限预算
+</span>
+<div class="flex items-center justify-between bg-[#101216] border border-white/[0.04] px-2.5 py-1 rounded">
+<span class="font-mono text-xs text-[#cbd2db]">500 次尝试封顶</span>
+<span class="font-mono text-[10px] text-[#8b929e]">剩余 158</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-mono text-[10px] text-[#8b929e] uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px] opacity-70">block</span> 别碰什么 (负向约束)
+</span>
+<div class="flex items-center bg-[#101216] border border-white/[0.04] px-2.5 py-1 rounded overflow-hidden" title="连续跌停复牌股、微盘流动性陷阱、停牌超5d">
+<span class="font-mono text-xs text-[#cbd2db] truncate">连续跌停复牌、微盘陷阱、停牌超5d</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Three-Column Observation Dashboard -->
+<section class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-5">
+<!-- Column 1: What is being tried NOW (正在试什么 - 4 cols) -->
+<div class="lg:col-span-4 flex flex-col gap-4">
+<div class="bg-[#101216] rounded border border-white/[0.06] p-4 flex flex-col gap-3.5">
+<div class="flex items-center justify-between pb-2 border-b border-white/[0.04]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#cbd2db] text-[18px]">explore</span>
+<div>
+<div class="font-mono text-xs text-[#f5f7fa] font-medium flex items-center gap-1.5">
+<span>Run #2026-1012-G</span>
+<span class="w-1.5 h-1.5 rounded-full bg-white/70"></span>
+</div>
+<span class="font-mono text-[9px] text-[#525763] uppercase tracking-wider">Active Execution Pipeline</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-mono text-xs text-[#cbd2db] font-semibold">342 / 500</span>
+<span class="block font-mono text-[9px] text-[#525763]">PROGRESS 68.4%</span>
+</div>
+</div>
+<!-- Progress Track (Minimal Hairline) -->
+<div class="w-full bg-[#090a0c] h-1 rounded-full overflow-hidden border border-white/[0.04]">
+<div class="bg-[#cbd2db] h-full" style="width: 68.4%;"></div>
+</div>
+<!-- Hypothesis Target -->
+<div class="p-3 rounded bg-[#090a0c] border border-white/[0.04] flex flex-col gap-1">
+<div class="flex items-center justify-between font-mono text-[10px]">
+<span class="text-[#8b929e] uppercase">当前尝试目标假设 (Hypothesis)</span>
+<span class="text-[#525763]">SEQ #342</span>
+</div>
+<p class="text-xs text-[#cbd2db] leading-relaxed">
+"验证日内量比跃迁 &gt; 2.5 叠加资金流向在 800G 核心代工厂的超额反转强度，过滤低买卖价差标的。"
+</p>
+</div>
+<!-- State Vector -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between font-mono text-[10px]">
+<span class="text-[#525763] uppercase tracking-wider">7维空间状态坐标 (State Vector)</span>
+<span class="text-[#8b929e]">L2-Normalized</span>
+</div>
+<div class="grid grid-cols-2 gap-1.5 font-mono text-[11px]">
+<div class="bg-[#090a0c] border border-white/[0.04] p-1.5 rounded flex justify-between">
+<span class="text-[#525763]">lookback_win:</span>
+<span class="text-[#cbd2db]">240d</span>
+</div>
+<div class="bg-[#090a0c] border border-white/[0.04] p-1.5 rounded flex justify-between">
+<span class="text-[#525763]">holding_period:</span>
+<span class="text-[#cbd2db]">5d</span>
+</div>
+<div class="bg-[#090a0c] border border-white/[0.04] p-1.5 rounded flex justify-between">
+<span class="text-[#525763]">stop_loss:</span>
+<span class="text-[#cbd2db]">-4.50%</span>
+</div>
+<div class="bg-[#090a0c] border border-white/[0.04] p-1.5 rounded flex justify-between">
+<span class="text-[#525763]">turnover_cap:</span>
+<span class="text-[#cbd2db]">&lt; 18.0%</span>
+</div>
+<div class="bg-[#090a0c] border border-white/[0.04] p-1.5 rounded flex justify-between">
+<span class="text-[#525763]">decay_halflife:</span>
+<span class="text-[#cbd2db]">3.2d</span>
+</div>
+<div class="bg-[#090a0c] border border-white/[0.04] p-1.5 rounded flex justify-between">
+<span class="text-[#525763]">vol_ratio_th:</span>
+<span class="text-[#cbd2db]">2.50</span>
+</div>
+</div>
+</div>
+<!-- Deterministic Factor Expression AST -->
+<div class="bg-[#090a0c] border border-white/[0.04] p-2.5 rounded flex flex-col gap-1">
+<div class="flex items-center justify-between font-mono text-[10px]">
+<span class="text-[#525763] uppercase">因子表达式 AST (Deterministic Code)</span>
+<button class="text-[#8b929e] hover:text-[#f5f7fa] flex items-center gap-0.5 transition-colors">
+<span class="material-symbols-outlined text-[12px]">code</span> Inspect AST
+</button>
+</div>
+<code class="font-mono text-[11px] text-[#cbd2db] bg-white/[0.02] px-2 py-1 rounded block overflow-x-auto">
+Ts_Rank(Volume_Ratio, 20) * Delta(Flow_In, 3) / WAvg_Spread
+</code>
+</div>
+<!-- First-Class Action Intervention -->
+<div class="pt-1 flex flex-col gap-1">
+<div class="flex items-center justify-between font-mono text-[10px] text-[#525763]">
+<span>一等公民干预 (INTERVENTION)</span>
+<span>无损快照保留</span>
+</div>
+<button class="w-full py-2 rounded bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-[#cbd2db] hover:text-[#f5f7fa] font-mono text-xs flex items-center justify-center gap-1.5 transition-colors" id="btn-abort-run">
+<span class="material-symbols-outlined text-[15px] opacity-70">stop_circle</span>
+<span>叫停 Run (带快照保存)</span>
+</button>
+</div>
+</div>
+<!-- Telemetry Hardware -->
+<div class="bg-[#101216] rounded border border-white/[0.06] p-3 flex flex-col gap-1.5">
+<div class="flex items-center justify-between font-mono text-[10px]">
+<span class="text-[#525763] uppercase">Node A-102 集群算力</span>
+<span class="text-[#cbd2db]">380 试/h</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex-1 bg-[#090a0c] h-1 rounded-full overflow-hidden border border-white/[0.04]">
+<div class="bg-white/40 h-full" style="width: 78%;"></div>
+</div>
+<span class="font-mono text-xs text-[#8b929e]">78% · 4x RTX4090</span>
+</div>
+<div class="flex justify-between font-mono text-[10px] text-[#525763]">
+<span>内存: 64.2GB / 128GB</span>
+<span>树深: 6层</span>
+</div>
+</div>
+</div>
+<!-- Column 2: Experiment Stream (实时尝试流 - 4 cols) -->
+<div class="lg:col-span-4 flex flex-col gap-4">
+<div class="bg-[#101216] rounded border border-white/[0.06] p-4 flex flex-col gap-3 h-full">
+<!-- Stream Header & Filters -->
+<div class="flex flex-col gap-2 pb-2 border-b border-white/[0.04]">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#cbd2db] text-[18px]">stream</span>
+<span class="text-sm font-medium text-[#f5f7fa]">实时尝试流</span>
+</div>
+<span class="font-mono text-[10px] text-[#525763]">seq 升序 (LIVE)</span>
+</div>
+<div class="flex items-center p-0.5 bg-[#090a0c] rounded border border-white/[0.04]">
+<button class="flex-1 py-1 text-center font-mono text-[11px] rounded bg-white/[0.08] text-[#f5f7fa]">全部 (342)</button>
+<button class="flex-1 py-1 text-center font-mono text-[11px] rounded text-[#8b929e] hover:text-[#cbd2db]">有效 (89)</button>
+<button class="flex-1 py-1 text-center font-mono text-[11px] rounded text-[#8b929e] hover:text-[#cbd2db]">已放弃 (253)</button>
+</div>
+<div class="text-[11px] text-[#8b929e] flex items-center justify-between px-1">
+<span>AI 洞察: 放弃的分支蕴含最关键的无效特征边界</span>
+<span class="material-symbols-outlined text-[13px] text-[#525763]">info</span>
+</div>
+</div>
+<!-- Stream List (Reduced Clutter, Titanium Gray Hierarchy) -->
+<div class="flex flex-col gap-2 overflow-y-auto max-h-[620px] pr-0.5">
+<!-- Seq #342 (Optimal Active) -->
+<div class="p-3 rounded bg-[#090a0c] border border-white/[0.1] flex flex-col gap-1.5 transition-colors">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 font-mono text-xs">
+<span class="font-semibold text-[#f5f7fa]">#342</span>
+<span class="text-[10px] px-1.5 py-0.2 rounded bg-white/[0.08] text-[#cbd2db]">COMPLETED</span>
+</div>
+<span class="font-mono text-[10px] text-[#525763]">12s 前</span>
+</div>
+<div class="flex items-center justify-between font-mono text-xs">
+<span class="text-[#cbd2db]">实测 Sharpe: <strong class="text-[#f5f7fa] font-mono text-sm">2.41</strong></span>
+<span class="text-[#8b929e] text-[11px]">P(胜) = 71% ± 3.4%</span>
+</div>
+<div class="flex items-center justify-between text-xs text-[#8b929e] pt-0.5">
+<span class="truncate">多头超额: +18.4% · IC: 0.082</span>
+<button class="font-mono text-[10px] text-[#cbd2db] hover:underline">详情</button>
+</div>
+</div>
+<!-- Seq #341 (Invalid Boundary) -->
+<div class="p-3 rounded bg-[#090a0c] border border-white/[0.04] flex flex-col gap-1.5 opacity-90">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 font-mono text-xs">
+<span class="text-[#8b929e]">#341</span>
+<span class="text-[10px] px-1.5 py-0.2 rounded bg-white/[0.04] text-[#8b929e]">INVALID (BIAS)</span>
+</div>
+<span class="font-mono text-[10px] text-[#525763]">48s 前</span>
+</div>
+<div class="flex items-center justify-between font-mono text-xs text-[#cbd2db]">
+<span>触发质问: 日换手率 34.2% 越界</span>
+<button class="px-1.5 py-0.5 rounded bg-white/[0.04] text-[#8b929e] hover:text-[#cbd2db] text-[10px]">质问日志</button>
+</div>
+<p class="text-[11px] text-[#525763] truncate">
+流动性冲击告警: 印花与滑点侵蚀全额 Alpha
+</p>
+</div>
+<!-- Seq #340 (Abandoned Branch) -->
+<div class="p-3 rounded bg-[#090a0c] border border-white/[0.04] flex flex-col gap-1.5 opacity-80">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 font-mono text-xs">
+<span class="text-[#525763]">#340</span>
+<span class="text-[10px] px-1.5 py-0.2 rounded bg-white/[0.04] text-[#525763]">ABANDONED</span>
+</div>
+<button class="text-[#8b929e] hover:text-[#cbd2db] font-mono text-[10px] flex items-center gap-0.5">
+<span>为什么放弃?</span>
+</button>
+</div>
+<div class="flex items-center justify-between font-mono text-xs text-[#8b929e]">
+<span>48h 内 IC 衰减过快 (0.091 → 0.012)</span>
+<span class="text-[#525763]">半衰期 &lt; 0.8d</span>
+</div>
+<p class="text-[11px] text-[#525763]">
+Agent 决策: 放弃纯挂单不平衡分支，转向微观量比跃迁。
+</p>
+</div>
+<!-- Seq #339 (Ancestor Node) -->
+<div class="p-3 rounded bg-[#090a0c] border border-white/[0.04] flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 font-mono text-xs">
+<span class="text-[#cbd2db]">#339</span>
+<span class="text-[10px] px-1.5 py-0.2 rounded bg-white/[0.04] text-[#8b929e]">COMPLETED</span>
+</div>
+<button class="px-1.5 py-0.5 rounded bg-white/[0.06] text-[#cbd2db] hover:bg-white/[0.1] font-mono text-[10px]">
+围绕它多试
+</button>
+</div>
+<div class="flex items-center justify-between font-mono text-xs">
+<span class="text-[#8b929e]">实测 Sharpe: <strong class="text-[#cbd2db]">1.95</strong></span>
+<span class="text-[#525763] text-[11px]">P(胜) = 62%</span>
+</div>
+<div class="flex items-center justify-between text-xs text-[#525763] pt-0.5">
+<span class="truncate">尾盘30分钟成交额爆发</span>
+<span class="font-mono text-[10px]">已作为父节点衍生</span>
+</div>
+</div>
+<!-- Seq #338 (Stable Baseline) -->
+<div class="p-3 rounded bg-[#090a0c] border border-white/[0.04] flex flex-col gap-1 opacity-70">
+<div class="flex items-center justify-between font-mono text-xs">
+<span class="text-[#525763]">#338</span>
+<span class="text-[10px] px-1.5 py-0.2 rounded bg-white/[0.04] text-[#525763]">STABLE</span>
+<span class="text-[#525763] text-[10px]">Sharpe: 1.40</span>
+</div>
+<p class="text-[11px] text-[#525763] truncate">
+基础形态: 移动均线过滤 + CPO龙头配比
+</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Column 3: Best Candidate & Validator Verdict (当前收敛最优与验证器裁决 - 4 cols) -->
+<div class="lg:col-span-4 flex flex-col gap-4">
+<div class="bg-[#101216] rounded border border-white/[0.06] p-4 flex flex-col gap-4 h-full">
+<div class="flex items-center justify-between pb-2 border-b border-white/[0.04]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#cbd2db] text-[18px]">verified</span>
+<span class="text-sm font-medium text-[#f5f7fa]">收敛最优与验证器裁决</span>
+</div>
+<span class="font-mono text-[10px] px-2 py-0.5 rounded bg-white/[0.08] text-[#f5f7fa] font-medium">
+VALIDATED
+</span>
+</div>
+<!-- Confidence Score Block -->
+<div class="bg-[#090a0c] p-3.5 rounded border border-white/[0.04] flex flex-col gap-2">
+<div class="flex items-center justify-between font-mono text-[10px]">
+<span class="text-[#525763] uppercase">综合评定置信概率 (Ensemble Confidence)</span>
+<span class="text-[#cbd2db]">最优候选项: #342</span>
+</div>
+<div class="flex items-baseline justify-between">
+<div class="flex items-baseline gap-2">
+<span class="font-mono text-3xl text-[#f5f7fa] font-semibold">71%</span>
+<span class="text-xs text-[#8b929e]">整体置信度</span>
+</div>
+<div class="flex items-center gap-1 font-mono text-[10px] text-[#8b929e]">
+<span>最弱项: 因果语义 (71%)</span>
+</div>
+</div>
+<div class="p-2 rounded bg-white/[0.02] border border-white/[0.04] flex items-center justify-between font-mono text-[11px]">
+<div class="text-[#cbd2db]">
+确定性历史夏普: <span class="text-[#f5f7fa] font-medium">2.41</span>
+</div>
+<div class="text-[#8b929e]">
+泛化区间: [1.82 ~ 2.65]
+</div>
+</div>
+</div>
+<!-- Six-Dimensional Breakdown -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between font-mono text-[10px]">
+<span class="text-[#525763] uppercase">验证器六维实时审计裁决</span>
+<span class="text-[#525763]">基准阈值 &gt; 65%</span>
+</div>
+<!-- Dim 1 -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-mono text-[11px]">
+<span class="text-[#cbd2db]">1. 统计显著性 (t-stat &gt; 3.2)</span>
+<span class="text-[#f5f7fa]">88%</span>
+</div>
+<div class="w-full bg-[#090a0c] h-1 rounded-full overflow-hidden border border-white/[0.04]">
+<div class="bg-[#cbd2db] h-full" style="width: 88%;"></div>
+</div>
+</div>
+<!-- Dim 2 -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-mono text-[11px]">
+<span class="text-[#cbd2db]">2. 经济学机理 (800G 资本支出驱动)</span>
+<span class="text-[#f5f7fa]">82%</span>
+</div>
+<div class="w-full bg-[#090a0c] h-1 rounded-full overflow-hidden border border-white/[0.04]">
+<div class="bg-[#cbd2db] h-full" style="width: 82%;"></div>
+</div>
+</div>
+<!-- Dim 3 -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-mono text-[11px]">
+<span class="text-[#cbd2db]">3. 参数扰动稳健性 (±20% 衰减 &lt; 15%)</span>
+<span class="text-[#cbd2db]">79%</span>
+</div>
+<div class="w-full bg-[#090a0c] h-1 rounded-full overflow-hidden border border-white/[0.04]">
+<div class="bg-[#8b929e] h-full" style="width: 79%;"></div>
+</div>
+</div>
+<!-- Dim 4 -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-mono text-[11px]">
+<span class="text-[#cbd2db]">4. 偏差免疫 (无未来函数净化)</span>
+<span class="text-[#f5f7fa]">85%</span>
+</div>
+<div class="w-full bg-[#090a0c] h-1 rounded-full overflow-hidden border border-white/[0.04]">
+<div class="bg-[#cbd2db] h-full" style="width: 85%;"></div>
+</div>
+</div>
+<!-- Dim 5 -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-mono text-[11px]">
+<span class="text-[#cbd2db]">5. 因子正交冗余度 (相关系数 0.22)</span>
+<span class="text-[#cbd2db]">74%</span>
+</div>
+<div class="w-full bg-[#090a0c] h-1 rounded-full overflow-hidden border border-white/[0.04]">
+<div class="bg-[#8b929e] h-full" style="width: 74%;"></div>
+</div>
+</div>
+<!-- Dim 6 -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-mono text-[11px]">
+<span class="text-[#8b929e]">6. 因果语义可解释 (成交量比跃迁)</span>
+<span class="text-[#8b929e]">71%</span>
+</div>
+<div class="w-full bg-[#090a0c] h-1 rounded-full overflow-hidden border border-white/[0.04]">
+<div class="bg-[#525763] h-full" style="width: 71%;"></div>
+</div>
+</div>
+</div>
+<!-- Bottom Decision Action -->
+<div class="mt-auto pt-2 flex flex-col gap-2">
+<div class="p-2 rounded bg-[#090a0c] border border-white/[0.04] flex items-center justify-between text-xs text-[#8b929e]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-[#cbd2db]">verified_user</span>
+<span>裁决结论: 建议进入实盘模拟沙盒</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<button class="py-2 rounded bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] text-[#cbd2db] hover:text-[#f5f7fa] font-mono text-xs flex items-center justify-center gap-1 transition-colors" id="btn-open-playback">
+<span class="material-symbols-outlined text-[14px]">alt_route</span>
+<span>深挖演化流 (F4)</span>
+</button>
+<button class="py-2 rounded bg-white/[0.1] hover:bg-white/[0.15] border border-white/[0.14] text-[#f5f7fa] font-mono text-xs flex items-center justify-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[14px]">send_to_mobile</span>
+<span>推入审阅台 (P0)</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- F4 Path Playback & Evolution Roadmap -->
+<section class="mx-6 mb-6 p-5 bg-[#101216] rounded border border-white/[0.06] flex flex-col gap-4" id="path-playback-section">
+<div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 pb-3 border-b border-white/[0.04]">
+<div class="flex items-center gap-2.5">
+<div class="w-6 h-6 rounded bg-white/[0.06] border border-white/[0.08] flex items-center justify-center text-[#f5f7fa]">
+<span class="material-symbols-outlined text-[15px]">account_tree</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="text-sm font-medium text-[#f5f7fa]">F4 探索路径深挖回放与演化路线图</span>
+<span class="font-mono text-[9px] px-1.5 py-0.2 rounded bg-white/[0.06] text-[#8b929e]">PATH PLAYBACK</span>
+</div>
+<span class="text-xs text-[#525763]">复盘 AI 实验员从试错、遭遇约束、主动放弃到最终收敛的最优推理轨迹</span>
+</div>
+</div>
+<!-- Playback Timeline Controller -->
+<div class="flex items-center gap-1 bg-[#090a0c] p-1 rounded border border-white/[0.06]">
+<button class="p-1 rounded hover:bg-white/[0.06] text-[#8b929e] hover:text-[#f5f7fa] transition-colors" id="ctrl-first" title="跳到最初">
+<span class="material-symbols-outlined text-[16px]">first_page</span>
+</button>
+<button class="p-1 rounded hover:bg-white/[0.06] text-[#8b929e] hover:text-[#f5f7fa] transition-colors" id="ctrl-prev" title="倒退一步">
+<span class="material-symbols-outlined text-[16px]">fast_rewind</span>
+</button>
+<button class="px-2.5 py-1 rounded bg-white/[0.08] hover:bg-white/[0.14] text-[#f5f7fa] font-mono text-xs flex items-center gap-1 transition-colors" id="ctrl-play" title="自动播放演化">
+<span class="material-symbols-outlined text-[14px]">play_arrow</span>
+<span>播放演化</span>
+</button>
+<button class="p-1 rounded hover:bg-white/[0.06] text-[#8b929e] hover:text-[#f5f7fa] transition-colors" id="ctrl-next" title="前进一步">
+<span class="material-symbols-outlined text-[16px]">fast_forward</span>
+</button>
+<button class="px-2 py-1 rounded text-[#cbd2db] hover:bg-white/[0.06] font-mono text-[11px] flex items-center gap-0.5" id="ctrl-last" title="跳到最优 Seq 342">
+<span>跳到最优 #342</span>
+<span class="material-symbols-outlined text-[14px]">last_page</span>
+</button>
+</div>
+</div>
+<!-- Scrubber Track -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between font-mono text-[10px] text-[#525763]">
+<span>初试 Seq #001 (冷启动)</span>
+<span>Seq #184 (遭遇拥挤度墙)</span>
+<span>Seq #290 (范式转向: 量比跃迁)</span>
+<span class="text-[#cbd2db] font-medium">Seq #342 (当前最优收敛)</span>
+</div>
+<div class="w-full bg-[#090a0c] h-1.5 rounded-full overflow-hidden flex border border-white/[0.04]">
+<div class="h-full bg-white/20" style="width: 25%;"></div>
+<div class="h-full bg-white/35" style="width: 20%;"></div>
+<div class="h-full bg-white/55" style="width: 35%;"></div>
+<div class="h-full bg-[#cbd2db]" style="width: 20%;"></div>
+</div>
+</div>
+<!-- Tree Storyline Node Map (4 Stages, Titanium Calm Tone) -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 pt-1">
+<!-- Stage 1 -->
+<div class="bg-[#090a0c] border border-white/[0.04] rounded p-3.5 flex flex-col gap-2">
+<div class="flex items-center justify-between font-mono text-[10px]">
+<span class="px-1.5 py-0.2 rounded bg-white/[0.04] text-[#8b929e]">STAGE 1 · 初试</span>
+<span class="text-[#525763]">Seq #001 - #045</span>
+</div>
+<div class="text-xs font-medium text-[#f5f7fa]">传统动量与两融超额</div>
+<p class="text-[11px] text-[#8b929e] leading-relaxed">
+"初始采用通用光模块高频动量突破假说，直接追踪主力两融净买入额。"
+</p>
+<div class="p-2 rounded bg-white/[0.02] border border-white/[0.02] font-mono text-[10px] text-[#525763]">
+<div>Sharpe: 1.12 · 换手: 9.4%</div>
+<div>IC: 0.038 · 回撤: -16.2%</div>
+</div>
+<div class="mt-auto pt-1 flex items-center gap-1 text-[#525763] font-mono text-[10px]">
+<span class="material-symbols-outlined text-[12px]">arrow_downward</span> 探索继续，未遇阻断
+</div>
+</div>
+<!-- Stage 2 -->
+<div class="bg-[#090a0c] border border-white/[0.04] rounded p-3.5 flex flex-col gap-2">
+<div class="flex items-center justify-between font-mono text-[10px]">
+<span class="px-1.5 py-0.2 rounded bg-white/[0.06] text-[#cbd2db]">STAGE 2 · 撞墙放弃</span>
+<span class="text-[#8b929e]">Seq #184 关键断裂</span>
+</div>
+<div class="text-xs font-medium text-[#f5f7fa]">两融超额拥挤与踩踏</div>
+<p class="text-[11px] text-[#8b929e] leading-relaxed">
+<strong class="text-[#cbd2db]">放弃决策理由:</strong> 杠杆因子权重放大后，拥挤度 &gt; 85% 导致集中踩踏，滑点扩大 3.8 倍。
+</p>
+<div class="p-2 rounded bg-white/[0.02] border border-white/[0.02] font-mono text-[10px] text-[#525763]">
+<div>质问: 踩中负向约束两融拥挤区</div>
+<div>决策: 剪枝整棵两融买入子树</div>
+</div>
+<div class="mt-auto pt-1 flex items-center gap-1 text-[#8b929e] font-mono text-[10px]">
+<span class="material-symbols-outlined text-[12px]">turn_right</span> 范式突变：转向尾盘微观流动性
+</div>
+</div>
+<!-- Stage 3 -->
+<div class="bg-[#090a0c] border border-white/[0.04] rounded p-3.5 flex flex-col gap-2">
+<div class="flex items-center justify-between font-mono text-[10px]">
+<span class="px-1.5 py-0.2 rounded bg-white/[0.06] text-[#cbd2db]">STAGE 3 · 范式突变</span>
+<span class="text-[#cbd2db]">Seq #290 转向</span>
+</div>
+<div class="text-xs font-medium text-[#f5f7fa]">日内量比跃迁反转假说</div>
+<p class="text-[11px] text-[#8b929e] leading-relaxed">
+"自主引入代工厂日内量比跃迁算子，避开全日均值平滑，抓 14:30 异常资金注入。"
+</p>
+<div class="p-2 rounded bg-white/[0.02] border border-white/[0.02] font-mono text-[10px] text-[#cbd2db]">
+<div>Sharpe 突跃: 1.12 → 1.95</div>
+<div>IC 半衰期拉长至 3.2 天</div>
+</div>
+<div class="mt-auto pt-1 flex items-center gap-1 text-[#cbd2db] font-mono text-[10px]">
+<span class="material-symbols-outlined text-[12px]">arrow_forward</span> 锁定主干：进入超参数退火
+</div>
+</div>
+<!-- Stage 4 -->
+<div class="bg-[#090a0c] border border-white/[0.08] rounded p-3.5 flex flex-col gap-2">
+<div class="flex items-center justify-between font-mono text-[10px]">
+<span class="px-1.5 py-0.2 rounded bg-white/[0.1] text-[#f5f7fa]">STAGE 4 · 收敛定型</span>
+<span class="text-[#f5f7fa] font-semibold">Seq #342 (最优)</span>
+</div>
+<div class="text-xs font-medium text-[#f5f7fa]">流动性差分加权反转</div>
+<p class="text-[11px] text-[#cbd2db] leading-relaxed">
+<strong class="text-[#f5f7fa]">收敛结局:</strong> 引入买卖价差归一化消除冲击，达成 Sharpe 2.41，通过六维验证裁决。
+</p>
+<div class="p-2 rounded bg-white/[0.04] border border-white/[0.04] font-mono text-[10px] text-[#cbd2db]">
+<div>综合评定: 71% (因果语义审阅就绪)</div>
+<div>状态: 可一键下发回测验证与审阅</div>
+</div>
+<div class="mt-auto pt-1 flex items-center justify-between font-mono text-[10px]">
+<button class="text-[#cbd2db] hover:underline flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[12px]">terminal</span> 导出剧本
+</button>
+<span class="text-[#8b929e] flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[12px]">done_all</span> 最优固化
+</span>
+</div>
+</div>
+</div>
+<!-- Footnote Row -->
+<div class="p-2.5 bg-[#090a0c] rounded border border-white/[0.04] flex flex-col lg:flex-row items-start lg:items-center justify-between gap-2 font-mono text-[11px] text-[#525763]">
+<div class="flex items-center gap-2 text-[#8b929e]">
+<span class="material-symbols-outlined text-[14px]">psychology</span>
+<span>Hermes Agent 决策反思: 共剪枝 18 个无价值分支，节省计算时间 6.4h</span>
+</div>
+<div class="flex items-center gap-4">
+<span>总节点数: 342</span>
+<span>有效: 89</span>
+<span>废弃剪枝率: 74.0%</span>
+<button class="text-[#cbd2db] hover:underline flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[12px]">download</span> 导出日志
+</button>
+</div>
+</div>
+</section>
+</div>
+<!-- Interactive Script -->
+<script>
+  (function initExploreInteractions() {
+    window.addEventListener('keydown', function(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        const input = document.getElementById('direction-input');
+        if (input) {
+          input.focus();
+          input.select();
+        }
+      }
+    });
+
+    const abortBtn = document.getElementById('btn-abort-run');
+    if (abortBtn) {
+      let confirmStage = false;
+      let timer = null;
+      abortBtn.addEventListener('click', function() {
+        if (!confirmStage) {
+          confirmStage = true;
+          abortBtn.classList.add('bg-white/[0.14]', 'text-white');
+          abortBtn.innerHTML = '<span class="material-symbols-outlined text-[14px]">priority_high</span><span>二次确认：确定立即叫停 Run 并保存快照？</span>';
+          
+          timer = setTimeout(() => {
+            confirmStage = false;
+            abortBtn.classList.remove('bg-white/[0.14]', 'text-white');
+            abortBtn.innerHTML = '<span class="material-symbols-outlined text-[15px] opacity-70">stop_circle</span><span>叫停 Run (带快照保存)</span>';
+          }, 4000);
+        } else {
+          clearTimeout(timer);
+          abortBtn.classList.add('opacity-40', 'cursor-not-allowed');
+          abortBtn.innerHTML = '<span class="material-symbols-outlined text-[14px]">check</span><span>Run 已安全中止 · 状态已封存 (Exit 0)</span>';
+          abortBtn.disabled = true;
+        }
+      });
+    }
+
+    const openPlaybackBtn = document.getElementById('btn-open-playback');
+    const playbackSection = document.getElementById('path-playback-section');
+    if (openPlaybackBtn && playbackSection) {
+      openPlaybackBtn.addEventListener('click', function() {
+        playbackSection.scrollIntoView({ behavior: 'smooth' });
+      });
+    }
+
+    const startRunBtn = document.getElementById('btn-start-run');
+    if (startRunBtn) {
+      startRunBtn.addEventListener('click', function() {
+        const originalContent = startRunBtn.innerHTML;
+        startRunBtn.disabled = true;
+        startRunBtn.innerHTML = '<span class="material-symbols-outlined text-[15px] animate-spin">refresh</span><span>调度计算集群...</span>';
+        setTimeout(() => {
+          startRunBtn.innerHTML = originalContent;
+          startRunBtn.disabled = false;
+        }, 1200);
+      });
+    }
+
+    const ctrlPlay = document.getElementById('ctrl-play');
+    if (ctrlPlay) {
+      let isPlaying = false;
+      ctrlPlay.addEventListener('click', function() {
+        isPlaying = !isPlaying;
+        if (isPlaying) {
+          ctrlPlay.innerHTML = '<span class="material-symbols-outlined text-[14px]">pause</span><span>暂停</span>';
+          ctrlPlay.classList.add('bg-white/[0.18]');
+        } else {
+          ctrlPlay.innerHTML = '<span class="material-symbols-outlined text-[14px]">play_arrow</span><span>播放演化</span>';
+          ctrlPlay.classList.remove('bg-white/[0.18]');
+        }
+      });
+    }
+  })();
+</script></main></div></body></html>

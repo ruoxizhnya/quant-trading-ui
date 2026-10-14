@@ -1,7 +1,7 @@
 <template>
   <div class="strategy-lab-page">
     <div class="lab-header">
-      <h1>策略实验室</h1>
+      <h1>策略库</h1>
       <n-space align="center" :size="12">
         <n-input v-model:value="searchQuery" placeholder="搜索策略..." clearable style="width:200px" />
         <n-select v-model:value="filterType" :options="typeOptions" style="width:130px" placeholder="全部类型" clearable />

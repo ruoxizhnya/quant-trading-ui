@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, h, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import {
   NCard,
   NSpace,
@@ -15,15 +14,15 @@ import {
   NText,
 } from 'naive-ui'
 import type { DataTableColumns } from 'naive-ui'
-import { SearchOutline, OpenOutline } from '@vicons/ionicons5'
+import { SearchOutline } from '@vicons/ionicons5'
 import { ApiError } from '@/api/client'
 import { getFactorCitation } from '@/api/factor'
+import EvidenceProbe from '@/components/evidence/EvidenceProbe.vue'
 import type { CitationTuple, FactorCacheEntry } from '@/types/factor'
 
 // TASKS.md P5-3 / ADR-022 §5: read a factor_cache row and show the evidence
 // coordinate behind it, so any factor number can be walked back to the exact
 // archived source response. The row is the A→B link; the tuple is the address.
-const router = useRouter()
 
 const factorName = ref('')
 const symbol = ref('')
@@ -74,12 +73,6 @@ async function handleLoad() {
   }
 }
 
-/** One click walks the coordinate back to its ingested source response: the
- *  evidence page receives the hash and resolves it without further input. */
-function traceEvidence(tuple: CitationTuple) {
-  router.push({ name: 'evidence', query: { content_hash: tuple.content_hash } })
-}
-
 const columns: DataTableColumns<CitationTuple> = [
   { title: 'source', key: 'source', render: (row) => row.source || '—' },
   { title: 'dataset', key: 'dataset', render: (row) => row.dataset || '—' },
@@ -102,12 +95,13 @@ const columns: DataTableColumns<CitationTuple> = [
   {
     title: '操作',
     key: 'actions',
+    // 就地开抽屉问来源，不跳页；坐标缺失时它自己会显示"无法回溯"。
     render: (row) =>
-      h(
-        NButton,
-        { size: 'small', onClick: () => traceEvidence(row) },
-        { icon: () => h(OpenOutline), default: () => '回溯证据' },
-      ),
+      h(EvidenceProbe, {
+        label: `${row.dataset || '未归档坐标'} · ${row.key || row.content_hash.slice(0, 12)}`,
+        hash: row.content_hash,
+        value: row.content_hash,
+      }),
   },
 ]
 </script>

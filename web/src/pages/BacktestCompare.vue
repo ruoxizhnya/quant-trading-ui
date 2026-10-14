@@ -63,6 +63,32 @@
         </n-space>
       </n-alert>
 
+      <!-- A-07 断言 4：被排除项与其原因必须显式呈现。这条与上面那条**不能合并**
+           —— "没加载出来"和"跑完了但被判无效"是两回事，混成一框等于把
+           "这项不可信"降级成"这项缺席"。后端早就把 invalid 从 entries 里摘出来
+           单发了（compare.go 的 CompareInvalidEntry），而前端类型里没这个字段，
+           于是它从对比表里消失且不留解释 —— 正是"少一项也不许静默"要拦的那类。
+           原因文案走 `utils/runStatus` 全站唯一口径：同一条 `empty_universe`
+           在快速回测显示"股票池为空"、在这里显示原始 Code，等于又开第二套口径。 -->
+      <n-alert
+        v-if="report.invalid.length > 0"
+        type="warning"
+        title="已排除的无效运行 —— 它们跑完了，但结果不可用作成功观测"
+        :show-icon="true"
+        data-testid="compare-invalid"
+        style="margin-bottom: 16px"
+      >
+        <ul class="excluded-list" data-testid="compare-invalid-list">
+          <li v-for="iv in report.invalid" :key="iv.id" data-testid="compare-invalid-item">
+            <n-tag type="warning" size="small" :bordered="false">{{ iv.strategy || '—' }}</n-tag>
+            <n-text depth="3" class="excluded-id">{{ iv.id }}</n-text>
+            <n-text class="excluded-reasons">
+              {{ invalidReasonsText(iv.invalid_reasons) }}
+            </n-text>
+          </li>
+        </ul>
+      </n-alert>
+
       <n-grid :cols="4" :x-gap="12" responsive="screen" item-responsive>
         <n-gi span="4 m:2 l:1">
           <n-card size="small" class="metric-card">
@@ -117,7 +143,17 @@
           </thead>
           <tbody>
             <tr v-for="row in metricRows" :key="row.key">
-              <td class="row-label">{{ row.label }}</td>
+              <td class="row-label">
+                {{ row.label }}
+                <!-- A-06 断言 1：对比页每个指标行都要有质问入口。入口挂在**行标签**
+                     而不是每格 —— 一格一个的话 N 个策略 × 12 行会糊成一片按钮，
+                     而这一行被质问的是同一个量，一次质问覆盖整行。 -->
+                <EvidenceProbe
+                  :label="`多策略对比 · ${row.label}`"
+                  :hash="null"
+                  :reason="compareEvidenceReason"
+                />
+              </td>
               <td
                 v-for="entry in report.entries"
                 :key="entry.id"
@@ -160,6 +196,9 @@ import { Chart, registerables } from 'chart.js'
 import { compareBacktests, type CompareReport, type CompareEntry } from '@/api/backtest'
 import { loadCompareIds, clearCompareIds } from '@/constants/backtest'
 import { fmtPercent, fmtNumber } from '@/utils/format'
+import { invalidReasonsText } from '@/utils/runStatus'
+import { chartPalette } from '@/styles/palette'
+import EvidenceProbe from '@/components/evidence/EvidenceProbe.vue'
 
 Chart.register(...registerables)
 
@@ -185,6 +224,17 @@ interface MetricRow {
   positive?: (e: CompareEntry) => boolean
   negative?: (e: CompareEntry) => boolean
 }
+/**
+ * 对比页的每一行都是**两次以上回测结果的并排读数**，而回测结果本身不带证据坐标
+ * （`GET /api/backtest/:id/report` 的响应里零个 hash/citation，2026-10-14 实测）。
+ * 所以这里的质问入口一律落到"无法回溯"。写清楚原因，是因为对比页最容易骗人：
+ * 并排摆放会让"谁更好"看起来像结论，而两边可能都是同一个空票池跑出来的。
+ */
+const compareEvidenceReason =
+  '对比表里的每个数都来自某次回测运行，而回测结果不落在 ingest.raw 里，' +
+  '所以没有"来源记录"可回溯。要质问这一行，该问的是：参与对比的每个回测，' +
+  '股票池 / 区间 / 费率是否可比，以及它们各自是不是有效运行。'
+
 const metricRows: MetricRow[] = [
   { key: 'total_return', label: '总收益', bestKey: 'total_return_id', format: e => fmtPercent(e.total_return), positive: e => e.total_return > 0, negative: e => e.total_return < 0 },
   { key: 'annual_return', label: '年化收益', bestKey: 'annual_return_id', format: e => fmtPercent(e.annual_return), positive: e => e.annual_return > 0 },
@@ -325,21 +375,27 @@ watch(report, async () => {
       maintainAspectRatio: false,
       animation: false,
       scales: {
-        x: { type: 'linear', title: { display: true, text: '回测期间 (示意)' } },
-        y: { title: { display: true, text: '组合价值' } },
+        x: {
+          type: 'linear',
+          title: { display: true, text: '回测期间 (示意)', color: chartPalette.axisTitle },
+          grid: { color: chartPalette.grid },
+          ticks: { color: chartPalette.tick, font: { size: 11 } },
+        },
+        y: {
+          title: { display: true, text: '组合价值', color: chartPalette.axisTitle },
+          grid: { color: chartPalette.grid },
+          ticks: { color: chartPalette.tick, font: { size: 11 } },
+        },
       },
       plugins: {
-        legend: { display: true, position: 'top' },
+        legend: { display: true, position: 'top', labels: { color: chartPalette.legend, boxWidth: 12, padding: 12, font: { size: 11 } } },
         tooltip: { mode: 'index', intersect: false },
       },
     },
   })
 })
 
-const PALETTE = [
-  '#58a6ff', '#f97583', '#85e89d', '#ffab70',
-  '#b392f0', '#79b8ff', '#ff7b72', '#e1e4e8',
-]
+const PALETTE = chartPalette.seriesCycle
 
 function destroyChart() {
   if (chartInstance) {
@@ -354,6 +410,29 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+.excluded-list {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  list-style: none;
+}
+.excluded-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+.excluded-id {
+  font-family: var(--q-mono);
+  font-size: 11px;
+}
+.excluded-reasons {
+  font-size: 12px;
+  /* A-07 断言 6：invalid 的原因行用站点给 invalid 定的色（--q-warning），
+     与 QuickBacktest / BacktestEngine / StrategyBuilder 同一画法 */
+  color: var(--q-warning);
+}
+
 .compare-page {
   max-width: 1400px;
   margin: 0 auto;
@@ -375,7 +454,7 @@ onBeforeUnmount(() => {
 .chart-card { margin-top: 8px; }
 .chart-wrap { position: relative; height: 320px; }
 .chart-empty { padding: 30px 0; }
-.is-best { background: rgba(133, 232, 157, 0.08); }
+.is-best { background: var(--q-success-soft); }
 .is-best.win { color: var(--q-success); }
 .positive { color: var(--q-success); }
 .negative { color: var(--q-danger); }
