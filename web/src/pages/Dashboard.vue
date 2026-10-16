@@ -40,11 +40,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMessage } from 'naive-ui'
 import { useBacktestStore } from '@/stores/backtest'
 import { getMarketIndex } from '@/api/market'
+import { readMarketIndex } from '@/utils/marketReadout'
 import { getStrategies } from '@/api/strategy'
 import { runBacktest as apiRunBacktest } from '@/api/backtest'
 import type { Strategy, MarketIndex, BacktestResult } from '@/types/api'
@@ -69,6 +70,13 @@ const strategiesCache = ref<string[]>([])
 const quickRunning = ref(false)
 const quickResult = ref<BacktestResult | null>(null)
 
+// 在飞的「市场概览」请求序号（DATA-11：选中项/日期一变就重发，见下面的 watch）。
+let marketSeq = 0
+
+// 下拉与日期一改就重取：core 认了这两个参数，控件就不再是装饰件；
+// 反过来说，改了选中项却不重取，界面照样是撒谎（工单 ③ 的「诚实判据」另一半）。
+watch([selectedIndex, selectedDate], fetchMarketData)
+
 const quickForm = reactive({
   strategy: 'momentum',
   stock: '600000.SH',
@@ -87,25 +95,30 @@ onMounted(async () => {
 })
 
 async function fetchMarketData() {
+  // DATA-11：选中项与日期都会重发一次请求，于是「哪次回包算数」成了真问题——
+  // 慢的那次若后落地，屏上就是**上一个选中项**的读数。序号作废过期回包。
+  const seq = ++marketSeq
   marketLoading.value = true
   try {
     const res = await getMarketIndex(selectedIndex.value, selectedDate.value)
-    // 三种状态分开表达：读到条目 / 接口回了空数组（诚实读数，库里那三个指数代码 0 行）/
-    // 回包不合形状（没有 indices 数组）。后两者都没有格子可显示，但说的话不同 ——
-    // 把"这次没读到"讲成"今天没有行情"，就是 DATA-07 收口前那四格 '-' 换了个地方。
-    marketFetchFailed.value = !Array.isArray(res.indices)
-    marketMetrics.value = Array.isArray(res.indices) && res.indices.length > 0
-      ? res.indices[res.indices.length - 1]
-      : null
-    // 取最后一条也**不代表**选中项生效：core 的 /market/index 现在忽略 ?symbol/?date，
-    // 参数化取数登记为 core 工单 DATA-11，不在这里悄悄冒充 PIT。
+    if (seq !== marketSeq) return
+    // 三种状态分开表达（DATA-07 立的口径，本单再拆细一格）：
+    // 读到点名的那一条 / 接口回了空数组（库里那个指数代码 0 行）/
+    // 回包不合形状或**没有点名的那一条**（契约违约，不是「今天没有行情」）。
+    const read = readMarketIndex(res, selectedIndex.value)
+    marketFetchFailed.value = read.fetchFailed
+    marketMetrics.value = read.metrics
+    // core 现在认 ?symbol 与 ?date（(a1) 参数化，DATA-11）：日期是 as-of
+    // 「该日或之前最近一根 bar」，**不是 PIT 快照**（无公告日/摄取时刻过滤），
+    // 所以这里显示的是那一天能看到的那一期收盘价，不是「那一天之前公开过的一切」。
   } catch (e) {
+    if (seq !== marketSeq) return
     // 失败也不留旧帧：读不到就是读不到，且界面要说"这次没读到"而不是"没有行情"。
     marketFetchFailed.value = true
     marketMetrics.value = null
     console.warn('市场数据获取失败:', e)
   } finally {
-    marketLoading.value = false
+    if (seq === marketSeq) marketLoading.value = false
   }
 }
 

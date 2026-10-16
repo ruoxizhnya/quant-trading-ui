@@ -72,6 +72,7 @@ import { computed } from 'vue'
 import { NCard, NSpace, NDatePicker, NSelect, NButton, NSpin, NIcon, NTag, NText } from 'naive-ui'
 import { RefreshOutline } from '@vicons/ionicons5'
 import { fmtVolume, fmtAmount, fmtNumber } from '@/utils/format'
+import { MARKET_INDEX_OPTIONS } from '@/utils/marketReadout'
 import type { MarketIndex } from '@/types/api'
 
 /**
@@ -83,7 +84,7 @@ import type { MarketIndex } from '@/types/api'
  * `types/api.ts` 与 core 的实测契约共同把关。
  *
  * `fetchFailed` 把 `null` 的两种成因分开：**这次请求没成功**（后端不可达、回包不合
- * 形状）与**接口确实回了空数组**（库里那三个指数代码 0 行）。共用一句文案就等于在
+ * 形状、或没给回点名的那一个指数）与**接口确实回了空数组**（库里那个指数代码 0 行）。共用一句文案就等于在
  * 失败时谎称「今天没有行情」，而调用方是知道这两件事的（`Dashboard.vue` 分别置位），
  * 所以这个信息不该在组件里被抹平。默认按「空数组」讲：没传这个 prop 的调用方，
  * 最坏的误读是"数据还没有"，而不是把一个坏掉的后端说成"今天没行情"以外的东西。
@@ -102,17 +103,23 @@ const emit = defineEmits<{
   refresh: []
 }>()
 
-/** 空态三句（标签 / 事实 / 下一步），随「失败」与「确实没有」切换。 */
+/**
+ * 空态三句（标签 / 事实 / 下一步），随「失败」与「确实没有」切换。
+ *
+ * 「失败」这一支在 DATA-11 之后多了一种成因：回包里有条目，但**没有点名的那一条**
+ * —— core 答应按 `?symbol` 给数却没给，那是契约违约，跟「库里 0 行」不是一件事，
+ * 所以归到"没读到"这一句里，不让它借用「确实没有」那句诚实读数（口径同 DATA-07）。
+ */
 const emptyTag = computed(() => (props.fetchFailed ? '读数失败' : '无指数数据'))
 const emptyText = computed(() =>
   props.fetchFailed
-    ? '这次请求没成功：后端不可达或回包不合形状，不是今天没有行情'
-    : '接口回了空数组：三个指数代码在日线表里 0 行',
+    ? '这次请求没成功：后端不可达、回包不合形状，或没给回你点名的那一个指数，不是今天没有行情'
+    : `接口对 ${props.selectedIndex} 回了空数组：这个指数代码在日线表里 0 行`,
 )
 const emptyNote = computed(() =>
   props.fetchFailed
     ? '重试或看后端日志。前端不拿上一帧旧数据顶上去，也不把失败写成"今天没行情"。'
-    : '补指数 bar 需要新数据源（tushare index_daily）与建表，已登记为 core 工单 DATA-12，待主任批准。前端不造数据，也不拿别处的数凑这一格。',
+    : '补指数 bar 需要新数据源（tushare index_daily）与建表，已登记为 core 工单 DATA-12（2026-10-16 主任已批准新源与建表）。前端不造数据，也不拿别处的数凑这一格。',
 )
 
 /**
@@ -137,11 +144,8 @@ function pctClass(metrics: MarketIndex): string {
   return pct >= 0 ? 'up' : 'down'
 }
 
-const indexOptions = [
-  { label: '上证指数', value: '000001.SH' },
-  { label: '深证成指', value: '399001.SZ' },
-  { label: '创业板指', value: '399006.SZ' },
-]
+// 下拉候选 = core 的服务集，收在 utils/marketReadout.ts 一处（理由与已知代价见那里）。
+const indexOptions = MARKET_INDEX_OPTIONS
 
 const greeting = computed(() => {
   const h = new Date().getHours()

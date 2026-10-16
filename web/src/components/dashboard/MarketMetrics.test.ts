@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { NSelect } from 'naive-ui'
 import MarketMetrics from './MarketMetrics.vue'
+import { MARKET_INDEX_OPTIONS } from '@/utils/marketReadout'
 import type { MarketIndex } from '@/types/api'
 
 /**
@@ -133,5 +135,35 @@ describe('市场概览：没有指数日线时走显式空态', () => {
     const empty = mountCard(null, false).text()
     expect(empty).toContain('0 行')
     expect(empty).not.toContain('这次请求没成功')
+  })
+})
+
+describe('市场概览的下拉与空态话说得准（DATA-11）', () => {
+  it('下拉候选绑的就是那份服务集，组件里没有第二份清单', () => {
+    // 旧形状在这里另写一份含 399001.SZ 的数组：选它 ⇒ core 400，想要 000300.SH ⇒ 选不到。
+    const sel = mountCard(bar()).findComponent(NSelect)
+    expect(sel.props('options')).toEqual(MARKET_INDEX_OPTIONS)
+    expect(sel.props('value')).toBe('000300.SH')
+  })
+
+  it('空态点名的是**选中的那一个**代码，不是「三个代码」', () => {
+    // (a1) 之后一条请求只问一个指数；还说「三个指数代码 0 行」就把用户没选的那两个
+    // 的账也算进了这一格 —— 读数与要的那一天/那一个指数对齐，正是本单的判据。
+    const w = mount(MarketMetrics, {
+      props: {
+        selectedDate: '2026-09-24',
+        selectedIndex: '399006.SZ',
+        loading: false,
+        metrics: null,
+        fetchFailed: false,
+      },
+    })
+    expect(w.text()).toContain('399006.SZ')
+    expect(w.text()).not.toContain('三个指数代码')
+  })
+
+  it('失败帧要说清第三种成因：回包没有点名的那一条也算没读到', () => {
+    const text = mountCard(null, true).text()
+    expect(text).toContain('没给回你点名的那一个指数')
   })
 })
