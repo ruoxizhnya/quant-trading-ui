@@ -40,9 +40,9 @@
         <NTag type="warning" size="small">缺口有两层</NTag>
         <span>
           一是数据：逐字段财务表已建但没有摄取链路，表内 0 行（core 已知项 EQD-P1-2）。
-          二是通道：本应给出这三个时刻的历史接口，在网关上没有转发（实测网关 404，
-          数据服务侧返回的 history 为空），且它的总数接口里声明的行情最新日实测从不返回 ——
-          两个形状问题登记为 core 工单 DATA-03。任何一条不补，这块就只能显示空态。
+          二是通道：给出这三个时刻的历史接口只在数据服务上，网关不转发（实测 404）——
+          这是 core 工单 DATA-03 裁决后的形状：明写不对 SPA 开放，护栏已钉住，不是遗漏。
+          两层里任何一层不补，这块就只能显示空态。
         </span>
       </div>
     </div>
@@ -58,12 +58,16 @@ import { apiMessage } from '@/utils/apiMessage'
 /**
  * PIT 与幸存者偏差两块（A-08 断言 6）：**保留，但只显示真读到的东西**。
  *
- * 为什么整块几乎都是空态（2026-10-14 实测，不是引用文档）：
- *  - `GET :8085/api/stocks/count` → `{count: 5908}`，只有总数，且类型里声明的
- *    `latest_date` 实测从不出现（handler 把 Scan 的错误丢掉了）；
- *  - `GET :8085/api/fundamentals/:symbol/history` → 404（网关没有转发这条），
- *    直连数据服务是 200 但 `{"history":null}`；
- *  - 库里 `delist_date` 其实有 339 条非空（`stocks` 表实测），但没有 HTTP 面能拿到拆分。
+ * 为什么整块几乎都是空态（2026-10-16 复测；原始实测 2026-10-14）：
+ *  - `GET :8085/api/stocks/count` 现在恒发 `{count, by_status, latest_date}`：
+ *    在市/退市拆分是 DATA-02、行情最新日是 DATA-03（2026-10-16 关闭 —— 原形状把
+ *    date 扫进 `**string` 且丢弃 error，那个键因此从来没出现过）。**本面板仍只取
+ *    `count`**，那两格还没接上屏：文案与读数一起重写登记为 UI-01。
+ *  - `GET :8085/api/fundamentals/:symbol/history` → 404。这条不是漏转发：DATA-03 已
+ *    裁决它属数据服务内部面、网关不开放（护栏在 core 的 `cmd/analysis/deps_test.go`）；
+ *    直连数据服务是 200 但 `fundamentals_detail` 0 行 ⇒ `history` 恒空（EQD-P1-2）。
+ *  - `delist_date` 在库里有 339 条非空（`stocks` 表实测），HTTP 面的拆分读数已由
+ *    DATA-02 给出（`by_status.delisted`），缺的只是这块界面把它接进来（UI-01）。
  *
  * 缺口的正确表现是**显式空态 + 指名工单**，不是造一行数据、也不是把总数换个说法
  * 显示成"在市股票数"。同 A-06 对 factor_cache 的裁决：摄取与通道是 core 的事，

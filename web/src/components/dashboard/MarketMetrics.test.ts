@@ -32,9 +32,15 @@ function bar(over: Partial<MarketIndex> = {}): MarketIndex {
   }
 }
 
-function mountCard(metrics: MarketIndex | null) {
+function mountCard(metrics: MarketIndex | null, fetchFailed = false) {
   return mount(MarketMetrics, {
-    props: { selectedDate: '2026-09-24', selectedIndex: '000300.SH', loading: false, metrics },
+    props: {
+      selectedDate: '2026-09-24',
+      selectedIndex: '000300.SH',
+      loading: false,
+      metrics,
+      fetchFailed,
+    },
   })
 }
 
@@ -101,6 +107,7 @@ describe('市场概览：没有指数日线时走显式空态', () => {
     expect(w.text()).toContain('无指数数据')
     // 空态要能说清"为什么没有"，否则只是一个新的装饰性占位
     expect(w.text()).toContain('0 行')
+    expect(w.text()).toContain('DATA-12')
     expect(w.text()).not.toMatch(/NaN|undefined|\[object Object]/)
   })
 
@@ -108,5 +115,23 @@ describe('市场概览：没有指数日线时走显式空态', () => {
     const text = mountCard(null).text()
     expect(text).not.toContain('+0.00%')
     expect(text).not.toMatch(/4,439/)
+  })
+
+  it('「这次没读到」与「确实没有」分两句：失败帧上不许说 0 行', () => {
+    // Dashboard 把请求失败也置 metrics=null。若空态只有一句"接口回了空数组、0 行"，
+    // 失败时界面就在替后端编一个诚实读数 —— 与 A-08 作业控制台那条「空态分句」冲突，
+    // 也正是 core 台账里对本单的描述（"不把失败显示成今天没行情"）要求的那件事。
+    const failed = mountCard(null, true)
+    const text = failed.text()
+    expect(text).toContain('读数失败')
+    expect(text).toContain('这次请求没成功')
+    expect(text).not.toContain('0 行')
+    expect(text).not.toContain('无指数数据')
+    expect(failed.findAll('.metric-item')).toHaveLength(0)
+
+    // 对照腿：同一句"0 行"只在空数组那一帧成立
+    const empty = mountCard(null, false).text()
+    expect(empty).toContain('0 行')
+    expect(empty).not.toContain('这次请求没成功')
   })
 })

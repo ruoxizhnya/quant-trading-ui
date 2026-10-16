@@ -5,6 +5,7 @@
       v-model:selected-index="selectedIndex"
       :loading="marketLoading"
       :metrics="marketMetrics"
+      :fetch-failed="marketFetchFailed"
       @refresh="fetchMarketData"
     />
 
@@ -61,6 +62,9 @@ const selectedDate = ref(new Date().toISOString().split('T')[0])
 const selectedIndex = ref('000001.SH')
 const marketLoading = ref(false)
 const marketMetrics = ref<MarketIndex | null>(null)
+// `metrics` 为 null 的**成因**：请求失败/回包不合形状 = true，接口回了空数组 = false。
+// 界面两种都没有格子，但说的话必须不同（见 MarketMetrics 的 fetchFailed）。
+const marketFetchFailed = ref(false)
 const strategiesCache = ref<string[]>([])
 const quickRunning = ref(false)
 const quickResult = ref<BacktestResult | null>(null)
@@ -86,14 +90,18 @@ async function fetchMarketData() {
   marketLoading.value = true
   try {
     const res = await getMarketIndex(selectedIndex.value, selectedDate.value)
-    // 空数组是诚实读数（库里那三个指数代码 0 行，DATA-07 ②），不是"保持上一帧"。
-    // 取最后一条也**不代表**选中项生效：core 的 /market/index 现在忽略 ?symbol/?date，
-    // 参数化取数登记为 core 工单 DATA-11，不在这里悄悄冒充 PIT。
+    // 三种状态分开表达：读到条目 / 接口回了空数组（诚实读数，库里那三个指数代码 0 行）/
+    // 回包不合形状（没有 indices 数组）。后两者都没有格子可显示，但说的话不同 ——
+    // 把"这次没读到"讲成"今天没有行情"，就是 DATA-07 收口前那四格 '-' 换了个地方。
+    marketFetchFailed.value = !Array.isArray(res.indices)
     marketMetrics.value = Array.isArray(res.indices) && res.indices.length > 0
       ? res.indices[res.indices.length - 1]
       : null
+    // 取最后一条也**不代表**选中项生效：core 的 /market/index 现在忽略 ?symbol/?date，
+    // 参数化取数登记为 core 工单 DATA-11，不在这里悄悄冒充 PIT。
   } catch (e) {
-    // 失败也不留旧帧：读不到就是读不到，界面显式空态（DATA-07 同一口径）。
+    // 失败也不留旧帧：读不到就是读不到，且界面要说"这次没读到"而不是"没有行情"。
+    marketFetchFailed.value = true
     marketMetrics.value = null
     console.warn('市场数据获取失败:', e)
   } finally {

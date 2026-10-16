@@ -12,10 +12,11 @@
     </div>
 
     <n-spin :show="loading">
-      <!-- DATA-07（2026-10-16）：库里没有指数日线时给**显式空态 + 指名工单**。
-           旧形状是四格各回一个 '-'，读的人分不清「今天没行情」「接口没实现」
-           「前端没接上」——与 A-08 对 DataQualityPanel 的裁决同一口径：
-           缺口的正确表现是显式空态，不是造一行数、也不是把 '-' 说成数据。 -->
+      <!-- DATA-07（2026-10-16）：没有读数时给**显式空态 + 指名工单**，并且两种成因分开说：
+           「这次请求没成功」与「接口确实回了空数组」不是同一件事，共用一句文案就等于
+           在失败时谎称"今天没有行情"。旧形状是四格各回一个 '-'，谁都分不清；口径照
+           A-08 对 DataQualityPanel 的裁决与作业控制台那条「空态分句」——缺口用显式空态
+           表达，不造一行数，也不把 '-' 说成数据。 -->
       <div
         v-if="!metrics"
         class="metrics-empty"
@@ -25,21 +26,20 @@
           :size="8"
         >
           <n-tag
-            type="warning"
+            :type="fetchFailed ? 'error' : 'warning'"
             size="small"
           >
-            无指数数据
+            {{ emptyTag }}
           </n-tag>
           <n-text class="empty-text">
-            接口实测回空数组：三个指数代码在日线表里 0 行
+            {{ emptyText }}
           </n-text>
         </n-space>
         <n-text
           depth="3"
           class="empty-note"
         >
-          补指数 bar 需要新数据源（tushare index_daily）与建表，待主任批准后另立工单；
-          前端不造数据，也不拿别处的数凑这一格。
+          {{ emptyNote }}
         </n-text>
       </div>
       <div
@@ -48,7 +48,7 @@
       >
         <div class="metric-item">
           <span class="metric-label">收盘价</span>
-          <span class="metric-val">{{ fmtNumber(metrics!.close, 2) }}</span>
+          <span class="metric-val">{{ fmtNumber(metrics.close, 2) }}</span>
         </div>
         <div class="metric-item">
           <span class="metric-label">涨跌幅</span>
@@ -56,11 +56,11 @@
         </div>
         <div class="metric-item">
           <span class="metric-label">成交量</span>
-          <span class="metric-val">{{ metrics!.volume == null ? '未读取' : fmtVolume(metrics!.volume) }}</span>
+          <span class="metric-val">{{ fmtVolume(metrics.volume) }}</span>
         </div>
         <div class="metric-item">
           <span class="metric-label">成交额</span>
-          <span class="metric-val">{{ metrics!.amount == null ? '未读取' : `${fmtAmount(metrics!.amount)}亿` }}</span>
+          <span class="metric-val">{{ metrics.amount == null ? '未读取' : `${fmtAmount(metrics.amount)}亿` }}</span>
         </div>
       </div>
     </n-spin>
@@ -75,18 +75,25 @@ import { fmtVolume, fmtAmount, fmtNumber } from '@/utils/format'
 import type { MarketIndex } from '@/types/api'
 
 /**
- * `metrics` 现在是一条真读数，或 `null`（库里没有指数日线 / 接口回空数组）。
+ * `metrics` 现在是一条真读数，或 `null`（库里没有指数日线 / 接口回空数组 / 请求失败）。
  *
  * 旧签名是 `metrics: Record<string, any>`：`any` 把「后端从来没给 volume/amount」
  * 和「后端给了但你没接住」两种情况压成同一个形状，界面于是恒显示 '-' 而没人报错
  * （DATA-07 的缺陷本体）。改成 `MarketIndex | null` 后，字段名与可空性由
  * `types/api.ts` 与 core 的实测契约共同把关。
+ *
+ * `fetchFailed` 把 `null` 的两种成因分开：**这次请求没成功**（后端不可达、回包不合
+ * 形状）与**接口确实回了空数组**（库里那三个指数代码 0 行）。共用一句文案就等于在
+ * 失败时谎称「今天没有行情」，而调用方是知道这两件事的（`Dashboard.vue` 分别置位），
+ * 所以这个信息不该在组件里被抹平。默认按「空数组」讲：没传这个 prop 的调用方，
+ * 最坏的误读是"数据还没有"，而不是把一个坏掉的后端说成"今天没行情"以外的东西。
  */
 const props = defineProps<{
   selectedDate: string
   selectedIndex: string
   loading: boolean
   metrics: MarketIndex | null
+  fetchFailed?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -95,7 +102,18 @@ const emit = defineEmits<{
   refresh: []
 }>()
 
-// Expose formatters to template
+/** 空态三句（标签 / 事实 / 下一步），随「失败」与「确实没有」切换。 */
+const emptyTag = computed(() => (props.fetchFailed ? '读数失败' : '无指数数据'))
+const emptyText = computed(() =>
+  props.fetchFailed
+    ? '这次请求没成功：后端不可达或回包不合形状，不是今天没有行情'
+    : '接口回了空数组：三个指数代码在日线表里 0 行',
+)
+const emptyNote = computed(() =>
+  props.fetchFailed
+    ? '重试或看后端日志。前端不拿上一帧旧数据顶上去，也不把失败写成"今天没行情"。'
+    : '补指数 bar 需要新数据源（tushare index_daily）与建表，已登记为 core 工单 DATA-12，待主任批准。前端不造数据，也不拿别处的数凑这一格。',
+)
 
 /**
  * 涨跌幅按**百分数刻度**渲染（core 的 `pct` 已经是 1.23 == +1.23%）。
@@ -104,16 +122,18 @@ const emit = defineEmits<{
  * 拿它接 `pct` 会把 +1.23% 显示成 +123.00%。旧代码读的根本不是 `pct` 而是
  * `metrics.change_pct`（后端从来没发过这个键），所以这个 100 倍错配一直没暴露。
  * null 显示「未读取」：没有上一期收盘时涨跌幅无从算起，不是 0%。
+ * 入参只可能是非 null（模板里这条分支在 `v-else`，metrics 已被收窄）；
+ * 也不防 NaN —— JSON 里带不出 NaN（Go 侧 marshal 直接报错），加那个分支是防空转。
  */
-function pctText(metrics: MarketIndex | null): string {
-  const pct = metrics?.pct
-  if (pct == null || isNaN(pct)) return '未读取'
+function pctText(metrics: MarketIndex): string {
+  const pct = metrics.pct
+  if (pct == null) return '未读取'
   return `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%`
 }
 
-function pctClass(metrics: MarketIndex | null): string {
-  const pct = metrics?.pct
-  if (pct == null || isNaN(pct)) return ''
+function pctClass(metrics: MarketIndex): string {
+  const pct = metrics.pct
+  if (pct == null) return ''
   return pct >= 0 ? 'up' : 'down'
 }
 
