@@ -126,6 +126,7 @@
   - `GET :8085/api/sync/jobs?status=pending` → `{"count":0,"jobs":null}`。
   - 根因形状：Go 侧 `Jobs []*SyncJob` 为 nil 时 `encoding/json` 编出 `null`，`[]` 需要显式初始化；`docs/openapi.yaml` 与前端类型 `web/src/types/sync.ts:60`（`jobs: SyncJob[]`）都按**必有数组**写。
   - 前端已止血（本轮 A-08：`stores/sync.ts` 的 `resp.jobs ?? []`，并有单测钉住真形状），但**止血不等于契约对了**：下一个客户端（agent 的 MCP 工具、curl 脚本、别的 SPA 页面）照类型写就会踩。本轮实测里同一个形状在 `schedules` 那条上也有对应处理（`resp.schedules ?? []`），说明这不是孤例而是**一族**。
+  - **第三个实测实例（2026-10-16，core DATA-11 自审时顺带查出，已登记为 core `DATA-13`）**：`GET :8085/api/ohlcv/600000.SH?start_date=2024-01-01&end_date=2024-12-31` ⇒ **200 `{"ohlcv":null}`**，同参换 `20240101/20241231` ⇒ 200 带真行。成因不是「集合端点忘了初始化」而是**日期格式被吞**：`pkg/data/cache.go:60` 的 `parseDate` 写着 `t, _ := time.Parse("20060102", s)`，注释自承「Returns zero time on error」⇒ ISO 写法塌成零值日期、查询范围 `[0001-01-01, 0001-01-01]`、结果 nil slice 编成 `null`。分工提醒，别各自收一半：**本单管形状**（空集合该是 `[]` 还是明写可空），**core DATA-13 管成因**（坏格式该 400 而不是装成没数据）；同一台服务上 `cmd/data/handlers_factor.go:223-229` 对同样的 `YYYYMMDD` 声明是**回 400** 的，可见两种做法已经并存。
 - **③ 要求**：把该族端点（至少 `GET /api/sync/jobs`、`GET /api/sync/schedules`）在空结果时序列化成 `[]`；或反过来在 SPEC/openapi 里把字段标成可空并同步所有已知消费方。**形状与取舍由 core 定**，前端不指挥。
 - **④ 约束与非目标**：不改前端已就位的 fail-closed（那是防御，不是本单的解）；不动 `ResultSpec`；不在本单里顺手改别的端点 —— 先盘点还有哪些集合端点会吐 `null`，把清单写进结案记录。
 - **⑤ 验收**：
@@ -156,4 +157,4 @@
   - `fmtVolume` / `fmtAmount` 改成只在 `null`/`undefined`/`NaN` 时返回占位，`0` 正常格式化；同步更新 `format.test.ts` 里钉住旧行为的那两条用例（改断言要写明理由，不许静默翻转）。
 - **④ 约束与非目标**：不动后端契约（形状由 core 定，本单只是接住已给的字段）；不在前端算 `5908 - 339` 之类客户端重建（core AGENTS.md §9 禁止两处真相）；不改其他格式化函数。
 - **⑤ 验收**：`npm test` + `npm run typecheck` + `npm run lint`（0 error）绿；新增/更新的 `MarketMetrics`/`DataQualityPanel` 单测钉住「0 不再显示成占位」与「空态只在 null 时出现」；浏览器实测 `/data-sync` 与 `/` 两页 DOM 回读，屏幕上的文字与 `curl` 拿到的字段集合一致；`e2e/tests/visual-regression.spec.ts` 的 `dashboard.png` 若因文案变化需 `--update-snapshots`，须在结案里写明是有意变化。**破坏验证**：把面板改回读 `count` 单一字段 ⇒ 新断言红；把 `fmtVolume` 的 null 判据改回 `!v` ⇒ 0 那条用例红。
-- **⑥ 边界**：只做"文案与能力对齐 + 0 与缺失分得开"；`/market/index` 的参数不生效（core DATA-11）与指数 bar 数据面（core DATA-12）不在本单。
+- **⑥ 边界**：只做"文案与能力对齐 + 0 与缺失分得开"；~~`/market/index` 的参数不生效（core DATA-11）~~ **该句已于 2026-10-16 被 core DATA-11 落地证伪**：`(a1)` 参数化后 `?symbol`/`?date` 真下传（网关那层原本连 query 都不带，也一并补上），ui 侧取值改为按选中项命中 + 选中项/日期一变就重取（本仓 `f473fa9`，已在 ui main），日期框同时改成不可清空 —— 清空会让 `market.ts` 的 `if (date)` 把参数省掉，屏上仍是最新一期而框里没有日期，正是本节立的「文案与能力相反」那一族。指数 bar 数据面（core DATA-12）仍不在本单。

@@ -191,7 +191,7 @@ Dashboard 页面
 
 | 接口 | 方法 | 用途 |
 |------|------|------|
-| `/api/market/index/:index` | GET | 获取指数数据 |
+| `/api/market/index` | GET | 市场概览读数。`?symbol=`（core 服务集内的一个指数代码）与 `?date=`（as-of，该日或之前最近一根 bar）自 core DATA-11（2026-10-16）起真的下传并生效。<br>⚠️ 本行原写 `/api/market/index/:index`（路径参数形态），core（`cmd/data/main.go` 只有 `/market/index`）与网关（`cmd/analysis/handlers_proxy.go` 只有 `/api/market/index`）都没有这条路由 —— 设计稿里的幻影端点，按实测改正 |
 | `/api/backtest` | POST | 快速回测 |
 | `/api/strategies` | GET | 获取策略列表 |
 

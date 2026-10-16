@@ -3,7 +3,20 @@
     <div class="market-header">
       <span class="greeting">{{ greeting }}</span>
       <n-space align="center" :size="12">
-        <n-date-picker :formatted-value="selectedDate" type="date" value-format="yyyy-MM-dd" size="small" @update:formatted-value="$emit('update:selectedDate', $event)" />
+        <!-- DATA-11 自审补的一处：这个日期框原来**可以清空**（naive-ui 的
+             n-date-picker 默认 clearable），清空后 formatted-value 变成 null，
+             `getMarketIndex` 里的 `if (date)` 就把参数省掉 ⇒ 屏上仍是最新一期，
+             而框里什么日期都没有 —— 一个说不清「这一格是哪一天的」的形状。
+             参数化之前它本来就不影响读数，看不出问题；现在影响了，所以关掉清空。
+             顺手按 vue/max-attributes-per-line 把这一枚标签拆成多行（同条警告 −4）。 -->
+        <n-date-picker
+          :formatted-value="selectedDate"
+          :clearable="false"
+          type="date"
+          value-format="yyyy-MM-dd"
+          size="small"
+          @update:formatted-value="$emit('update:selectedDate', $event)"
+        />
         <n-select :value="selectedIndex" :options="indexOptions" size="small" style="width: 120px" @update:value="$emit('update:selectedIndex', $event)" />
         <n-button quaternary size="tiny" @click="$emit('refresh')">
           <template #icon><n-icon><RefreshOutline /></n-icon></template>

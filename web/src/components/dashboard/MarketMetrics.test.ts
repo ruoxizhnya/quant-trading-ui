@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
-import { NSelect } from 'naive-ui'
+import { NDatePicker, NSelect } from 'naive-ui'
 import MarketMetrics from './MarketMetrics.vue'
 import { MARKET_INDEX_OPTIONS } from '@/utils/marketReadout'
 import type { MarketIndex } from '@/types/api'
@@ -165,5 +165,14 @@ describe('市场概览的下拉与空态话说得准（DATA-11）', () => {
   it('失败帧要说清第三种成因：回包没有点名的那一条也算没读到', () => {
     const text = mountCard(null, true).text()
     expect(text).toContain('没给回你点名的那一个指数')
+  })
+
+  it('日期框不可清空：清空会让读数说不出自己是哪一天的', () => {
+    // 能清空 ⇒ formatted-value 变 null ⇒ market.ts 的 `if (date)` 把参数省掉，
+    // 屏上还是「最近一根 bar」但框里没有日期。参数化之前看不出（date 本来不生效），
+    // (a1) 之后这一格必须自己说得出是哪一天。
+    const picker = mountCard(bar()).findComponent(NDatePicker)
+    expect(picker.props('clearable')).toBe(false)
+    expect(picker.props('valueFormat')).toBe('yyyy-MM-dd')
   })
 })
