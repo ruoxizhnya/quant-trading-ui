@@ -60,7 +60,7 @@ const backtestStore = useBacktestStore()
 const selectedDate = ref(new Date().toISOString().split('T')[0])
 const selectedIndex = ref('000001.SH')
 const marketLoading = ref(false)
-const marketMetrics = ref<MarketIndex | Record<string, unknown>>({})
+const marketMetrics = ref<MarketIndex | null>(null)
 const strategiesCache = ref<string[]>([])
 const quickRunning = ref(false)
 const quickResult = ref<BacktestResult | null>(null)
@@ -86,11 +86,15 @@ async function fetchMarketData() {
   marketLoading.value = true
   try {
     const res = await getMarketIndex(selectedIndex.value, selectedDate.value)
-    if (Array.isArray(res.indices) && res.indices.length > 0) {
-      const latest = res.indices[res.indices.length - 1]
-      marketMetrics.value = latest
-    }
+    // 空数组是诚实读数（库里那三个指数代码 0 行，DATA-07 ②），不是"保持上一帧"。
+    // 取最后一条也**不代表**选中项生效：core 的 /market/index 现在忽略 ?symbol/?date，
+    // 参数化取数登记为 core 工单 DATA-11，不在这里悄悄冒充 PIT。
+    marketMetrics.value = Array.isArray(res.indices) && res.indices.length > 0
+      ? res.indices[res.indices.length - 1]
+      : null
   } catch (e) {
+    // 失败也不留旧帧：读不到就是读不到，界面显式空态（DATA-07 同一口径）。
+    marketMetrics.value = null
     console.warn('市场数据获取失败:', e)
   } finally {
     marketLoading.value = false

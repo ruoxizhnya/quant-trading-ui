@@ -108,26 +108,46 @@ export interface StrategyParam {
   options?: { label: string; value: number | string | boolean }[] // For select type
 }
 
+/**
+ * 「市场概览」的一条指数读数 —— 形状以 core 的 `GET /market/index` 实测为准
+ * （DATA-07，2026-10-16；契约登记在 core `docs/SPEC.md` §1 与 openapi.yaml）。
+ *
+ * 三处刻意与旧类型不同，都是「声明了但后端从来没给」的字段：
+ *  - 去掉 `open`/`high`/`low`：core 的 `marketIndexPayload` 从不发这三个键。
+ *  - 去掉 `MarketData.updated_at`：响应里只有 `indices`，没有更新时间。
+ *  - `change`/`pct`/`amount` 可空：没有上一期收盘时涨跌幅**无从算起**，
+ *    `turnover` 列可空时成交额没有读数。core 给 null 而不是 0，因为
+ *    「+0.00%」「成交额 0 元」是假数字。
+ *
+ * `pct` 是**百分数刻度**（1.23 == +1.23%），所以这里不能过 `fmtPercent`
+ * （它自己会再乘 100，会把 1.23% 显示成 123%）。单位：volume 股、amount CNY，
+ * 展示层换算（亿/万）不改单位口径本身。
+ */
 export interface MarketIndex {
   code: string
   name: string
-  open: number
-  high: number
-  low: number
   close: number
+  change: number | null
+  pct: number | null
   volume: number
-  change: number
-  pct: number
+  amount: number | null
 }
 
 export interface MarketData {
   indices: MarketIndex[]
-  updated_at: string
 }
 
+/**
+ * `GET /api/stocks/count` 的读数（DATA-02 的拆分 + DATA-03 的最新行情日期）。
+ *
+ * `by_status` 与 `latest_date` 都是后端**恒发**的键：前者空表时是 `{}`，
+ * 后者在库里还没有行情时是 `null`（不是缺席）。旧类型只声明 `count` 与
+ * `latest_date: string`，而 `latest_date` 实测从不出现 —— 那是 DATA-03 关闭的缺陷。
+ */
 export interface StockCount {
   count: number
-  latest_date: string
+  by_status: Record<string, number>
+  latest_date: string | null
 }
 
 export interface HealthStatus {
